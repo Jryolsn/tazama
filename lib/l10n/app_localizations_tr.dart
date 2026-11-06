@@ -9,7 +9,7 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get aboutFlauncher => 'Arc Launcher Hakkında';
+  String get aboutFlauncher => 'Tazama Hakkında';
 
   @override
   String get addCategory => 'Kategori ekle';
@@ -273,7 +273,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get updateInstallPermissionBody =>
-      'Arc Launcher\'ın bilinmeyen uygulamaları yüklemesine izin verin, ardından güncellemeyi yeniden deneyin.';
+      'Tazama\'ın bilinmeyen uygulamaları yüklemesine izin verin, ardından güncellemeyi yeniden deneyin.';
 
   @override
   String get updateOpenPermissionSettingsButton => 'İzin ayarlarını aç';
@@ -284,7 +284,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String textAboutDialog(String repoUrl) {
-    return 'Arc Launcher, FLauncher tabanlı, Android TV için özelleştirilmiş açık kaynaklı bir başlatıcıdır.\n\nGeliştiren: Meddouri Badis.\nKaynak kodu $repoUrl adresinde mevcuttur.';
+    return 'Tazama is an open-source launcher for Android TV, based on Arc Launcher by Meddouri Badis, which builds on LTvLauncher and FLauncher.\n\nSource code available at $repoUrl.';
   }
 
   @override

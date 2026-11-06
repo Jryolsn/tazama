@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get aboutFlauncher => '关于 Arc Launcher';
+  String get aboutFlauncher => '关于 Tazama';
 
   @override
   String get addCategory => '添加分类';
@@ -269,7 +269,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get updateInstallPermissionTitle => '需要安装权限';
 
   @override
-  String get updateInstallPermissionBody => '允许 Arc Launcher 安装未知应用，然后重试更新。';
+  String get updateInstallPermissionBody => '允许 Tazama 安装未知应用，然后重试更新。';
 
   @override
   String get updateOpenPermissionSettingsButton => '打开权限设置';
@@ -279,7 +279,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String textAboutDialog(String repoUrl) {
-    return 'Arc Launcher 是一款基于 FLauncher 为 Android TV 定制的开源启动器。\n\n由 Meddouri Badis 开发。\n源代码位于 $repoUrl。';
+    return 'Tazama is an open-source launcher for Android TV, based on Arc Launcher by Meddouri Badis, which builds on LTvLauncher and FLauncher.\n\nSource code available at $repoUrl.';
   }
 
   @override

@@ -85,7 +85,7 @@ class _ReplaceLauncherPageState extends State<ReplaceLauncherPage> with WidgetsB
               ),
               const SizedBox(height: 8),
               Text(
-                'Home opens Arc, and Arc is shown whenever the stock home screen would appear '
+                'Home opens Tazama, and Tazama is shown whenever the stock home screen would appear '
                 '(after start-up or when you leave an app). The stock launcher stays installed, '
                 'so nothing has to be disabled.',
                 style: textTheme.bodySmall,
@@ -93,7 +93,7 @@ class _ReplaceLauncherPageState extends State<ReplaceLauncherPage> with WidgetsB
               if (_isDefault) ...[
                 const SizedBox(height: 12),
                 Text(
-                  'Arc is already the default home app, so this setting has nothing to do right now.',
+                  'Tazama is already the default home app, so this setting has nothing to do right now.',
                   style: textTheme.bodySmall,
                 ),
               ],
@@ -118,8 +118,8 @@ class _ReplaceLauncherPageState extends State<ReplaceLauncherPage> with WidgetsB
                 Text(
                   _openFailed
                       ? 'This TV has no direct link. Open the system Settings > Accessibility, '
-                          'choose Arc Brightness and switch it on.'
-                      : 'This needs the "Arc Brightness" accessibility service. Switch it on, then press Back.',
+                          'choose Tazama Brightness and switch it on.'
+                      : 'This needs the "Tazama Brightness" accessibility service. Switch it on, then press Back.',
                   style: textTheme.bodySmall,
                 ),
               ],

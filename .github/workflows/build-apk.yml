@@ -51,10 +51,10 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/*armeabi-v7a*.apk "dist/arc-launcher-${{ steps.version.outputs.name }}-armeabi-v7a.apk"
+          cp build/app/outputs/flutter-apk/*armeabi-v7a*.apk "dist/tazama-${{ steps.version.outputs.name }}-armeabi-v7a.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: arc-launcher
+          name: tazama
           path: dist/*.apk
           if-no-files-found: error
       - name: Publish release
@@ -66,7 +66,7 @@ jobs:
           prerelease=""
           [ "$GITHUB_REF_NAME" = "main" ] || prerelease="--prerelease"
           gh release create "v$VERSION" dist/*.apk $prerelease \
-            --target "$GITHUB_SHA" --title "Arc $VERSION" \
+            --target "$GITHUB_SHA" --title "Tazama $VERSION" \
             --notes "$(git log -1 --format=%B "$GITHUB_SHA")"
       - name: Keep only the 10 newest pre-releases
         if: github.ref_name == 'dev'

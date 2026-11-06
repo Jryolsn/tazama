@@ -93,7 +93,7 @@ class _QuickPanelApp extends StatelessWidget {
       selector: (_, settings) => settings.accentColor,
       builder: (context, accentColor, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Arc quick settings',
+        title: 'Tazama quick settings',
         theme: arcTheme(accentColor),
         shortcuts: {
           ...WidgetsApp.defaultShortcuts,

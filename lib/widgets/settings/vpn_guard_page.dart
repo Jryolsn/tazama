@@ -69,7 +69,7 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Text(
-                    "The guard is off: turn on \"Arc Brightness\" in Android Settings > Accessibility.",
+                    "The guard is off: turn on \"Tazama Brightness\" in Android Settings > Accessibility.",
                     style: TextStyle(color: Colors.orangeAccent),
                   ),
                 ),
@@ -101,8 +101,8 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: Text(
-                  'If your VPN only tunnels chosen apps, include Arc in that list too. '
-                  'Otherwise Arc can\'t see the VPN and treats it as off.',
+                  'If your VPN only tunnels chosen apps, include Tazama in that list too. '
+                  'Otherwise Tazama can\'t see the VPN and treats it as off.',
                   style: TextStyle(color: Colors.white60),
                 ),
               ),
@@ -110,9 +110,9 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                 child: Text(
                   status.canCheckApps
-                      ? 'Per-app check: on. Arc sees which apps the VPN covers.'
-                      : 'Per-app check: off. To let Arc see which apps the VPN covers, run once from a computer:\n'
-                          'adb shell pm grant com.jryolsn.arc android.permission.DUMP',
+                      ? 'Per-app check: on. Tazama sees which apps the VPN covers.'
+                      : 'Per-app check: off. To let Tazama see which apps the VPN covers, run once from a computer:\n'
+                          'adb shell pm grant com.jryolsn.tazama android.permission.DUMP',
                   style: TextStyle(color: status.canCheckApps ? Colors.white60 : Colors.white70),
                 ),
               ),

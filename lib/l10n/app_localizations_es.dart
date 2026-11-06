@@ -276,7 +276,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get updateInstallPermissionBody =>
-      'Permite que Arc Launcher instale apps desconocidas y vuelve a intentar la actualización.';
+      'Permite que Tazama instale apps desconocidas y vuelve a intentar la actualización.';
 
   @override
   String get updateOpenPermissionSettingsButton => 'Abrir ajustes de permisos';
@@ -287,7 +287,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String textAboutDialog(String repoUrl) {
-    return 'Arc Launcher es un lanzador de código abierto personalizado para Android TV, basado en FLauncher.\n\nDesarrollado por Meddouri Badis.\nCódigo fuente disponible en $repoUrl.';
+    return 'Tazama is an open-source launcher for Android TV, based on Arc Launcher by Meddouri Badis, which builds on LTvLauncher and FLauncher.\n\nSource code available at $repoUrl.';
   }
 
   @override

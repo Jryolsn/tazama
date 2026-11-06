@@ -27,6 +27,6 @@ com.google.android.tv.axel              # remote pairing, TV control
 com.netflix.tokenmanager
 
 # Our launcher and helpers
-com.jryolsn.arc
+com.jryolsn.tazama
 com.thayford.castfix
 com.motionplay.tv

@@ -9,7 +9,7 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get aboutFlauncher => 'Giới thiệu Arc Launcher';
+  String get aboutFlauncher => 'Giới thiệu Tazama';
 
   @override
   String get addCategory => 'Thêm danh mục';
@@ -273,7 +273,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get updateInstallPermissionBody =>
-      'Cho phép Arc Launcher cài ứng dụng không rõ nguồn gốc, rồi thử cập nhật lại.';
+      'Cho phép Tazama cài ứng dụng không rõ nguồn gốc, rồi thử cập nhật lại.';
 
   @override
   String get updateOpenPermissionSettingsButton => 'Mở cài đặt quyền';
@@ -284,7 +284,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String textAboutDialog(String repoUrl) {
-    return 'Arc Launcher là ứng dụng màn hình chính mã nguồn mở dành cho Android TV, được tùy chỉnh từ FLauncher.\n\nDo Meddouri Badis phát triển.\nMã nguồn tại $repoUrl.';
+    return 'Tazama is an open-source launcher for Android TV, based on Arc Launcher by Meddouri Badis, which builds on LTvLauncher and FLauncher.\n\nSource code available at $repoUrl.';
   }
 
   @override

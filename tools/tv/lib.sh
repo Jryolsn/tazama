@@ -14,10 +14,10 @@ else
 fi
 
 TOOLS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ARC="com.jryolsn.arc"
+ARC="com.jryolsn.tazama"
 ARC_HOME="$ARC/com.omeda.arc.MainActivity"
 ARC_A11Y="$ARC/com.omeda.arc.ArcAccessibilityService"
-ARC_REPO="Jryolsn/arclauncher"
+ARC_REPO="Jryolsn/tazama"
 CASTFIX="com.thayford.castfix"
 CASTFIX_REPO="thayford/castfix"
 STOCK_HOME="com.google.android.apps.tv.launcherx"

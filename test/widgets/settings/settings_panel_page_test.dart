@@ -109,7 +109,7 @@ void main() {
 
     await _pumpWidgetWithProviders(tester, settingsService, appsService);
 
-    await tester.tap(find.text("About Arc Launcher"));
+    await tester.tap(find.text("About Tazama"));
     await tester.pumpAndSettle();
     expect(find.byType(LTvLauncherAboutDialog), findsOneWidget);
   });
@@ -144,7 +144,7 @@ Future<void> _pumpWidgetWithProviders(
 class _MockPackageInfoPlatform with MockPlatformInterfaceMixin implements PackageInfoPlatform {
   @override
   Future<PackageInfoData> getAll({String? baseUrl}) async => PackageInfoData(
-        appName: "Arc Launcher",
+        appName: "Tazama",
         packageName: "me.efesser.flauncher",
         version: "1.0.0",
         buildNumber: "1",
