@@ -118,8 +118,8 @@ class _ReplaceLauncherPageState extends State<ReplaceLauncherPage> with WidgetsB
                 Text(
                   _openFailed
                       ? 'This TV has no direct link. Open the system Settings > Accessibility, '
-                          'choose Tazama Brightness and switch it on.'
-                      : 'This needs the "Tazama Brightness" accessibility service. Switch it on, then press Back.',
+                          'choose Tazama and switch it on.'
+                      : 'This needs the "Tazama" accessibility service. Switch it on, then press Back.',
                   style: textTheme.bodySmall,
                 ),
               ],

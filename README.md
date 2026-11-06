@@ -16,7 +16,7 @@ It is based on [Arc Launcher](https://github.com/meddouribadis/arclauncher) and 
 
 Every push to `dev` publishes a pre-release and every push to `main` a release on [GitHub Releases](https://github.com/Jryolsn/tazama/releases). The easiest way to stay updated on a TV is [Obtainium](https://github.com/ImranR98/Obtainium) pointed at this repository.
 
-Several features need the **Tazama Brightness** accessibility service and a few adb grants. `tools/tv/setup-tv.sh` sets up a new TV.
+Several features need the **Tazama** accessibility service and a few adb grants. `tools/tv/setup-tv.sh` sets up a new TV.
 
 ## Build
 

@@ -69,7 +69,7 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Text(
-                    "The guard is off: turn on \"Tazama Brightness\" in Android Settings > Accessibility.",
+                    "The guard is off: turn on \"Tazama\" in Android Settings > Accessibility.",
                     style: TextStyle(color: Colors.orangeAccent),
                   ),
                 ),

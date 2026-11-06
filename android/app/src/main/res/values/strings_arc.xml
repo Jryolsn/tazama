@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="arc_accessibility_description">Dims the screen on top of every app, and opens a quick brightness panel with the YouTube button on the remote.</string>
-    <string name="arc_accessibility_label">Tazama Brightness</string>
+    <string name="arc_accessibility_description">Lets Tazama dim the screen over every app, open the quick panel from the remote, lock apps and stand in for the home screen.</string>
+    <string name="arc_accessibility_label">Tazama</string>
 </resources>

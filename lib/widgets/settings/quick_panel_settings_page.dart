@@ -78,7 +78,7 @@ class _QuickPanelSettingsPageState extends State<QuickPanelSettingsPage> with Wi
               const SizedBox(height: 8),
               Text(
                 'Hold Home (or press the YouTube button) to open the quick panel over any app. '
-                'This needs the "Tazama Brightness" accessibility service.',
+                'This needs the "Tazama" accessibility service.',
                 style: textTheme.bodySmall,
               ),
               const SizedBox(height: 16),
@@ -93,8 +93,8 @@ class _QuickPanelSettingsPageState extends State<QuickPanelSettingsPage> with Wi
                 Text(
                   _openFailed
                       ? 'This TV has no direct link. Open the system Settings > Accessibility, '
-                          'choose Tazama Brightness and switch it on.'
-                      : 'Choose Tazama Brightness in the list and switch it on, then press Back.',
+                          'choose Tazama and switch it on.'
+                      : 'Choose Tazama in the list and switch it on, then press Back.',
                   style: textTheme.bodySmall,
                 ),
               ] else

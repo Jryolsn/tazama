@@ -365,7 +365,7 @@ class _LockedTabState extends State<_LockedTab> {
         if (!lock.isActive)
           FocusableSettingsTile(
             leading: const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent),
-            title: Text('App lock is off: enable "Tazama Brightness" in Accessibility',
+            title: Text('App lock is off: enable "Tazama" in Accessibility',
                 style: Theme.of(context).textTheme.bodyMedium),
             onPressed: () => FLauncherChannel().openAccessibilitySettings(),
           ),
