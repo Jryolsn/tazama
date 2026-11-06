@@ -19,6 +19,7 @@ Scripts that set up a Chromecast with Google TV the way ours is, over adb from a
    TV_SERIAL=<serial from adb devices> tools/tv/setup-tv.sh          # all steps, asks before each
    TV_SERIAL=<serial> tools/tv/setup-tv.sh --pre                     # same, Arc from the newest pre-release
    TV_SERIAL=<serial> tools/tv/setup-tv.sh 6                         # one step only
+   TV_HOST=<ip> tools/tv/migrate-from-arc.sh [--pre]                # once: move a TV from the old Arc fork to Tazama
    ```
 
    Step 5 asks for the pairing port and code that the TV shows under
