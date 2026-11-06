@@ -8,7 +8,7 @@ Targets Chromecast with Google TV (HD "boreal" and 4K "sabrina"), armeabi-v7a.
 
 ## Layout
 - `lib/` Flutter app. `lib/quick_panel.dart` is a second entry point (`quickPanelMain`).
-- `android/app/src/main/kotlin/` native side. The Java/Kotlin package is still `com.omeda.arc`
+- `android/app/src/main/java/` native side. The Java package is still `com.omeda.arc`
   (upstream); the application id is `com.jryolsn.tazama`. Do not rename the package without need.
 - `tools/tv/` adb setup/restore scripts for TVs.
 - `.github/workflows/build-apk.yml` builds, signs with `android/app/sideload.keystore` and publishes releases.
