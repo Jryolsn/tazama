@@ -222,6 +222,16 @@ class SettingsService extends ChangeNotifier {
     return set(_showAppNamesBelowIcons, show);
   }
 
+  /// Watch Next card size: "s", "m" (default) or "l".
+  String get watchNextCardSize => _sharedPreferences.getString("watch_next_card_size") ?? "m";
+
+  double get watchNextCardScale => const {"s": 0.75, "m": 1.0, "l": 1.25}[watchNextCardSize] ?? 1.0;
+
+  Future<void> setWatchNextCardSize(String size) async {
+    await _sharedPreferences.setString("watch_next_card_size", size);
+    notifyListeners();
+  }
+
   /// Home screen layout: "rows" (default dock + rows), "orbit" or "aurora".
   String get homeLayout => _sharedPreferences.getString("home_layout") ?? HOME_LAYOUT_ROWS;
 

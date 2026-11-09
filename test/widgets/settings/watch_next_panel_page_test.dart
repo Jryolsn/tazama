@@ -175,6 +175,7 @@ void main() {
     expect(find.text('Unlimited'), findsOneWidget);
     expect(find.text('Refresh content'), findsOneWidget);
     expect(find.text('Filter apps'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Plex'), 100);
     expect(find.text('Plex'), findsOneWidget);
     expect(find.text('Netflix'), findsOneWidget);
   });
@@ -198,7 +199,7 @@ void main() {
     expect(settingsService.isWatchNextPackageExcluded('com.plexapp.android'), isFalse);
 
     // Scroll to Plex toggle and tap
-    await tester.ensureVisible(find.text('Plex'));
+    await tester.scrollUntilVisible(find.text('Plex'), 100);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Plex'));
     await tester.pumpAndSettle();

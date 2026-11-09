@@ -510,7 +510,7 @@ class _CategorySettingsState extends State<_CategorySettings>
               children: [
                 for (int i = 0; i < kCategorySizeLabels.length; i++)
                   Expanded(
-                    child: _SizeChip(
+                    child: SettingsChoiceChip(
                       label: kCategorySizeLabels[i],
                       selected: _sizeIndex == i,
                       onPressed: () {
@@ -753,42 +753,6 @@ Widget _listTile(BuildContext context, Widget title, Widget subtitle, {Widget? t
 const List<String> kCategorySizeLabels = ['S', 'M', 'L', 'XL'];
 const List<int> kCategoryRowHeights = [80, 110, 140, 170];
 const List<int> kCategoryColumns = [8, 6, 5, 4];
-
-class _SizeChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onPressed;
-
-  const _SizeChip({required this.label, required this.selected, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
-    final onAccent = accent.computeLuminance() > 0.4 ? const Color(0xFF1A1238) : Colors.white;
-    return SettingsFocusCard(
-      onPressed: onPressed,
-      margin: const EdgeInsets.symmetric(horizontal: 3),
-      padding: EdgeInsets.zero,
-      radius: 99,
-      builder: (context, highlighted) => AnimatedContainer(
-        duration: SettingsStyle.focusDurationFor(context),
-        height: 34,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: selected ? accent : Colors.transparent,
-          borderRadius: BorderRadius.circular(99),
-        ),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: selected ? onAccent : Colors.white.withValues(alpha: highlighted ? 1 : 0.8),
-              ),
-        ),
-      ),
-    );
-  }
-}
 
 /// Small live sketch of how the category's cards will sit on the home screen.
 class _SizePreview extends StatelessWidget {

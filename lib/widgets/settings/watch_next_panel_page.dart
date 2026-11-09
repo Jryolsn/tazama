@@ -155,6 +155,30 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                   secondary: const Icon(Icons.photo_size_select_actual_rounded),
                 ),
 
+                if (!settingsService.watchNextBigPictureMode)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Card size', style: Theme.of(context).textTheme.bodyMedium),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            for (final (id, label) in const [("s", "S"), ("m", "M"), ("l", "L")])
+                              Expanded(
+                                child: SettingsChoiceChip(
+                                  label: label,
+                                  selected: settingsService.watchNextCardSize == id,
+                                  onPressed: () => settingsService.setWatchNextCardSize(id),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
                 RoundedSwitchListTile(
                   value: settingsService.watchNextHideProgramsWithoutImages,
                   onChanged: settingsService.setWatchNextHideProgramsWithoutImages,

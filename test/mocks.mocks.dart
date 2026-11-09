@@ -1908,6 +1908,26 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as _i4.Color);
 
   @override
+  String get watchNextCardSize => (super.noSuchMethod(
+        Invocation.getter(#watchNextCardSize),
+        returnValue: _i19.dummyValue<String>(
+          this,
+          Invocation.getter(#watchNextCardSize),
+        ),
+        returnValueForMissingStub: _i19.dummyValue<String>(
+          this,
+          Invocation.getter(#watchNextCardSize),
+        ),
+      ) as String);
+
+  @override
+  double get watchNextCardScale => (super.noSuchMethod(
+        Invocation.getter(#watchNextCardScale),
+        returnValue: 0.0,
+        returnValueForMissingStub: 0.0,
+      ) as double);
+
+  @override
   String get homeLayout => (super.noSuchMethod(
         Invocation.getter(#homeLayout),
         returnValue: _i19.dummyValue<String>(
@@ -2170,6 +2190,16 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
         Invocation.method(
           #setShowAppNamesBelowIcons,
           [show],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setWatchNextCardSize(String? size) => (super.noSuchMethod(
+        Invocation.method(
+          #setWatchNextCardSize,
+          [size],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),

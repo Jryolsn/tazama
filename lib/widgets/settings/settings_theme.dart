@@ -376,3 +376,41 @@ class SettingsGroupLabel extends StatelessWidget {
         ),
       );
 }
+
+/// Pill-shaped choice used for small option sets such as S/M/L.
+class SettingsChoiceChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  const SettingsChoiceChip({super.key, required this.label, required this.selected, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = accent.computeLuminance() > 0.4 ? const Color(0xFF1A1238) : Colors.white;
+    return SettingsFocusCard(
+      onPressed: onPressed,
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      padding: EdgeInsets.zero,
+      radius: 99,
+      builder: (context, highlighted) => AnimatedContainer(
+        duration: SettingsStyle.focusDurationFor(context),
+        height: 34,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(99),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: selected ? onAccent : Colors.white.withValues(alpha: highlighted ? 1 : 0.8),
+              ),
+        ),
+      ),
+    );
+  }
+}
+
