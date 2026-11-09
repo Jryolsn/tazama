@@ -453,7 +453,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
             builder: (context, showTitle, _) {
               if (showTitle) {
                 return Padding(
-                  padding: const EdgeInsets.only(left: 40, bottom: 8, top: 8),
+                  padding: const EdgeInsets.only(left: 48, bottom: 8, top: 8),
                   child: Text(
                     category.name,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -476,11 +476,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
           slivers.add(
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(
-                  left: kLauncherSectionHorizontalPadding,
-                  right: kLauncherSectionHorizontalPadding,
-                  bottom: 8,
-                ),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: CategoryRow(
                   key: sectionKey,
                   category: category,
@@ -1067,9 +1063,11 @@ class _OrbitClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsService>();
-    return Align(
-      alignment: const Alignment(0, -0.1),
-      child: Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           DateTimeWidget(
@@ -1097,6 +1095,7 @@ class _OrbitClock extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -1113,34 +1112,26 @@ class _AuroraSide extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DateTimeWidget(
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: DateTimeWidget(
             settings.timeFormat,
             updateInterval: const Duration(minutes: 1),
             textStyle: const TextStyle(
-              fontSize: 84,
+              fontSize: 80,
               fontWeight: FontWeight.w300,
               height: 1,
               color: Nebula.text,
               shadows: Nebula.textShadow,
             ),
           ),
+          ),
           const SizedBox(height: 10),
           DateTimeWidget(
             settings.dateFormat,
             updateInterval: const Duration(minutes: 1),
             textStyle: const TextStyle(fontSize: 20, color: Nebula.textMuted, shadows: Nebula.textShadow),
-          ),
-          const Spacer(),
-          Container(
-            height: 2,
-            width: 64,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              gradient: LinearGradient(colors: [
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0),
-              ]),
-            ),
           ),
         ],
       ),

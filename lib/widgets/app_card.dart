@@ -41,7 +41,7 @@ const _validationKeys = [LogicalKeyboardKey.select, LogicalKeyboardKey.enter, Lo
 const kAppCardAspectRatio = 16 / 9;
 const kAppCardHorizontalPadding = 12.0;
 const kAppCardVerticalPadding = 9.0;
-const kLauncherSectionHorizontalPadding = 24.0;
+const kLauncherSectionHorizontalPadding = 36.0;
 const kAppNameLabelHeight = 24.0;
 
 /// Row extent for a grid/dock line given the content width between section paddings.

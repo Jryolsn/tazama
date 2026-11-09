@@ -7,6 +7,8 @@ _Last updated: 2026-11-09_
 - New application id `com.jryolsn.tazama`: TVs need a one-time install of Tazama and removal of the old
   `com.jryolsn.arc` (settings, PIN, home and accessibility setup must be redone).
 - Icon and banner are a first placeholder (amber eye on dark).
+- TV tuning pass at 960x540 dp (the real TV canvas): 48 dp side margins, rows scroll to the screen edge,
+  focus glow no longer clipped, Orbit/Aurora clocks shrink to fit, Watch Next sizes S/M/L = 0.6/0.78/1.0.
 
 ## Next
 - Nebula style (PR): night-blue/violet nebula default background, lavender accent, Nunito font,
