@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   video_player: ^2.9.5
   http: ^1.2.2
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:
