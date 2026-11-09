@@ -309,7 +309,8 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     }
     final isOrbit = homeLayout == HOME_LAYOUT_ORBIT;
 
-    final watchNextSpace = watchNextBigPicture ? 385 : 410;
+    final watchNextScale = context.select<SettingsService, double>((s) => s.watchNextCardScale);
+    final watchNextSpace = watchNextBigPicture ? 385.0 : 410 - 200 * (1 - watchNextScale);
 
     return CustomScrollView(
       controller: _scrollController,
@@ -930,7 +931,7 @@ class _HeroBackdropBaker extends ChangeNotifier {
         // 1. Full-screen hero background with cinematic scrim
         final heroRecorder = ui.PictureRecorder();
         final heroCanvas = Canvas(heroRecorder);
-        paintImage(canvas: heroCanvas, rect: Offset.zero & pxSize, image: source, fit: BoxFit.cover);
+        paintImage(canvas: heroCanvas, rect: Offset.zero & pxSize, image: source, fit: BoxFit.cover, filterQuality: FilterQuality.medium);
         const _CinematicScrimPainter().paint(heroCanvas, pxSize);
         final heroPicture = heroRecorder.endRecording();
         final heroImage = heroPicture.toImageSync(pxSize.width.toInt(), pxSize.height.toInt());

@@ -39,8 +39,12 @@ void _playFocusSound(BuildContext context) {
   }
 }
 
-const double _kWatchNextItemWidth = 360;
-const double _kWatchNextItemHeight = 200;
+const double _kWatchNextBaseWidth = 360;
+const double _kWatchNextBaseHeight = 200;
+
+// Card size follows the Watch Next size setting (S/M/L).
+double _itemWidth(BuildContext context) => _kWatchNextBaseWidth * context.read<SettingsService>().watchNextCardScale;
+double _itemHeight(BuildContext context) => _kWatchNextBaseHeight * context.read<SettingsService>().watchNextCardScale;
 const double _kWatchNextItemSpacing = 24;
 const double _kWatchNextRowVerticalSlack = 8;
 const double _kWatchNextHorizontalPadding =
@@ -297,10 +301,10 @@ class _WatchNextCleanRowState extends State<_WatchNextCleanRow> {
 
     final position = _scrollController.position;
     final viewportWidth = position.viewportDimension;
-    final slotWidth = _kWatchNextItemWidth + _kWatchNextItemSpacing;
+    final slotWidth = _itemWidth(context) + _kWatchNextItemSpacing;
 
     final cardStart = _kWatchNextHorizontalPadding + index * slotWidth;
-    final cardCenter = cardStart + _kWatchNextItemWidth / 2;
+    final cardCenter = cardStart + _itemWidth(context) / 2;
     final targetOffset = (cardCenter - viewportWidth / 2).clamp(
       position.minScrollExtent,
       position.maxScrollExtent,
@@ -324,13 +328,14 @@ class _WatchNextCleanRowState extends State<_WatchNextCleanRow> {
 
   @override
   Widget build(BuildContext context) {
+    context.select<SettingsService, double>((s) => s.watchNextCardScale);
     return SizedBox(
-      height: _kWatchNextItemHeight + 24 + _kWatchNextRowVerticalSlack,
+      height: _itemHeight(context) + 24 + _kWatchNextRowVerticalSlack,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: _kWatchNextHorizontalPadding, vertical: 12),
-        itemExtent: _kWatchNextItemWidth + _kWatchNextItemSpacing,
+        itemExtent: _itemWidth(context) + _kWatchNextItemSpacing,
         addSemanticIndexes: false,
         addRepaintBoundaries: true,
         itemCount: widget.items.length,
@@ -447,6 +452,7 @@ class _WatchNextCardState extends State<_WatchNextCard> {
         );
       },
     );
+    context.select<SettingsService, double>((s) => s.watchNextCardScale);
     final targetScale = _clicked ? 0.97 : (_isHovered ? _focusedScale : 1.0);
     final targetLift = _isHovered && !_clicked ? _focusedLift : 0.0;
     final (bool showFocusBorders, double borderThickness) = context.select<SettingsService, (bool, double)>(
@@ -490,8 +496,8 @@ class _WatchNextCardState extends State<_WatchNextCard> {
                     borderRadius: BorderRadius.circular(Nebula.cardRadius),
                   ),
                   child: SizedBox(
-                    width: _kWatchNextItemWidth,
-                    height: _kWatchNextItemHeight,
+                    width: _itemWidth(context),
+                    height: _itemHeight(context),
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
@@ -532,11 +538,12 @@ class _WatchNextCardState extends State<_WatchNextCard> {
       return Image.memory(
         posterData,
         fit: BoxFit.cover,
-        width: _kWatchNextItemWidth,
-        height: _kWatchNextItemHeight,
-        cacheWidth: _kWatchNextItemWidth.toInt(),
-        cacheHeight: _kWatchNextItemHeight.toInt(),
-        filterQuality: FilterQuality.low,
+        width: _itemWidth(context),
+        height: _itemHeight(context),
+        // Decode at physical size (plus room for the focus zoom), width only so the
+        // aspect ratio is kept; BoxFit.cover then crops instead of stretching.
+        cacheWidth: (_itemWidth(context) * MediaQuery.devicePixelRatioOf(context) * 1.15).round(),
+        filterQuality: FilterQuality.medium,
       );
     }
 
