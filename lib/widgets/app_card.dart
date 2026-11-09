@@ -34,6 +34,7 @@ import 'package:provider/provider.dart';
 
 import '../models/app.dart';
 import '../models/category.dart';
+import 'package:flauncher/nebula_theme.dart';
 
 const _validationKeys = [LogicalKeyboardKey.select, LogicalKeyboardKey.enter, LogicalKeyboardKey.gameButtonA];
 
@@ -106,7 +107,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   late final AnimationController _animation;
 
   late final CurvedAnimation _curvedAnimation;
-  static const double _focusedScale = 1.07;
+  static const double _focusedScale = 1.1;
   static const Duration _focusAnimationDuration = Duration(milliseconds: 180);
 
   @override
@@ -178,7 +179,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final bool showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesBelowIcons);
+    final bool showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesFor(widget.category.id));
     final (bool animationEnabled, String accentColorHex, bool showFocusBorders, double borderThickness) = context.select<SettingsService, (bool, String, bool, double)>(
       (s) => (s.appHighlightAnimationEnabled, s.accentColorHex, s.showFocusBorders, s.focusBorderThickness),
     );
@@ -218,12 +219,29 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                       curve: Curves.easeOutCubic,
                       child: Stack(
                         fit: StackFit.expand,
+                        clipBehavior: Clip.none,
                         children: [
+                          // Soft accent glow behind the focused card.
+                          IgnorePointer(
+                            child: AnimatedOpacity(
+                              opacity: shouldHighlight && !_moving ? 1.0 : 0.0,
+                              duration: _focusAnimationDuration,
+                              curve: Curves.easeOutCubic,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(Nebula.cardRadius),
+                                  boxShadow: [
+                                    BoxShadow(color: _accentColor.withValues(alpha: 0.7), blurRadius: 32, spreadRadius: 4),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           Material(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(Nebula.cardRadius),
                             clipBehavior: Clip.antiAlias,
-                            elevation: shouldHighlight ? 7 : 4,
-                            shadowColor: Colors.black,
+                            elevation: shouldHighlight ? 2 : 4,
+                            shadowColor: const Color(0xFF05041A),
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
@@ -244,7 +262,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                                     duration: _focusAnimationDuration,
                                     curve: Curves.easeInOut,
                                     opacity: shouldHighlight ? 0.0 : 1.0,
-                                    child: const ColoredBox(color: Color(0x1A000000)),
+                                    child: const ColoredBox(color: Color(0x260B0A24)),
                                   ),
                                 ),
                               ],
@@ -650,7 +668,7 @@ class _HighlightOutline extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       foregroundPainter: AppCardContourPainter(
-        radius: 12.0,
+        radius: Nebula.cardRadius,
         strokeWidth: isMoving ? max(2.0, strokeWidth + 0.5) : strokeWidth,
         accentColor: accentColor,
         alpha: alpha,

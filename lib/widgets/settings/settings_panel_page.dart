@@ -16,24 +16,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/update_service.dart';
 import 'package:flauncher/build_flags.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
-import 'package:flauncher/widgets/settings/interface_settings_page.dart';
+import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
+import 'package:flauncher/widgets/settings/lock_protection_page.dart';
+import 'package:flauncher/widgets/settings/misc_panel_page.dart';
+import 'package:flauncher/widgets/settings/screen_sleep_page.dart';
+import 'package:flauncher/widgets/settings/status_bar_panel_page.dart';
+import 'package:flauncher/widgets/settings/wallpaper_panel_page.dart';
+import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/update_dialogs.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
 
 import 'focusable_settings_tile.dart';
 
 class SettingsPanelPage extends StatelessWidget {
   static const String routeName = "settings_panel";
+
+  Widget _link(BuildContext context, IconData icon, String title, String route, {String? subtitle, bool autofocus = false}) =>
+      FocusableSettingsTile(
+        autofocus: autofocus,
+        showChevron: true,
+        leading: Icon(icon),
+        title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+        subtitle: subtitle == null ? null : Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+        onPressed: () => Navigator.of(context).pushNamed(route),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -47,54 +62,43 @@ class SettingsPanelPage extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
-                FocusableSettingsTile(
-                  autofocus: true,
-                  showChevron: true,
-                  leading: const Icon(Icons.apps),
-                  title: Text(localizations.applications, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => Navigator.of(context).pushNamed(ApplicationsPanelPage.routeName),
-                ),
-                FocusableSettingsTile(
-                  showChevron: true,
-                  leading: const Icon(Icons.auto_awesome_mosaic_outlined),
-                  title: Text(localizations.interface, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => Navigator.of(context).pushNamed(InterfaceSettingsPage.routeName),
-                ),
-                FocusableSettingsTile(
-                  showChevron: true,
-                  leading: const Icon(Icons.settings_suggest_outlined),
-                  title: Text(localizations.system, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => Navigator.of(context).pushNamed(GeneralSettingsPage.routeName),
-                ),
-                const SettingsSectionDivider(),
-                FocusableSettingsTile(
-                  leading: const Icon(Icons.settings_outlined),
-                  title: Text(localizations.systemSettings, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => context.read<AppsService>().openSettings(),
-                ),
-                if (kEnableSelfUpdater)
-                  FocusableSettingsTile(
-                    leading: const Icon(Icons.system_update_alt),
-                    title: Text(localizations.updateCheck, style: Theme.of(context).textTheme.bodyMedium),
-                    onPressed: () => _checkForUpdates(context),
-                  ),
-                FocusableSettingsTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: Text(localizations.aboutFlauncher, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (_) => FutureBuilder<PackageInfo>(
-                      future: PackageInfo.fromPlatform(),
-                      builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done && snapshot.hasData
-                          ? LTvLauncherAboutDialog(packageInfo: snapshot.data!)
-                          : Container(),
-                    )))
-      ])))
-    ]);
+                const SettingsGroupLabel('Home screen'),
+                _link(context, Icons.dashboard_rounded, 'Home layout', HomeLayoutPage.routeName,
+                    subtitle: 'Rows, Orbit or Aurora', autofocus: true),
+                _link(context, Icons.view_agenda_rounded, 'Categories', LauncherSectionsPanelPage.routeName,
+                    subtitle: 'Order, size and layout'),
+                _link(context, Icons.play_circle_rounded, localizations.watchNextSectionTitle, WatchNextPanelPage.routeName),
+                _link(context, Icons.apps_rounded, localizations.applications, ApplicationsPanelPage.routeName,
+                    subtitle: 'Favorites and hidden apps'),
+                const SettingsGroupLabel('Appearance'),
+                _link(context, Icons.wallpaper_rounded, localizations.wallpaper, WallpaperPanelPage.routeName),
+                _link(context, Icons.palette_rounded, 'Color, cards and focus', MiscPanelPage.routeName),
+                _link(context, Icons.schedule_rounded, 'Clock and status bar', StatusBarPanelPage.routeName),
+                const SettingsGroupLabel('TV and system'),
+                _link(context, Icons.lock_rounded, 'Lock and protection', LockProtectionPage.routeName,
+                    subtitle: 'App lock, VPN guard'),
+                _link(context, Icons.brightness_medium_rounded, 'Screen and sleep', ScreenSleepPage.routeName),
+                _link(context, Icons.tune_rounded, localizations.system, GeneralSettingsPage.routeName),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
-Future<void> _checkForUpdates(BuildContext context) async {
+void showAboutTazama(BuildContext context) => showDialog(
+      context: context,
+      builder: (_) => FutureBuilder<PackageInfo>(
+        future: PackageInfo.fromPlatform(),
+        builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done && snapshot.hasData
+            ? LTvLauncherAboutDialog(packageInfo: snapshot.data!)
+            : Container(),
+      ),
+    );
+
+Future<void> checkForUpdates(BuildContext context) async {
   if (!kEnableSelfUpdater) {
     return;
   }

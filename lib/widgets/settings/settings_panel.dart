@@ -30,7 +30,6 @@ import 'package:flauncher/widgets/settings/status_bar_panel_page.dart';
 import 'package:flauncher/widgets/settings/wallpaper_panel_page.dart';
 import 'package:flauncher/widgets/settings/wifi_usage_period_page.dart';
 import 'package:flauncher/widgets/settings/back_button_action_page.dart';
-import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/replace_launcher_page.dart';
 import 'package:flauncher/widgets/settings/date_time_format_page.dart';
 import 'package:flauncher/widgets/settings/app_details_page.dart';
@@ -41,7 +40,9 @@ import 'package:flauncher/widgets/settings/focus_border_thickness_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_max_items_page.dart';
-import 'package:flauncher/widgets/settings/interface_settings_page.dart';
+import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flauncher/widgets/settings/screen_sleep_page.dart';
+import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/screensaver_clock_style_page.dart';
 import 'package:flauncher/models/app.dart';
@@ -52,7 +53,10 @@ import 'package:flutter/material.dart';
 class SettingsPanel extends StatefulWidget {
   final String? initialRoute;
 
-  const SettingsPanel({Key? key, this.initialRoute}) : super(key: key);
+  /// Arguments for [initialRoute], e.g. the section index to edit.
+  final Object? initialArguments;
+
+  const SettingsPanel({Key? key, this.initialRoute, this.initialArguments}) : super(key: key);
 
   @override
   State<SettingsPanel> createState() => _SettingsPanelState();
@@ -78,7 +82,7 @@ class _SettingsPanelState extends State<SettingsPanel> {
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
-                    colors: [Color(0x8C000000), Color(0x1A000000)],
+                    colors: [Color(0x990B0A24), Color(0x220B0A24)],
                   ),
                 ),
               ),
@@ -96,8 +100,12 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => SettingsPanelPage());
                     case GeneralSettingsPage.routeName:
                       return _FastPageRoute(builder: (_) => GeneralSettingsPage());
-                    case InterfaceSettingsPage.routeName:
-                      return _FastPageRoute(builder: (_) => InterfaceSettingsPage());
+                    case HomeLayoutPage.routeName:
+                      return _FastPageRoute(builder: (_) => const HomeLayoutPage());
+                    case ScreenSleepPage.routeName:
+                      return _FastPageRoute(builder: (_) => const ScreenSleepPage());
+                    case LockProtectionPage.routeName:
+                      return _FastPageRoute(builder: (_) => const LockProtectionPage());
                     case WallpaperPanelPage.routeName:
                       return _FastPageRoute(builder: (_) => WallpaperPanelPage());
                     case StatusBarPanelPage.routeName:
@@ -113,17 +121,15 @@ class _SettingsPanelState extends State<SettingsPanel> {
                     case RedditSubredditsPanelPage.routeName:
                       return _FastPageRoute(builder: (_) => const RedditSubredditsPanelPage());
                     case ApplicationsPanelPage.routeName:
-                      return _FastPageRoute(builder: (_) => ApplicationsPanelPage());
+                      return _FastPageRoute(builder: (_) => ApplicationsPanelPage(initialTab: settings.arguments as int? ?? 0));
                     case LauncherSectionsPanelPage.routeName:
                       return _FastPageRoute(builder: (_) => LauncherSectionsPanelPage());
                     case LauncherSectionPanelPage.routeName:
                       return _FastPageRoute(
-                        builder: (_) => LauncherSectionPanelPage(sectionIndex: settings.arguments as int?),
+                        builder: (_) => LauncherSectionPanelPage(sectionIndex: (settings.arguments ?? widget.initialArguments) as int?),
                       );
                     case WifiUsagePeriodPage.routeName:
                       return _FastPageRoute(builder: (_) => WifiUsagePeriodPage());
-                    case QuickPanelSettingsPage.routeName:
-                      return _FastPageRoute(builder: (_) => const QuickPanelSettingsPage());
                     case ReplaceLauncherPage.routeName:
                       return _FastPageRoute(builder: (_) => const ReplaceLauncherPage());
                     case BackButtonActionPage.routeName:

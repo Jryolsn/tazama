@@ -169,7 +169,7 @@ class _StyleRadioTile extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Icon(
-            isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
+            isSelected ? Icons.check_circle_rounded : Icons.circle_rounded,
             size: 22,
             color: isSelected ? primaryColor : Colors.white.withValues(alpha: 0.3),
           ),

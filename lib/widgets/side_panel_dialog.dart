@@ -23,14 +23,19 @@ class SidePanelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = Theme.of(context).colorScheme.primary;
-    final radius = BorderRadius.horizontal(
-      right: isRightSide ? Radius.zero : const Radius.circular(SettingsStyle.panelRadius),
-      left: isRightSide ? const Radius.circular(SettingsStyle.panelRadius) : Radius.zero,
-    );
+    // Floating panel: inset from the screen edge, rounded on all corners.
+    final radius = BorderRadius.circular(SettingsStyle.panelRadius);
 
     return Align(
       alignment: isRightSide ? Alignment.centerRight : Alignment.centerLeft,
-      child: ClipRRect(
+      child: Padding(
+        padding: const EdgeInsets.all(SettingsStyle.panelInset),
+        child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          boxShadow: const [BoxShadow(color: Color(0x9905041A), blurRadius: 48, offset: Offset(0, 18))],
+        ),
+        child: ClipRRect(
         borderRadius: radius,
         child: SizedBox(
           width: width,
@@ -65,12 +70,16 @@ class SidePanelDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                top: 0,
-                bottom: 0,
-                left: isRightSide ? 0 : null,
-                right: isRightSide ? null : 0,
-                child: Container(width: 1, color: Colors.white.withValues(alpha: 0.08)),
+              // Soft rim light around the whole panel.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: radius,
+                      border: Border.all(color: const Color(0x24DCCDFF)),
+                    ),
+                  ),
+                ),
               ),
               Material(
                 color: Colors.transparent,
@@ -85,6 +94,8 @@ class SidePanelDialog extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      ),
       ),
     );
   }

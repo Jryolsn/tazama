@@ -21,7 +21,7 @@ import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
-import 'package:flauncher/widgets/settings/interface_settings_page.dart';
+import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
 import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
 import 'package:flauncher/widgets/settings/settings_panel_page.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +57,7 @@ void main() {
     expect(find.byKey(const Key("ApplicationsPanelPage")), findsOneWidget);
   });
 
-  testWidgets("'Interface' navigates to InterfaceSettingsPage", (tester) async {
+  testWidgets("'Categories' navigates to LauncherSectionsPanelPage", (tester) async {
     final settingsService = MockSettingsService();
     final appsService = MockAppsService();
     when(appsService.categories).thenReturn([]);
@@ -66,9 +66,9 @@ void main() {
 
     await _pumpWidgetWithProviders(tester, settingsService, appsService);
 
-    await tester.tap(find.text("Interface"));
+    await tester.tap(find.text("Categories"));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key("InterfaceSettingsPage")), findsOneWidget);
+    expect(find.byKey(const Key("LauncherSectionsPanelPage")), findsOneWidget);
   });
 
   testWidgets("'System' navigates to GeneralSettingsPage", (tester) async {
@@ -80,6 +80,8 @@ void main() {
 
     await _pumpWidgetWithProviders(tester, settingsService, appsService);
 
+    await tester.ensureVisible(find.text("System"));
+    await tester.pumpAndSettle();
     await tester.tap(find.text("System"));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key("GeneralSettingsPage")), findsOneWidget);
@@ -92,7 +94,7 @@ void main() {
     when(appsService.applications).thenReturn([]);
     when(settingsService.appHighlightAnimationEnabled).thenReturn(true);
 
-    await _pumpWidgetWithProviders(tester, settingsService, appsService);
+    await _pumpWidgetWithProviders(tester, settingsService, appsService, home: GeneralSettingsPage());
 
     await tester.tap(find.text("System settings"));
     await tester.pumpAndSettle();
@@ -107,7 +109,7 @@ void main() {
     when(settingsService.appHighlightAnimationEnabled).thenReturn(true);
     PackageInfoPlatform.instance = _MockPackageInfoPlatform();
 
-    await _pumpWidgetWithProviders(tester, settingsService, appsService);
+    await _pumpWidgetWithProviders(tester, settingsService, appsService, home: GeneralSettingsPage());
 
     await tester.tap(find.text("About Tazama"));
     await tester.pumpAndSettle();
@@ -118,8 +120,9 @@ void main() {
 Future<void> _pumpWidgetWithProviders(
   WidgetTester tester,
   SettingsService settingsService,
-  AppsService appsService,
-) async {
+  AppsService appsService, {
+  Widget? home,
+}) async {
   await tester.pumpWidget(
     MultiProvider(
       providers: [
@@ -131,10 +134,10 @@ Future<void> _pumpWidgetWithProviders(
         supportedLocales: AppLocalizations.supportedLocales,
         routes: {
           ApplicationsPanelPage.routeName: (_) => const Scaffold(body: Text("Apps", key: Key("ApplicationsPanelPage"))),
-          InterfaceSettingsPage.routeName: (_) => const Scaffold(body: Text("Interface", key: Key("InterfaceSettingsPage"))),
+          LauncherSectionsPanelPage.routeName: (_) => const Scaffold(body: Text("Categories", key: Key("LauncherSectionsPanelPage"))),
           GeneralSettingsPage.routeName: (_) => const Scaffold(body: Text("System", key: Key("GeneralSettingsPage"))),
         },
-        home: Material(child: SettingsPanelPage()),
+        home: Material(child: home ?? SettingsPanelPage()),
       ),
     ),
   );

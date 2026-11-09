@@ -8,7 +8,10 @@ and FLauncher. All original copyright notices are kept in the source files.
 Changes from Arc Launcher, made from October 2026 on, include: new name,
 icon, banner and application id (com.jryolsn.tazama), app lock, dim screen,
 quick panel, VPN guard, "Replace current launcher", sideload build and
-release workflow, and TV setup scripts. The full list is in the git history.
+release workflow, TV setup scripts and the "Nebula" visual style. The full list is in the git history.
+
+The Nunito font (assets/fonts) is licensed under the SIL Open Font License 1.1,
+see assets/fonts/OFL.txt.
 
 This program is distributed under the GNU General Public License version 3,
 WITHOUT ANY WARRANTY. See the LICENSE file.

@@ -32,12 +32,14 @@ import 'package:flutter/services.dart';
 import 'package:flauncher/providers/launcher_state.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
+import 'package:flauncher/nebula_theme.dart';
 import 'package:flauncher/providers/watch_next_service.dart';
 import 'package:flauncher/widgets/app_card.dart';
 import 'package:flauncher/widgets/cached_blur_backdrop.dart';
 import 'package:flauncher/widgets/category_clean_row.dart';
 import 'package:flauncher/widgets/category_row.dart';
 import 'package:flauncher/widgets/dock_contour_painter.dart';
+import 'package:flauncher/widgets/date_time_widget.dart';
 import 'package:flauncher/widgets/launcher_alternative_view.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
 import 'package:flauncher/widgets/wallpaper_video_background.dart';
@@ -253,9 +255,9 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
               backgroundColor: Colors.transparent,
               appBar: FocusAwareAppBar(key: _appBarKey),
               // (initialized (data.$1), layoutVersion (data.$2), showAppNamesBelowIcons (data.$3))
-              body: Selector2<AppsService, SettingsService, (bool, int, bool)>(
+              body: Selector2<AppsService, SettingsService, (bool, int, bool, int)>(
                 selector: (_, appsService, settingsService) =>
-                    (appsService.initialized, appsService.layoutVersion, settingsService.showAppNamesBelowIcons),
+                    (appsService.initialized, appsService.layoutVersion, settingsService.showAppNamesBelowIcons, settingsService.categoryUiRevision),
                 builder: (context, data, _) {
                   if (data.$1) {
                     return _tvOSLayout(context, context.read<AppsService>(), showAppNames: data.$3);
@@ -301,6 +303,12 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
 
     if (favoriteApps.isEmpty && otherSections.isEmpty) return _emptyState(context);
 
+    final homeLayout = context.select<SettingsService, String>((s) => s.homeLayout);
+    if (homeLayout == HOME_LAYOUT_AURORA) {
+      return _auroraLayout(context, appsService, showWatchNextSection: showWatchNextSection, showAppNames: showAppNames);
+    }
+    final isOrbit = homeLayout == HOME_LAYOUT_ORBIT;
+
     final watchNextSpace = watchNextBigPicture ? 385 : 410;
 
     return CustomScrollView(
@@ -314,6 +322,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   MediaQuery.of(context).padding.top -
                   kToolbarHeight -
                   (reserveWatchNextSpace ? watchNextSpace : 150),
+              child: isOrbit ? const _OrbitClock() : null,
             ),
           ),
           if (showWatchNextSection)
@@ -338,6 +347,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                     favoriteApps,
                     appsService,
                     handleUpNavigationToSettings: !reserveWatchNextSpace,
+                    floating: isOrbit,
                   ),
                 ),
               ),
@@ -350,6 +360,51 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
           onFirstSectionFocused: favoriteApps.isNotEmpty ? _scrollDockToTop : null,
         ),
         SliverToBoxAdapter(child: SizedBox(height: _bottomScrollPadding(context, hasDock: favoriteApps.isNotEmpty))),
+      ],
+    );
+  }
+
+  /// Aurora: clock column on the left, all sections scroll on the right.
+  Widget _auroraLayout(
+    BuildContext context,
+    AppsService appsService, {
+    required bool showWatchNextSection,
+    required bool showAppNames,
+  }) {
+    final mq = MediaQuery.of(context);
+    final sideWidth = mq.size.width * 0.28;
+    final contentWidth = mq.size.width - sideWidth;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(width: sideWidth, child: const _AuroraSide()),
+        Expanded(
+          // Narrower MediaQuery so grid and row sizing match the column.
+          child: MediaQuery(
+            data: mq.copyWith(size: Size(contentWidth, mq.size.height)),
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                if (showWatchNextSection)
+                  SliverToBoxAdapter(
+                    child: RepaintBoundary(
+                      child: WatchNextRow(
+                        isFirstSection: true,
+                        isAboveDock: false,
+                        onItemFocused: _onHomeSectionFocused,
+                      ),
+                    ),
+                  ),
+                ..._buildSectionSlivers(
+                  appsService.launcherSections,
+                  showAppNames: showAppNames,
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 64)),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -393,7 +448,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
       slivers.add(
         SliverToBoxAdapter(
           child: Selector<SettingsService, bool>(
-            selector: (context, service) => service.showCategoryTitles,
+            selector: (context, service) => service.showTitleFor(category.id),
             builder: (context, showTitle, _) {
               if (showTitle) {
                 return Padding(
@@ -401,7 +456,10 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   child: Text(
                     category.name,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      shadows: const [Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 8)],
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                      color: Nebula.textMuted,
+                      shadows: Nebula.textShadow,
                     ),
                   ),
                 );
@@ -436,7 +494,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
           break;
         case CategoryType.grid:
           final gridContentWidth = MediaQuery.sizeOf(context).width - 2 * kLauncherSectionHorizontalPadding;
-          final gridAspectRatio = showAppNames
+          final gridAspectRatio = context.read<SettingsService>().showAppNamesFor(category.id)
               ? appCardGridAspectRatio(gridContentWidth, category.columnsCount)
               : kAppCardAspectRatio;
           slivers.add(
@@ -566,7 +624,23 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     List<App> apps,
     AppsService appsService, {
     required bool handleUpNavigationToSettings,
+    bool floating = false,
   }) {
+    // Orbit: cards float freely, without the glass dock behind them.
+    if (floating) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          child: CategoryCleanRow(
+            category: category,
+            applications: apps,
+            isFirstSection: handleUpNavigationToSettings,
+            scrollAlignment: 1.0,
+            onAppFocused: _onHomeSectionFocused,
+          ),
+        ),
+      );
+    }
     final backdropDisabled = context.select<SettingsService, bool>((s) => s.dockBackdropFilterDisabled);
     final darkBackground = context.select<SettingsService, bool>((s) => s.dockDarkBackground);
     final shadowEnabled = context.select<SettingsService, bool>((s) => s.dockShadowEnabled);
@@ -648,7 +722,8 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
         width: screenSize.width,
       );
     } else {
-      return _CachedGradientBackground(key: const Key("background"), gradient: wallpaperService.gradient.gradient);
+      final g = wallpaperService.gradient;
+      return _CachedGradientBackground(key: const Key("background"), gradient: g.gradient, nebula: g.nebula);
     }
   }
 
@@ -675,8 +750,9 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
 /// background as cheap as a static image wallpaper.
 class _CachedGradientBackground extends StatefulWidget {
   final Gradient gradient;
+  final bool nebula;
 
-  const _CachedGradientBackground({super.key, required this.gradient});
+  const _CachedGradientBackground({super.key, required this.gradient, this.nebula = false});
 
   @override
   State<_CachedGradientBackground> createState() => _CachedGradientBackgroundState();
@@ -699,12 +775,17 @@ class _CachedGradientBackgroundState extends State<_CachedGradientBackground> {
       return;
     }
     _rendering = true;
-    final recorder = ui.PictureRecorder();
-    final rect = Offset.zero & size;
-    Canvas(recorder).drawRect(rect, Paint()..shader = widget.gradient.createShader(rect));
-    final picture = recorder.endRecording();
-    final image = picture.toImageSync(size.width.round(), size.height.round());
-    picture.dispose();
+    final ui.Image image;
+    if (widget.nebula) {
+      image = Nebula.renderBackground(size);
+    } else {
+      final recorder = ui.PictureRecorder();
+      final rect = Offset.zero & size;
+      Canvas(recorder).drawRect(rect, Paint()..shader = widget.gradient.createShader(rect));
+      final picture = recorder.endRecording();
+      image = picture.toImageSync(size.width.round(), size.height.round());
+      picture.dispose();
+    }
     _rendering = false;
     if (!mounted) {
       image.dispose();
@@ -976,3 +1057,92 @@ class _CinematicScrimPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+
+
+/// Big centered clock above the dock in the Orbit layout.
+class _OrbitClock extends StatelessWidget {
+  const _OrbitClock();
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsService>();
+    return Align(
+      alignment: const Alignment(0, -0.1),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DateTimeWidget(
+            settings.timeFormat,
+            updateInterval: const Duration(minutes: 1),
+            textStyle: const TextStyle(
+              fontSize: 112,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 2,
+              height: 1,
+              color: Nebula.text,
+              shadows: Nebula.textShadow,
+            ),
+          ),
+          const SizedBox(height: 12),
+          DateTimeWidget(
+            settings.dateFormat,
+            updateInterval: const Duration(minutes: 1),
+            textStyle: const TextStyle(
+              fontSize: 20,
+              letterSpacing: 4,
+              color: Nebula.textMuted,
+              shadows: Nebula.textShadow,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Left column of the Aurora layout: clock and date on a soft glass strip.
+class _AuroraSide extends StatelessWidget {
+  const _AuroraSide();
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsService>();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(48, 24, 16, 48),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DateTimeWidget(
+            settings.timeFormat,
+            updateInterval: const Duration(minutes: 1),
+            textStyle: const TextStyle(
+              fontSize: 84,
+              fontWeight: FontWeight.w300,
+              height: 1,
+              color: Nebula.text,
+              shadows: Nebula.textShadow,
+            ),
+          ),
+          const SizedBox(height: 10),
+          DateTimeWidget(
+            settings.dateFormat,
+            updateInterval: const Duration(minutes: 1),
+            textStyle: const TextStyle(fontSize: 20, color: Nebula.textMuted, shadows: Nebula.textShadow),
+          ),
+          const Spacer(),
+          Container(
+            height: 2,
+            width: 64,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2),
+              gradient: LinearGradient(colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

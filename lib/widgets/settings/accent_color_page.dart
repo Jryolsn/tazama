@@ -28,6 +28,7 @@ class AccentColorPage extends StatelessWidget {
 
   // Define accent color presets with names
   static const List<(String hex, String name)> colorPresets = [
+    (ACCENT_COLOR_LAVENDER, 'Lavender'),
     (ACCENT_COLOR_PURPLE, 'Purple'),
     (ACCENT_COLOR_TEAL, 'Teal'),
     (ACCENT_COLOR_BLUE, 'Blue'),
@@ -123,7 +124,7 @@ class AccentColorPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.palette,
+                      Icons.palette_rounded,
                       color: _hexToColor(currentColor),
                       size: 32,
                     ),

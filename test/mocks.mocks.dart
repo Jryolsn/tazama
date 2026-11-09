@@ -426,6 +426,26 @@ class MockFLauncherChannel extends _i1.Mock implements _i12.FLauncherChannel {
       ) as _i9.Future<void>);
 
   @override
+  _i9.Future<bool> isAccessibilityRunning() => (super.noSuchMethod(
+        Invocation.method(
+          #isAccessibilityRunning,
+          [],
+        ),
+        returnValue: _i9.Future<bool>.value(false),
+        returnValueForMissingStub: _i9.Future<bool>.value(false),
+      ) as _i9.Future<bool>);
+
+  @override
+  _i9.Future<bool> openAccessibilitySettings() => (super.noSuchMethod(
+        Invocation.method(
+          #openAccessibilitySettings,
+          [],
+        ),
+        returnValue: _i9.Future<bool>.value(false),
+        returnValueForMissingStub: _i9.Future<bool>.value(false),
+      ) as _i9.Future<bool>);
+
+  @override
   _i9.Future<void> openSettings() => (super.noSuchMethod(
         Invocation.method(
           #openSettings,
@@ -562,6 +582,16 @@ class MockFLauncherChannel extends _i1.Mock implements _i12.FLauncherChannel {
   _i9.Future<bool> checkMediaPermissions() => (super.noSuchMethod(
         Invocation.method(
           #checkMediaPermissions,
+          [],
+        ),
+        returnValue: _i9.Future<bool>.value(false),
+        returnValueForMissingStub: _i9.Future<bool>.value(false),
+      ) as _i9.Future<bool>);
+
+  @override
+  _i9.Future<bool> areMediaPermissionsAvailable() => (super.noSuchMethod(
+        Invocation.method(
+          #areMediaPermissionsAvailable,
           [],
         ),
         returnValue: _i9.Future<bool>.value(false),
@@ -1434,6 +1464,17 @@ class MockAppsService extends _i1.Mock implements _i16.AppsService {
       ) as _i9.Future<void>);
 
   @override
+  _i9.Future<void> deleteCategory(_i3.Category? category) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteCategory,
+          [category],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
   void moveSectionInMemory(
     int? oldIndex,
     int? newIndex,
@@ -1477,6 +1518,23 @@ class MockAppsService extends _i1.Mock implements _i16.AppsService {
       ) as _i9.Future<void>);
 
   @override
+  _i9.Future<void> moveCategory(
+    int? oldIndex,
+    int? newIndex,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #moveCategory,
+          [
+            oldIndex,
+            newIndex,
+          ],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
   _i9.Future<void> hideApplication(_i17.App? application) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1492,6 +1550,17 @@ class MockAppsService extends _i1.Mock implements _i16.AppsService {
       (super.noSuchMethod(
         Invocation.method(
           #showApplication,
+          [application],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> unHideApplication(_i17.App? application) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #unHideApplication,
           [application],
         ),
         returnValue: _i9.Future<void>.value(),
@@ -1603,6 +1672,13 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
   @override
   bool get appHighlightAnimationEnabled => (super.noSuchMethod(
         Invocation.getter(#appHighlightAnimationEnabled),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
+
+  @override
+  bool get replaceLauncher => (super.noSuchMethod(
+        Invocation.getter(#replaceLauncher),
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
@@ -1830,6 +1906,26 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
           Invocation.getter(#accentColor),
         ),
       ) as _i4.Color);
+
+  @override
+  String get homeLayout => (super.noSuchMethod(
+        Invocation.getter(#homeLayout),
+        returnValue: _i19.dummyValue<String>(
+          this,
+          Invocation.getter(#homeLayout),
+        ),
+        returnValueForMissingStub: _i19.dummyValue<String>(
+          this,
+          Invocation.getter(#homeLayout),
+        ),
+      ) as String);
+
+  @override
+  int get categoryUiRevision => (super.noSuchMethod(
+        Invocation.getter(#categoryUiRevision),
+        returnValue: 0,
+        returnValueForMissingStub: 0,
+      ) as int);
 
   @override
   List<String> get watchNextExcludedPackages => (super.noSuchMethod(
@@ -2074,6 +2170,70 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
         Invocation.method(
           #setShowAppNamesBelowIcons,
           [show],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setHomeLayout(String? layout) => (super.noSuchMethod(
+        Invocation.method(
+          #setHomeLayout,
+          [layout],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  bool showTitleFor(int? categoryId) => (super.noSuchMethod(
+        Invocation.method(
+          #showTitleFor,
+          [categoryId],
+        ),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
+
+  @override
+  bool showAppNamesFor(int? categoryId) => (super.noSuchMethod(
+        Invocation.method(
+          #showAppNamesFor,
+          [categoryId],
+        ),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
+
+  @override
+  _i9.Future<void> setCategoryShowTitle(
+    int? categoryId,
+    bool? show,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setCategoryShowTitle,
+          [
+            categoryId,
+            show,
+          ],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setCategoryShowAppNames(
+    int? categoryId,
+    bool? show,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setCategoryShowAppNames,
+          [
+            categoryId,
+            show,
+          ],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),

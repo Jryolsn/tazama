@@ -27,6 +27,7 @@ import 'package:flauncher/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'flauncher.dart';
+import 'package:flauncher/nebula_theme.dart';
 
 class FLauncherApp extends StatelessWidget
 {
@@ -82,7 +83,7 @@ class FLauncherApp extends StatelessWidget
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      title: 'FLauncher',
+      title: 'Tazama',
         theme: arcTheme(accentColor),
       home: Builder(
         builder: (context) => PopScope(
@@ -103,38 +104,48 @@ class FLauncherApp extends StatelessWidget
 
 /// Arc's dark theme, also used by the quick panel that opens on top of other apps.
 ThemeData arcTheme(Color accentColor) {
+  final text = Typography.material2018().white.apply(
+        fontFamily: Nebula.fontFamily,
+        bodyColor: Nebula.text,
+        displayColor: Nebula.text,
+      );
   return ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
-          // Use ColorScheme based on accent color
+          fontFamily: Nebula.fontFamily,
+          textTheme: text,
           colorScheme: ColorScheme.fromSeed(
             seedColor: accentColor,
             brightness: Brightness.dark,
             primary: accentColor,
             secondary: accentColor,
-            surface: const Color(0xFF1E1E1E),
-            background: const Color(0xFF121212),
+            surface: Nebula.surface,
+            onSurface: Nebula.text,
           ),
-          cardColor: const Color(0xFF1E1E1E), // Dark surface color
-          canvasColor: const Color(0xFF121212),
-          scaffoldBackgroundColor: const Color(0xFF121212), // Dark background
+          cardColor: Nebula.surfaceHigh,
+          canvasColor: Nebula.surface,
+          scaffoldBackgroundColor: Nebula.deep,
           textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white, // Revert to white for settings list
+                foregroundColor: Nebula.text,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               )
           ),
           dialogTheme: DialogThemeData(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            backgroundColor: const Color(0xFF1E1E1E),
-            titleTextStyle: Typography.material2018().white.titleLarge,
-            contentTextStyle: Typography.material2018().white.bodyMedium,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+              side: const BorderSide(color: Color(0x1FFFFFFF)),
+            ),
+            backgroundColor: Nebula.surfaceHigh,
+            titleTextStyle: text.titleLarge,
+            contentTextStyle: text.bodyMedium,
           ),
           appBarTheme: const AppBarTheme(elevation: 0, backgroundColor: Colors.transparent),
           typography: Typography.material2018(),
           inputDecorationTheme: InputDecorationTheme(
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-            labelStyle: Typography.material2018().white.bodyMedium,
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: accentColor)),
+            labelStyle: text.bodyMedium,
           ),
           textSelectionTheme: TextSelectionThemeData(
             cursorColor: accentColor,

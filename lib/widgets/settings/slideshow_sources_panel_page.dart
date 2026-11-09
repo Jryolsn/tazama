@@ -40,9 +40,9 @@ class SlideshowSourcesPanelPage extends StatelessWidget {
           child: Consumer<SettingsService>(
             builder: (_, settings, __) => ListView(
               children: [
-                _header(context, Icons.wb_sunny, localizations.slideshowDay),
+                _header(context, Icons.wb_sunny_rounded, localizations.slideshowDay),
                 ..._switches(settings, day: true, selected: settings.unsplashDaySources),
-                _header(context, Icons.nights_stay, localizations.slideshowNight),
+                _header(context, Icons.nights_stay_rounded, localizations.slideshowNight),
                 ..._switches(settings, day: false, selected: settings.unsplashNightSources),
               ],
             ),

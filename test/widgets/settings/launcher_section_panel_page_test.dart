@@ -19,6 +19,7 @@
 import 'package:flauncher/l10n/app_localizations.dart';
 import 'package:flauncher/models/category.dart';
 import 'package:flauncher/providers/apps_service.dart';
+import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/widgets/settings/launcher_section_panel_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,7 +52,7 @@ void main() {
     expect(find.text("Favorites"), findsWidgets);
     expect(find.text("Alphabetical"), findsOneWidget);
     expect(find.text("Grid"), findsOneWidget);
-    expect(find.text("6"), findsOneWidget);
+    expect(find.text("M"), findsOneWidget);
   });
 
   testWidgets("Spacer is displayed", (tester) async {
@@ -79,6 +80,8 @@ void main() {
 
     final deleteFinder = find.widgetWithText(FilledButton, "Delete");
     expect(deleteFinder, findsOneWidget);
+    await tester.ensureVisible(deleteFinder);
+    await tester.pumpAndSettle();
     await tester.tap(deleteFinder);
     await tester.pumpAndSettle();
 
@@ -91,6 +94,7 @@ Future<void> _pumpWidgetWithProviders(WidgetTester tester, AppsService appsServi
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AppsService>.value(value: appsService),
+        ChangeNotifierProvider<SettingsService>.value(value: MockSettingsService()),
       ],
       builder: (_, __) => MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

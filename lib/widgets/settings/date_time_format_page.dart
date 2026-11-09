@@ -90,7 +90,7 @@ class _DateTimeFormatPageState extends State<DateTimeFormatPage> {
                       autofocus: entry.key == 0,
                       frameLeading: false,
                       leading: Icon(
-                        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                        isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
                         color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
                       ),
                       title: Column(
@@ -119,7 +119,7 @@ class _DateTimeFormatPageState extends State<DateTimeFormatPage> {
                     return FocusableSettingsTile(
                       frameLeading: false,
                       leading: Icon(
-                        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                        isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
                         color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
                       ),
                       title: Column(

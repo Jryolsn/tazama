@@ -68,7 +68,7 @@ class _LauncherSectionsPanelPageState extends State<LauncherSectionsPanelPage> {
         ),
         SizedBox(height: 4, width: 0),
         FocusableSettingsTile(
-          leading: Icon(Icons.add),
+          leading: Icon(Icons.add_rounded),
           title: Text(localizations.addSection, style: Theme.of(context).textTheme.bodyMedium),
           onPressed: () {
             Navigator.pushNamed(context, LauncherSectionPanelPage.routeName);
@@ -194,7 +194,7 @@ class _LauncherSectionsPanelPageState extends State<LauncherSectionsPanelPage> {
                       ReorderableDragStartListener(
                         index: index,
                         child: Icon(
-                          isMoving ? Icons.drag_indicator : Icons.drag_handle,
+                          isMoving ? Icons.drag_indicator_rounded : Icons.drag_handle_rounded,
                           color: iconColor,
                         ),
                       ),
@@ -210,9 +210,9 @@ class _LauncherSectionsPanelPageState extends State<LauncherSectionsPanelPage> {
 
                       // Move Indicators
                       if (isMoving) ...[
-                         Icon(Icons.keyboard_arrow_up, color: textColor),
+                         Icon(Icons.keyboard_arrow_up_rounded, color: textColor),
                          const SizedBox(width: 4),
-                         Icon(Icons.keyboard_arrow_down, color: textColor),
+                         Icon(Icons.keyboard_arrow_down_rounded, color: textColor),
                       ] else ...[
                          Icon(Icons.chevron_right_rounded, color: Colors.white.withValues(alpha: 0.25)),
                       ],

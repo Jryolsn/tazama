@@ -10,11 +10,11 @@ import 'package:flutter/material.dart';
 /// feedback is a single [CustomPaint] plus a composited scale transform, so a
 /// focus change repaints one small row instead of the whole panel.
 abstract final class SettingsStyle {
-  /// Focus lift/highlight animation. Snappy (90ms) for responsive TV D-pad navigation.
-  static const Duration focusDuration = Duration(milliseconds: 90);
+  /// Focus lift/highlight animation. Short (140ms) for responsive TV D-pad navigation.
+  static const Duration focusDuration = Duration(milliseconds: 140);
 
   /// Row card geometry.
-  static const double cardRadius = 16;
+  static const double cardRadius = 24;
   static const EdgeInsets cardMargin = EdgeInsets.symmetric(
     horizontal: 8,
     vertical: 3,
@@ -33,16 +33,17 @@ abstract final class SettingsStyle {
   static const double iconSize = 20;
 
   /// Scale applied to the focused row (1.0 means no lift).
-  static const double focusScale = 1.018;
+  static const double focusScale = 1.025;
 
   static const double panelWidth = 380;
   static const double panelRadius = 32;
+  static const double panelInset = 24;
 
-  static const Color panelTop = Color(0xFF2A2A2F);
-  static const Color panelBottom = Color(0xFF161618);
+  static const Color panelTop = Color(0xFF241C47);
+  static const Color panelBottom = Color(0xFF0E0B22);
 
-  static const Color rowRestFill = Color(0x0AFFFFFF); // white @ 4%
-  static const Color rowFocusFill = Color(0x1CFFFFFF); // white @ 11%
+  static const Color rowRestFill = Color(0x0DE6DCFF); // lavender white @ 5%
+  static const Color rowFocusFill = Color(0x21E6DCFF); // lavender white @ 13%
 
   static Duration focusDurationFor(BuildContext context) {
     final reduceMotion =
@@ -306,7 +307,7 @@ class SettingsSurfacePainter extends CustomPainter {
     if (t > 0.001) {
       canvas.drawRRect(
         rrect,
-        Paint()..color = accentColor.withValues(alpha: 0.12 * t),
+        Paint()..color = accentColor.withValues(alpha: 0.18 * t),
       );
     }
 
@@ -351,4 +352,27 @@ class SettingsSurfacePainter extends CustomPainter {
       oldDelegate.progress != progress ||
       oldDelegate.accentColor != accentColor ||
       oldDelegate.radius != radius;
+}
+
+/// Small uppercase label that starts a group of rows.
+class SettingsGroupLabel extends StatelessWidget {
+  final String text;
+
+  const SettingsGroupLabel(this.text, {super.key});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(22, 14, 22, 4),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            text.toUpperCase(),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  letterSpacing: 1.4,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white.withValues(alpha: 0.5),
+                ),
+          ),
+        ),
+      );
 }
