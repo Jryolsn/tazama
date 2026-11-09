@@ -39,8 +39,23 @@ public class QuickPanelActivity extends FlutterActivity {
         return current != null;
     }
 
+    static final String MODE_QUICK = "quick";
+    static final String MODE_HOME_ASSISTANT = "ha";
+    private static final String EXTRA_MODE = "mode";
+    private static String currentMode;
+
+    static boolean isShowing(String mode) {
+        return current != null && mode.equals(currentMode);
+    }
+
     static void show(Context context) {
+        show(context, MODE_QUICK);
+    }
+
+    static void show(Context context, String mode) {
+        hide();
         context.startActivity(new Intent(context, QuickPanelActivity.class)
+                .putExtra(EXTRA_MODE, mode)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
     }
 
@@ -140,8 +155,10 @@ public class QuickPanelActivity extends FlutterActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         current = this;
+        String mode = getIntent().getStringExtra(EXTRA_MODE);
+        currentMode = mode == null ? MODE_QUICK : mode;
         // Fresh values and focus on the first row. Only here: coming back from the PIN screen keeps the state.
-        new MethodChannel(engine.getDartExecutor().getBinaryMessenger(), "arc/quick_panel").invokeMethod("shown", null);
+        new MethodChannel(engine.getDartExecutor().getBinaryMessenger(), "arc/quick_panel").invokeMethod("shown", currentMode);
         // Never leave an invisible window that swallows the remote: close if Flutter hasn't come up.
         getWindow().getDecorView().postDelayed(() -> {
             if (!dartReady) {
@@ -154,6 +171,10 @@ public class QuickPanelActivity extends FlutterActivity {
     @Override
     protected void onDestroy() {
         if (current == this) current = null;
+        // Lets the panel stop polling; skipped when another panel has already taken over.
+        if (current == null && engine != null) {
+            new MethodChannel(engine.getDartExecutor().getBinaryMessenger(), "arc/quick_panel").invokeMethod("hidden", null);
+        }
         if (pendingPinResult != null) {
             pendingPinResult.success(false);
             pendingPinResult = null;

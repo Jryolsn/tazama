@@ -1,5 +1,6 @@
 import 'package:flauncher/providers/home_assistant_service.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
+import 'package:flauncher/widgets/settings/home_assistant_entities_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -70,6 +71,18 @@ class HomeAssistantPage extends StatelessWidget {
                   leading: const Icon(Icons.network_check_rounded),
                   title: Text('Test connection', style: body),
                   onPressed: ha.state == HaConnectionState.checking ? null : ha.testConnection,
+                ),
+              if (ha.state == HaConnectionState.connected)
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.toggle_on_rounded),
+                  title: Text('Panel controls', style: body),
+                  subtitle: Text(
+                      ha.panelEntities.isEmpty
+                          ? 'Choose lights, scenes, sensors and cameras'
+                          : '${ha.panelEntities.length} chosen · hold Home to open the panel',
+                      style: small),
+                  showChevron: true,
+                  onPressed: () => Navigator.of(context).pushNamed(HomeAssistantEntitiesPage.routeName),
                 ),
               if (ha.url != null || ha.hasToken)
                 FocusableSettingsTile(

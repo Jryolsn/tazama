@@ -1,6 +1,6 @@
 /*
  * Arc quick settings: a trimmed settings panel that opens on top of whatever app is playing
- * (hold Home, or the YouTube button), built from the same widgets as Arc's own settings.
+ * (hold Back or the YouTube button; hold Home for Home Assistant), built from the same widgets as Arc's own settings.
  *
  * It runs in its own Flutter engine inside QuickPanelActivity, a see-through activity, so it sits under
  * Arc's dim layer and is dimmed along with the picture.
@@ -15,8 +15,10 @@ import 'package:flauncher/actions.dart';
 import 'package:flauncher/flauncher_app.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/brightness_service.dart';
+import 'package:flauncher/providers/home_assistant_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/vpn_guard_service.dart';
+import 'package:flauncher/widgets/home_assistant_panel.dart';
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/brightness_settings_page.dart';
@@ -32,6 +34,9 @@ const _panelChannel = MethodChannel('arc/quick_panel');
 
 /// Goes up by one each time the panel is shown, so it starts fresh (focus on the first row, current values).
 final _shown = ValueNotifier<int>(0);
+
+/// Which panel is up: 'quick' (hold Back), 'ha' (hold Home), or null once closed so timers stop.
+final _mode = ValueNotifier<String?>(null);
 
 /// The app the panel was opened over, and the VPN status (from the accessibility service).
 final _currentApp = ValueNotifier<Map<dynamic, dynamic>?>(null);
@@ -51,9 +56,22 @@ Future<void> quickPanelMain() async {
   final settings = SettingsService(prefs);
   final brightness = BrightnessService(prefs);
   final lock = AppLockService();
+  final homeAssistant = HomeAssistantService(prefs);
 
   _panelChannel.setMethodCallHandler((call) async {
+    if (call.method == 'hidden') {
+      _mode.value = null;
+      return null;
+    }
     if (call.method == 'shown') {
+      final mode = call.arguments is String ? call.arguments as String : 'quick';
+      if (mode == 'ha') {
+        await homeAssistant.reload();
+        _mode.value = mode;
+        _shown.value++;
+        return null;
+      }
+      _mode.value = mode;
       // Arc's settings may have changed since last time.
       await prefs.reload();
       await brightness.applyCurrentSlotBrightness();
@@ -74,6 +92,7 @@ Future<void> quickPanelMain() async {
       ChangeNotifierProvider.value(value: settings),
       ChangeNotifierProvider.value(value: brightness),
       ChangeNotifierProvider.value(value: lock),
+      ChangeNotifierProvider.value(value: homeAssistant),
     ],
     child: const _QuickPanelApp(),
   ));
@@ -106,9 +125,16 @@ class _QuickPanelApp extends StatelessWidget {
           onPopInvokedWithResult: (didPop, _) {
             if (!didPop) _close();
           },
-          child: ValueListenableBuilder<int>(
-            valueListenable: _shown,
-            builder: (context, shown, _) => _QuickPanel(key: ValueKey(shown)),
+          child: ValueListenableBuilder<String?>(
+            valueListenable: _mode,
+            builder: (context, mode, _) => ValueListenableBuilder<int>(
+              valueListenable: _shown,
+              builder: (context, shown, _) => switch (mode) {
+                'ha' => _HomeAssistantSheet(key: ValueKey(shown)),
+                'quick' => _QuickPanel(key: ValueKey(shown)),
+                _ => const SizedBox.shrink(),
+              },
+            ),
           ),
         ),
       ),
@@ -209,6 +235,42 @@ class _QuickPanel extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The Home Assistant panel, on the right so it is easy to tell from quick settings.
+class _HomeAssistantSheet extends StatelessWidget {
+  const _HomeAssistantSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            GestureDetector(
+              onTap: _close,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    colors: [Color(0x66000000), Color(0x00000000)],
+                  ),
+                ),
+              ),
+            ),
+            SidePanelDialog(
+              width: SettingsStyle.panelWidth,
+              isRightSide: true,
+              child: Actions(
+                actions: {BackIntent: CallbackAction<BackIntent>(onInvoke: (_) => _close())},
+                child: HomeAssistantPanel(
+                  onOpenSettings: () => _panelChannel.invokeMethod('openLauncherSettings'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 /// The app the panel was opened over: always in view above the list.

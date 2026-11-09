@@ -48,6 +48,7 @@ import 'package:flauncher/widgets/settings/screensaver_clock_style_page.dart';
 import 'package:flauncher/models/app.dart';
 import 'package:flauncher/widgets/settings/slideshow_sources_panel_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/settings/home_assistant_entities_page.dart';
 import 'package:flauncher/widgets/settings/home_assistant_page.dart';
 import 'package:flutter/material.dart';
 
@@ -149,6 +150,8 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => const WatchNextMaxItemsPage());
                     case ScreensaverClockStylePage.routeName:
                       return _FastPageRoute(builder: (_) => const ScreensaverClockStylePage());
+                    case HomeAssistantEntitiesPage.routeName:
+                      return _FastPageRoute(builder: (_) => const HomeAssistantEntitiesPage());
                     case HomeAssistantPage.routeName:
                       return _FastPageRoute(builder: (_) => const HomeAssistantPage());
                     case VpnGuardPage.routeName:

@@ -12,6 +12,13 @@ enum HaConnectionState { notConfigured, checking, connected, unauthorized, unrea
 class HomeAssistantService extends ChangeNotifier {
   static const _urlKey = 'home_assistant_url';
   static const _tokenKey = 'home_assistant_token';
+  static const _entitiesKey = 'home_assistant_entities';
+
+  /// Domains the panel can show or control.
+  static const supportedDomains = {
+    'light', 'switch', 'fan', 'input_boolean', 'scene', 'script', 'cover', 'lock',
+    'media_player', 'climate', 'sensor', 'binary_sensor', 'camera',
+  };
 
   final SharedPreferences _prefs;
   final FlutterSecureStorage _secure;
@@ -35,6 +42,22 @@ class HomeAssistantService extends ChangeNotifier {
   String? get locationName => _locationName;
   String? get version => _version;
   String? get error => _error;
+
+  /// Entity ids shown in the Home Assistant panel, in order.
+  List<String> get panelEntities => _prefs.getStringList(_entitiesKey) ?? const [];
+
+  Future<void> setPanelEntity(String entityId, bool shown) async {
+    final list = [...panelEntities]..remove(entityId);
+    if (shown) list.add(entityId);
+    await _prefs.setStringList(_entitiesKey, list);
+    notifyListeners();
+  }
+
+  /// Picks up changes made by the other engine (launcher or panel).
+  Future<void> reload() async {
+    await _prefs.reload();
+    await _load();
+  }
 
   Future<void> _load() async {
     try {
@@ -136,5 +159,83 @@ class HomeAssistantService extends ChangeNotifier {
       _error = e.toString();
     }
     notifyListeners();
+  }
+
+  /// All entity states, or null when the server can't be reached.
+  Future<List<HaEntity>?> fetchStates() async {
+    if (!isConfigured) return null;
+    try {
+      final response =
+          await http.get(Uri.parse('$url/api/states'), headers: _headers).timeout(const Duration(seconds: 8));
+      if (response.statusCode != 200) return null;
+      return (jsonDecode(response.body) as List)
+          .map((e) => HaEntity.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<bool> callService(String domain, String service, String entityId) async {
+    if (!isConfigured) return false;
+    try {
+      final response = await http
+          .post(Uri.parse('$url/api/services/$domain/$service'),
+              headers: _headers, body: jsonEncode({'entity_id': entityId}))
+          .timeout(const Duration(seconds: 8));
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// The main action for OK on an entity, or null when it can only be shown.
+  static (String domain, String service)? primaryAction(HaEntity entity) => switch (entity.domain) {
+        'light' || 'switch' || 'fan' || 'input_boolean' => (entity.domain, 'toggle'),
+        'scene' => ('scene', 'turn_on'),
+        'script' => ('script', 'turn_on'),
+        'cover' => ('cover', 'toggle'),
+        'media_player' => ('media_player', 'media_play_pause'),
+        'lock' => ('lock', entity.state == 'locked' ? 'unlock' : 'lock'),
+        _ => null,
+      };
+
+  Future<bool> runPrimaryAction(HaEntity entity) async {
+    final action = primaryAction(entity);
+    if (action == null) return false;
+    return callService(action.$1, action.$2, entity.entityId);
+  }
+
+  /// A fresh snapshot of a camera; [bust] makes the URL unique so the image is not cached.
+  Uri cameraSnapshotUri(String entityId, int bust) => Uri.parse('$url/api/camera_proxy/$entityId?t=$bust');
+
+  Map<String, String> get authHeaders => {'Authorization': 'Bearer $_token'};
+}
+
+class HaEntity {
+  final String entityId;
+  final String state;
+  final Map<String, dynamic> attributes;
+
+  HaEntity(this.entityId, this.state, this.attributes);
+
+  factory HaEntity.fromJson(Map<String, dynamic> json) => HaEntity(
+        json['entity_id'] as String,
+        json['state']?.toString() ?? '',
+        (json['attributes'] as Map?)?.cast<String, dynamic>() ?? const {},
+      );
+
+  String get domain => entityId.split('.').first;
+  String get name => attributes['friendly_name'] as String? ?? entityId;
+  bool get isOn => const {'on', 'open', 'playing', 'unlocked', 'home'}.contains(state);
+  bool get unavailable => state == 'unavailable' || state == 'unknown';
+
+  String get displayState {
+    final unit = attributes['unit_of_measurement'];
+    if (domain == 'climate') {
+      final current = attributes['current_temperature'];
+      return current == null ? state : '$current° · $state';
+    }
+    return unit == null ? state : '$state $unit';
   }
 }
