@@ -75,6 +75,7 @@ const String WIFI_USAGE_WEEKLY = "weekly";
 const String WIFI_USAGE_MONTHLY = "monthly";
 
 // Accent color presets (hex values)
+const String ACCENT_COLOR_LAVENDER = "B49CFF";
 const String ACCENT_COLOR_PURPLE = "7C4DFF";
 const String ACCENT_COLOR_TEAL = "00BFA5";
 const String ACCENT_COLOR_BLUE = "2979FF";
@@ -130,7 +131,7 @@ class SettingsService extends ChangeNotifier {
 
   bool get showNetworkIndicatorInStatusBar => _sharedPreferences.getBool(_showNetworkIndicatorInStatusBar) ?? true;
 
-  String get accentColorHex => _sharedPreferences.getString(_accentColor) ?? ACCENT_COLOR_WHITE;
+  String get accentColorHex => _sharedPreferences.getString(_accentColor) ?? ACCENT_COLOR_LAVENDER;
 
   String get screensaverClockStyle => _sharedPreferences.getString(_screensaverClockStyle) ?? "minimal";
 
@@ -215,6 +216,26 @@ class SettingsService extends ChangeNotifier {
 
   Future<void> setShowAppNamesBelowIcons(bool show) async {
     return set(_showAppNamesBelowIcons, show);
+  }
+
+  // Per-category overrides; fall back to the global switches when unset.
+  int _categoryUiRevision = 0;
+  int get categoryUiRevision => _categoryUiRevision;
+
+  bool showTitleFor(int categoryId) =>
+      _sharedPreferences.getBool("category_${categoryId}_show_title") ?? showCategoryTitles;
+
+  bool showAppNamesFor(int categoryId) =>
+      _sharedPreferences.getBool("category_${categoryId}_show_app_names") ?? showAppNamesBelowIcons;
+
+  Future<void> setCategoryShowTitle(int categoryId, bool show) async {
+    _categoryUiRevision++;
+    return set("category_${categoryId}_show_title", show);
+  }
+
+  Future<void> setCategoryShowAppNames(int categoryId, bool show) async {
+    _categoryUiRevision++;
+    return set("category_${categoryId}_show_app_names", show);
   }
 
   Future<void> setShowDateInStatusBar(bool show) async {

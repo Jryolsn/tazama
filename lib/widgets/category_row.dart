@@ -25,6 +25,7 @@ import 'package:provider/provider.dart';
 import '../models/app.dart';
 import '../models/category.dart';
 import '../providers/settings_service.dart';
+import 'package:flauncher/nebula_theme.dart';
 
 class CategoryRow extends StatelessWidget
 {
@@ -46,7 +47,7 @@ class CategoryRow extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesBelowIcons);
+    final showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesFor(category.id));
     Widget categoryContent;
     if (applications.isEmpty) {
       categoryContent = categoryContainerEmptyState(context);
@@ -84,7 +85,7 @@ class CategoryRow extends StatelessWidget
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Selector<SettingsService, bool>(
-          selector: (context, service) => service.showCategoryTitles,
+          selector: (context, service) => service.showTitleFor(category.id),
           builder: (context, showCategoriesTitle, _) {
             if (showCategoriesTitle) {
               return Padding(
@@ -93,7 +94,7 @@ class CategoryRow extends StatelessWidget
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
-                      .copyWith(shadows: [const Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 8)])
+                      .copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Nebula.textMuted, shadows: Nebula.textShadow)
                 ),
               );
             }

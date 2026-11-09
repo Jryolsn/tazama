@@ -58,12 +58,12 @@ class RedditWallpaperPanelPage extends StatelessWidget {
                   RoundedSwitchListTile(
                     autofocus: true,
                     title: Text(localizations.redditWallpaperEnable),
-                    secondary: const Icon(Icons.photo_library_outlined),
+                    secondary: const Icon(Icons.photo_library_rounded),
                     value: settings.redditWallpaperEnabled,
                     onChanged: (value) => settings.setRedditWallpaperEnabled(value),
                   ),
                   FocusableSettingsTile(
-                    leading: const Icon(Icons.explore_outlined),
+                    leading: const Icon(Icons.explore_rounded),
                     title: Text(localizations.redditSubreddits),
                     trailing: Text(
                       settings.redditSubreddits.length == 1
@@ -73,19 +73,19 @@ class RedditWallpaperPanelPage extends StatelessWidget {
                     onPressed: () => Navigator.of(context).pushNamed(RedditSubredditsPanelPage.routeName),
                   ),
                   FocusableSettingsTile(
-                    leading: const Icon(Icons.sort),
+                    leading: const Icon(Icons.sort_rounded),
                     title: Text(localizations.redditSort),
                     trailing: Text(_sortLabel(localizations, settings.redditSort)),
                     onPressed: () => settings.setRedditSort(_nextSort(settings.redditSort)),
                   ),
                   FocusableSettingsTile(
-                    leading: const Icon(Icons.timer_outlined),
+                    leading: const Icon(Icons.timer_rounded),
                     title: Text(localizations.redditInterval),
                     trailing: Text(_intervalLabel(localizations, settings.redditIntervalMinutes)),
                     onPressed: () => settings.setRedditIntervalMinutes(_nextInterval(settings.redditIntervalMinutes)),
                   ),
                   FocusableSettingsTile(
-                    leading: const Icon(Icons.key_outlined),
+                    leading: const Icon(Icons.key_rounded),
                     title: Text(localizations.redditClientId),
                     trailing: Text(
                       hasClientId ? "••••${_tail(settings.redditClientId)}" : localizations.unsplashNotSet,
@@ -94,7 +94,7 @@ class RedditWallpaperPanelPage extends StatelessWidget {
                   ),
                   if (settings.redditWallpaperEnabled)
                     FocusableSettingsTile(
-                      leading: const Icon(Icons.refresh),
+                      leading: const Icon(Icons.refresh_rounded),
                       title: Text(localizations.redditChangeNow),
                       onPressed: () async {
                         final service = context.read<WallpaperService>();

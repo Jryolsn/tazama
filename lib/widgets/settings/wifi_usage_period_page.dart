@@ -39,7 +39,7 @@ class WifiUsagePeriodPage extends StatelessWidget {
     return FocusableSettingsTile(
       frameLeading: false,
       leading: Icon(
-        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
         color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
       ),
       title: Text(label, style: Theme.of(context).textTheme.bodyMedium),

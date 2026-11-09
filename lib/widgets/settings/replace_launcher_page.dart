@@ -79,7 +79,7 @@ class _ReplaceLauncherPageState extends State<ReplaceLauncherPage> with WidgetsB
               RoundedSwitchListTile(
                 autofocus: true,
                 title: Text('Replace current launcher', style: textTheme.bodyMedium),
-                secondary: Icon(_replace ? Icons.home : Icons.home_outlined),
+                secondary: Icon(_replace ? Icons.home_rounded : Icons.home_rounded),
                 value: _replace,
                 onChanged: _setReplace,
               ),
@@ -111,7 +111,7 @@ class _ReplaceLauncherPageState extends State<ReplaceLauncherPage> with WidgetsB
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
                   onPressed: _openAccessibility,
-                  icon: const Icon(Icons.settings),
+                  icon: const Icon(Icons.settings_rounded),
                   label: const Text('Open accessibility settings'),
                 ),
                 const SizedBox(height: 8),

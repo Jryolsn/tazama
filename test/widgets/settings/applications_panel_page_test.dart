@@ -78,7 +78,7 @@ void main() {
     await _pumpWidgetWithProviders(tester, appsService);
 
     // Switch to Hidden Apps tab via its icon
-    await tester.tap(find.byIcon(Icons.visibility_off_outlined));
+    await tester.tap(find.byIcon(Icons.visibility_off_rounded));
     await tester.pumpAndSettle();
 
     expect(find.text("Hidden Apps"), findsOneWidget);

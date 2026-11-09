@@ -20,15 +20,24 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 
+import 'nebula_theme.dart';
+
 class FLauncherGradient {
   final String uuid;
   final String name;
   final Gradient gradient;
+  final bool nebula;
 
-  FLauncherGradient(this.uuid, this.name, this.gradient);
+  FLauncherGradient(this.uuid, this.name, this.gradient, {this.nebula = false});
 }
 
 mixin FLauncherGradients {
+  static final nebula = FLauncherGradient(
+    "4f1c8b2e-7a3d-4e61-9c55-2b0d6a9e1f73",
+    "Nebula",
+    Nebula.baseGradient,
+    nebula: true,
+  );
   static final greatWhale = FLauncherGradient(
     "8bbdc190-ff6c-496e-8033-3c217e78da36",
     "Great Whale",
@@ -91,6 +100,7 @@ mixin FLauncherGradients {
   );
 
   static List<FLauncherGradient> get all => [
+        nebula,
         pitchBlack,
         greatWhale,
         viciousStance,

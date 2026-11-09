@@ -32,6 +32,7 @@ import 'package:flutter/services.dart';
 import 'package:flauncher/providers/launcher_state.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
+import 'package:flauncher/nebula_theme.dart';
 import 'package:flauncher/providers/watch_next_service.dart';
 import 'package:flauncher/widgets/app_card.dart';
 import 'package:flauncher/widgets/cached_blur_backdrop.dart';
@@ -253,9 +254,9 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
               backgroundColor: Colors.transparent,
               appBar: FocusAwareAppBar(key: _appBarKey),
               // (initialized (data.$1), layoutVersion (data.$2), showAppNamesBelowIcons (data.$3))
-              body: Selector2<AppsService, SettingsService, (bool, int, bool)>(
+              body: Selector2<AppsService, SettingsService, (bool, int, bool, int)>(
                 selector: (_, appsService, settingsService) =>
-                    (appsService.initialized, appsService.layoutVersion, settingsService.showAppNamesBelowIcons),
+                    (appsService.initialized, appsService.layoutVersion, settingsService.showAppNamesBelowIcons, settingsService.categoryUiRevision),
                 builder: (context, data, _) {
                   if (data.$1) {
                     return _tvOSLayout(context, context.read<AppsService>(), showAppNames: data.$3);
@@ -393,7 +394,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
       slivers.add(
         SliverToBoxAdapter(
           child: Selector<SettingsService, bool>(
-            selector: (context, service) => service.showCategoryTitles,
+            selector: (context, service) => service.showTitleFor(category.id),
             builder: (context, showTitle, _) {
               if (showTitle) {
                 return Padding(
@@ -401,7 +402,10 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   child: Text(
                     category.name,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      shadows: const [Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 8)],
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                      color: Nebula.textMuted,
+                      shadows: Nebula.textShadow,
                     ),
                   ),
                 );
@@ -436,7 +440,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
           break;
         case CategoryType.grid:
           final gridContentWidth = MediaQuery.sizeOf(context).width - 2 * kLauncherSectionHorizontalPadding;
-          final gridAspectRatio = showAppNames
+          final gridAspectRatio = context.read<SettingsService>().showAppNamesFor(category.id)
               ? appCardGridAspectRatio(gridContentWidth, category.columnsCount)
               : kAppCardAspectRatio;
           slivers.add(
@@ -648,7 +652,8 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
         width: screenSize.width,
       );
     } else {
-      return _CachedGradientBackground(key: const Key("background"), gradient: wallpaperService.gradient.gradient);
+      final g = wallpaperService.gradient;
+      return _CachedGradientBackground(key: const Key("background"), gradient: g.gradient, nebula: g.nebula);
     }
   }
 
@@ -675,8 +680,9 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
 /// background as cheap as a static image wallpaper.
 class _CachedGradientBackground extends StatefulWidget {
   final Gradient gradient;
+  final bool nebula;
 
-  const _CachedGradientBackground({super.key, required this.gradient});
+  const _CachedGradientBackground({super.key, required this.gradient, this.nebula = false});
 
   @override
   State<_CachedGradientBackground> createState() => _CachedGradientBackgroundState();
@@ -699,12 +705,17 @@ class _CachedGradientBackgroundState extends State<_CachedGradientBackground> {
       return;
     }
     _rendering = true;
-    final recorder = ui.PictureRecorder();
-    final rect = Offset.zero & size;
-    Canvas(recorder).drawRect(rect, Paint()..shader = widget.gradient.createShader(rect));
-    final picture = recorder.endRecording();
-    final image = picture.toImageSync(size.width.round(), size.height.round());
-    picture.dispose();
+    final ui.Image image;
+    if (widget.nebula) {
+      image = Nebula.renderBackground(size);
+    } else {
+      final recorder = ui.PictureRecorder();
+      final rect = Offset.zero & size;
+      Canvas(recorder).drawRect(rect, Paint()..shader = widget.gradient.createShader(rect));
+      final picture = recorder.endRecording();
+      image = picture.toImageSync(size.width.round(), size.height.round());
+      picture.dispose();
+    }
     _rendering = false;
     if (!mounted) {
       image.dispose();

@@ -51,7 +51,7 @@ class WallpaperPanelPage extends StatelessWidget {
                 builder: (_, settings, __) {
                   return RoundedSwitchListTile(
                     title: Text(localizations.timeBasedWallpaper),
-                    secondary: Icon(Icons.access_time),
+                    secondary: Icon(Icons.access_time_rounded),
                     value: settings.timeBasedWallpaperEnabled,
                     onChanged: (value) => settings.setTimeBasedWallpaperEnabled(value),
                   );
@@ -63,25 +63,25 @@ class WallpaperPanelPage extends StatelessWidget {
                     return Column(
                       children: [
                         FocusableSettingsTile(
-                          leading: Icon(Icons.wb_sunny),
+                          leading: Icon(Icons.wb_sunny_rounded),
                           title: Text(localizations.pickDayWallpaper),
                           onPressed: () =>
                               _pickWallpaper(context, (s, media) => s.pickWallpaperDayFromUri(media.uri), false),
                         ),
                         FocusableSettingsTile(
-                          leading: Icon(Icons.videocam_outlined),
+                          leading: Icon(Icons.videocam_rounded),
                           title: Text(localizations.pickDayVideoWallpaper),
                           onPressed: () =>
                               _pickWallpaper(context, (s, media) => s.pickVideoWallpaperDay(File(media.path)), true),
                         ),
                         FocusableSettingsTile(
-                          leading: Icon(Icons.nights_stay),
+                          leading: Icon(Icons.nights_stay_rounded),
                           title: Text(localizations.pickNightWallpaper),
                           onPressed: () =>
                               _pickWallpaper(context, (s, media) => s.pickWallpaperNightFromUri(media.uri), false),
                         ),
                         FocusableSettingsTile(
-                          leading: Icon(Icons.videocam_outlined),
+                          leading: Icon(Icons.videocam_rounded),
                           title: Text(localizations.pickNightVideoWallpaper),
                           onPressed: () =>
                               _pickWallpaper(context, (s, media) => s.pickVideoWallpaperNight(File(media.path)), true),
@@ -93,18 +93,18 @@ class WallpaperPanelPage extends StatelessWidget {
                       children: [
                         FocusableSettingsTile(
                           autofocus: true,
-                          leading: Icon(Icons.gradient),
+                          leading: Icon(Icons.gradient_rounded),
                           title: Text(localizations.gradient, style: Theme.of(context).textTheme.bodyMedium),
                           onPressed: () => Navigator.of(context).pushNamed(GradientPanelPage.routeName),
                         ),
                         FocusableSettingsTile(
-                          leading: Icon(Icons.insert_drive_file_outlined),
+                          leading: Icon(Icons.insert_drive_file_rounded),
                           title: Text(localizations.picture, style: Theme.of(context).textTheme.bodyMedium),
                           onPressed: () =>
                               _pickWallpaper(context, (s, media) => s.pickWallpaperFromUri(media.uri), false),
                         ),
                         FocusableSettingsTile(
-                          leading: Icon(Icons.videocam_outlined),
+                          leading: Icon(Icons.videocam_rounded),
                           title: Text(localizations.video, style: Theme.of(context).textTheme.bodyMedium),
                           onPressed: () =>
                               _pickWallpaper(context, (s, media) => s.pickVideoWallpaper(File(media.path)), true),
@@ -115,12 +115,12 @@ class WallpaperPanelPage extends StatelessWidget {
                 },
               ),
               FocusableSettingsTile(
-                leading: const Icon(Icons.slideshow),
+                leading: const Icon(Icons.slideshow_rounded),
                 title: Text(localizations.unsplashSlideshow),
                 onPressed: () => Navigator.of(context).pushNamed(UnsplashSlideshowPanelPage.routeName),
               ),
               FocusableSettingsTile(
-                leading: const Icon(Icons.photo_library_outlined),
+                leading: const Icon(Icons.photo_library_rounded),
                 title: Text(localizations.redditWallpaper),
                 onPressed: () => Navigator.of(context).pushNamed(RedditWallpaperPanelPage.routeName),
               ),

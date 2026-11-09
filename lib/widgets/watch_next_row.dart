@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flauncher/nebula_theme.dart';
 
 void _playFocusSound(BuildContext context) {
   final settingsService = context.read<SettingsService>();
@@ -486,7 +487,7 @@ class _WatchNextCardState extends State<_WatchNextCard> {
                   elevation: _isHovered ? 6 : 2,
                   clipBehavior: Clip.antiAlias,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(Nebula.cardRadius),
                   ),
                   child: SizedBox(
                     width: _kWatchNextItemWidth,
@@ -506,7 +507,7 @@ class _WatchNextCardState extends State<_WatchNextCard> {
                           IgnorePointer(
                             child: CustomPaint(
                               foregroundPainter: AppCardContourPainter(
-                                radius: 8,
+                                radius: Nebula.cardRadius,
                                 strokeWidth: borderThickness,
                                 accentColor: Theme.of(context).colorScheme.primary,
                               ),

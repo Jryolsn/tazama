@@ -78,7 +78,7 @@ class RedditSubredditsPanelPage extends StatelessWidget {
                         alignment: 0.5,
                         child: RoundedSwitchListTile(
                           title: Text('r/$sub'),
-                          secondary: const Icon(Icons.tag),
+                          secondary: const Icon(Icons.tag_rounded),
                           value: true,
                           onChanged: (_) {
                             if (selected.length <= 1) return;
@@ -91,7 +91,7 @@ class RedditSubredditsPanelPage extends StatelessWidget {
                   ],
                   const SizedBox(height: 8),
                   FocusableSettingsTile(
-                    leading: const Icon(Icons.add),
+                    leading: const Icon(Icons.add_rounded),
                     title: Text(localizations.redditAddSubreddit),
                     onPressed: () async {
                       final name = await _askSubreddit(context, localizations);

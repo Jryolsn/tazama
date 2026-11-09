@@ -12,6 +12,7 @@ import 'network_widget.dart';
 import 'vpn_indicator.dart';
 import 'settings/vpn_guard_page.dart';
 import '../providers/vpn_guard_service.dart';
+import 'package:flauncher/nebula_theme.dart';
 
 class FocusAwareAppBar extends StatefulWidget implements PreferredSizeWidget
 {
@@ -106,7 +107,7 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
                 onPressed: () => showDialog(context: context, builder: (_) => const SettingsPanel()),
                 semanticLabel: 'Settings',
                 child: const Icon(
-                  Icons.settings_outlined,
+                  Icons.settings_rounded,
                   size: 20,
                   color: Colors.white,
                   shadows: [
@@ -173,12 +174,11 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
                 builder: (context, dateTimeSettings, _) {
                   // Define standard text style
                   const textStyle = TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 4)
-                    ],
+                    fontSize: 22,
+                    fontWeight: FontWeight.w300,
+                    letterSpacing: 0.4,
+                    color: Nebula.text,
+                    shadows: Nebula.textShadow,
                   );
 
                   return Row(

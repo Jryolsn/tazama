@@ -44,7 +44,7 @@ class AppsGrid extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesBelowIcons);
+    final showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesFor(category.id));
     Widget categoryContent;
     if (applications.isEmpty) {
       categoryContent = categoryContainerEmptyState(context);
@@ -96,7 +96,7 @@ class AppsGrid extends StatelessWidget
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Selector<SettingsService, bool>(
-          selector: (context, service) => service.showCategoryTitles,
+          selector: (context, service) => service.showTitleFor(category.id),
           builder: (context, showCategoriesTitle, _) {
             if (showCategoriesTitle) {
               return Padding(

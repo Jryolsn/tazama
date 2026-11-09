@@ -39,7 +39,7 @@ class FocusableSettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColor = Theme.of(context).colorScheme.primary;
     final baseTextStyle = Theme.of(context).textTheme.bodyMedium ?? const TextStyle(fontSize: 14);
-    // Icons get a tinted squircle behind them; arbitrary widgets (app icons,
+    // Icons get a round tinted bubble behind them; arbitrary widgets (app icons,
     // spinners) are rendered untouched.
     final framedLeading = frameLeading && leading is Icon;
 
@@ -60,20 +60,18 @@ class FocusableSettingsTile extends StatelessWidget {
                   width: SettingsStyle.iconChipSize,
                   height: SettingsStyle.iconChipSize,
                   decoration: BoxDecoration(
-                    color: highlighted
-                        ? accentColor.withValues(alpha: 0.22)
-                        : Colors.white.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(SettingsStyle.iconChipRadius),
-                    border: Border.all(
-                      color: highlighted
-                          ? Colors.white.withValues(alpha: 0.18)
-                          : Colors.white.withValues(alpha: 0.04),
-                    ),
+                    color: highlighted ? accentColor : accentColor.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                    boxShadow: highlighted
+                        ? [BoxShadow(color: accentColor.withValues(alpha: 0.45), blurRadius: 14)]
+                        : const [],
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
                       size: SettingsStyle.iconSize,
-                      color: highlighted ? Colors.white : Colors.white.withValues(alpha: 0.78),
+                      color: highlighted
+                          ? (accentColor.computeLuminance() > 0.4 ? const Color(0xFF1A1238) : Colors.white)
+                          : const Color(0xFFD9CCFF),
                     ),
                     child: Center(child: leading!),
                   ),

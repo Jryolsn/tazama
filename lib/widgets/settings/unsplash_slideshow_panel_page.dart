@@ -46,25 +46,25 @@ class UnsplashSlideshowPanelPage extends StatelessWidget {
             RoundedSwitchListTile(
               autofocus: true,
               title: Text(localizations.unsplashEnable),
-              secondary: const Icon(Icons.slideshow),
+              secondary: const Icon(Icons.slideshow_rounded),
               value: settings.unsplashSlideshowEnabled,
               // Without a key the switch asks for one instead of enabling a slideshow that cannot run.
               onChanged: (value) => hasKey ? settings.setUnsplashSlideshowEnabled(value) : editKey(),
             ),
             FocusableSettingsTile(
-              leading: const Icon(Icons.key),
+              leading: const Icon(Icons.key_rounded),
               title: Text(localizations.unsplashAccessKey),
               trailing: Text(hasKey ? "••••${_tail(settings.unsplashAccessKey)}" : localizations.unsplashNotSet),
               onPressed: editKey,
             ),
             FocusableSettingsTile(
-              leading: const Icon(Icons.timer_outlined),
+              leading: const Icon(Icons.timer_rounded),
               title: Text(localizations.unsplashInterval),
               trailing: Text(localizations.unsplashIntervalMinutes(settings.unsplashIntervalMinutes)),
               onPressed: () => settings.setUnsplashIntervalMinutes(_nextInterval(settings.unsplashIntervalMinutes)),
             ),
             FocusableSettingsTile(
-              leading: const Icon(Icons.category_outlined),
+              leading: const Icon(Icons.category_rounded),
               title: Text(localizations.slideshowCategories),
               onPressed: () => Navigator.of(context).pushNamed(SlideshowSourcesPanelPage.routeName),
             ),

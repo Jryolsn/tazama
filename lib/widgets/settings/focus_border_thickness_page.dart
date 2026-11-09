@@ -66,7 +66,7 @@ class FocusBorderThicknessPage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.tv, size: 28, color: Colors.white.withValues(alpha: 0.8)),
+                              Icon(Icons.tv_rounded, size: 28, color: Colors.white.withValues(alpha: 0.8)),
                               const SizedBox(width: 8),
                               Text(
                                 "${currentThickness.toStringAsFixed(1)} dp",
@@ -151,7 +151,7 @@ class FocusBorderThicknessPage extends StatelessWidget {
       autofocus: autofocus,
       frameLeading: false,
       leading: Icon(
-        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
         color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.grey,
       ),
       title: Text(label, style: Theme.of(context).textTheme.bodyMedium),

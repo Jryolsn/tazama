@@ -29,6 +29,8 @@ import 'package:flauncher/l10n/app_localizations.dart';
 
 import '../models/app.dart';
 import '../models/category.dart';
+import 'package:flauncher/widgets/settings/launcher_section_panel_page.dart';
+import 'package:flauncher/widgets/settings/settings_panel.dart';
 
 class ApplicationInfoPanel extends StatefulWidget
 {
@@ -72,7 +74,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                 if (widget.applicationIcon != null)
                   Image(image: widget.applicationIcon!, width: 50)
                 else
-                  const Icon(Icons.image_not_supported_outlined),
+                  const Icon(Icons.image_not_supported_rounded),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
@@ -104,7 +106,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                    TextButton(
                      child: Row(
                        children: [
-                         const Icon(Icons.add_box_outlined),
+                         const Icon(Icons.add_box_rounded),
                          Container(width: 8),
                          Text(localizations.addToCategory, style: Theme.of(context).textTheme.bodyMedium),
                        ],
@@ -122,7 +124,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                      TextButton(
                        child: Row(
                          children: [
-                           const Icon(Icons.open_with),
+                           const Icon(Icons.open_with_rounded),
                            Container(width: 8),
                            Text(localizations.reorder, style: Theme.of(context).textTheme.bodyMedium),
                          ],
@@ -132,7 +134,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                    TextButton(
                      child: Row(
                        children: [
-                         const Icon(Icons.open_in_new),
+                         const Icon(Icons.open_in_new_rounded),
                          Container(width: 8),
                          Text(localizations.open, style: Theme.of(context).textTheme.bodyMedium),
                        ],
@@ -150,7 +152,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                        return TextButton(
                          child: Row(
                            children: [
-                             Icon(isInFavorites ? Icons.star : Icons.star_border),
+                             Icon(isInFavorites ? Icons.star_rounded : Icons.star_border_rounded),
                              Container(width: 8),
                              Flexible(
                                child: Text(
@@ -171,7 +173,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                    TextButton(
                      child: Row(
                        children: [
-                         Icon(widget.application.hidden ? Icons.visibility : Icons.visibility_off_outlined),
+                         Icon(widget.application.hidden ? Icons.visibility_rounded : Icons.visibility_off_rounded),
                          Container(width: 8),
                          Text(widget.application.hidden ? localizations.show : localizations.hide, style: Theme.of(context).textTheme.bodyMedium),
                        ],
@@ -189,7 +191,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                      TextButton(
                        child: Row(
                          children: [
-                           const Icon(Icons.delete_sweep_outlined),
+                           const Icon(Icons.delete_sweep_rounded),
                            Container(width: 8),
                            Flexible(
                              child: Text(
@@ -206,6 +208,38 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                          Navigator.of(context).pop(ApplicationInfoPanelResult.none);
                        },
                      ),
+                   if (widget.category != null)
+                     TextButton(
+                       child: Row(
+                         children: [
+                           const Icon(Icons.tune_rounded),
+                           Container(width: 8),
+                           Flexible(
+                             child: Text(
+                               'Edit ${widget.category!.name}',
+                               style: Theme.of(context).textTheme.bodyMedium,
+                               maxLines: 2,
+                               overflow: TextOverflow.ellipsis,
+                             ),
+                           ),
+                         ],
+                       ),
+                       onPressed: () {
+                         final sections = context.read<AppsService>().launcherSections;
+                         final index = sections.indexWhere((s) => s is Category && s.id == widget.category!.id);
+                         final navigator = Navigator.of(context);
+                         navigator.pop(ApplicationInfoPanelResult.none);
+                         if (index >= 0) {
+                           showDialog(
+                             context: navigator.context,
+                             builder: (_) => SettingsPanel(
+                               initialRoute: LauncherSectionPanelPage.routeName,
+                               initialArguments: index,
+                             ),
+                           );
+                         }
+                       },
+                     ),
                    const Divider(),
                    FutureBuilder<bool>(
                      future: _hasCustomBannerFuture,
@@ -217,7 +251,7 @@ class _ApplicationInfoPanelState extends State<ApplicationInfoPanel>
                            TextButton(
                              child: Row(
                                children: [
-                                 const Icon(Icons.image_search),
+                                 const Icon(Icons.image_search_rounded),
                                  Container(width: 8),
                                  Text(localizations.setCustomBanner, style: Theme.of(context).textTheme.bodyMedium),
                                ],
@@ -261,7 +295,7 @@ onPressed: () async {
                              TextButton(
                                child: Row(
                                  children: [
-                                   const Icon(Icons.hide_image_outlined),
+                                   const Icon(Icons.hide_image_rounded),
                                    Container(width: 8),
                                    Text(localizations.clearCustomBanner, style: Theme.of(context).textTheme.bodyMedium),
                                  ],
@@ -292,7 +326,7 @@ onPressed: () async {
                    TextButton(
                      child: Row(
                        children: [
-                         const Icon(Icons.info_outlined),
+                         const Icon(Icons.info_rounded),
                          Container(width: 8),
                          Text(localizations.appInfo, style: Theme.of(context).textTheme.bodyMedium),
                        ],
@@ -302,7 +336,7 @@ onPressed: () async {
                    TextButton(
                      child: Row(
                        children: [
-                         const Icon(Icons.delete_outlined),
+                         const Icon(Icons.delete_rounded),
                          Container(width: 8),
                          Text(localizations.uninstall, style: Theme.of(context).textTheme.bodyMedium),
                        ],

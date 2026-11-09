@@ -110,7 +110,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                   }
                 },
                 title: Text(localizations.showWatchNextSection, style: Theme.of(context).textTheme.bodyMedium),
-                secondary: const Icon(Icons.play_circle_outline),
+                secondary: const Icon(Icons.play_circle_rounded),
               ),
 
               if (settingsService.showWatchNextSection) ...[
@@ -152,7 +152,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                     localizations.watchNextBigPictureModeDescription,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  secondary: const Icon(Icons.photo_size_select_actual_outlined),
+                  secondary: const Icon(Icons.photo_size_select_actual_rounded),
                 ),
 
                 RoundedSwitchListTile(
@@ -163,11 +163,11 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                     localizations.watchNextHideWithoutImagesDescription,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  secondary: const Icon(Icons.hide_image_outlined),
+                  secondary: const Icon(Icons.hide_image_rounded),
                 ),
 
                 FocusableSettingsTile(
-                  leading: const Icon(Icons.format_list_numbered),
+                  leading: const Icon(Icons.format_list_numbered_rounded),
                   title: Text(localizations.watchNextMaxItems, style: Theme.of(context).textTheme.bodyMedium),
                   subtitle: Text(
                     settingsService.watchNextMaxItems == 0
@@ -175,7 +175,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                         : '${settingsService.watchNextMaxItems}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  trailing: const Icon(Icons.chevron_right, size: 20),
+                  trailing: const Icon(Icons.chevron_right_rounded, size: 20),
                   onPressed: () => Navigator.of(context).pushNamed(WatchNextMaxItemsPage.routeName),
                 ),
 
@@ -186,7 +186,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                           height: 24,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.refresh),
+                      : const Icon(Icons.refresh_rounded),
                   title: Text(localizations.watchNextRefresh, style: Theme.of(context).textTheme.bodyMedium),
                   subtitle: Text(
                     localizations.watchNextRefreshDescription,
@@ -246,7 +246,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                 Center(
                   child: TextButton.icon(
                     onPressed: () => setState(() => _showAllApps = !_showAllApps),
-                    icon: Icon(_showAllApps ? Icons.filter_list : Icons.apps_outlined, size: 18),
+                    icon: Icon(_showAllApps ? Icons.filter_list_rounded : Icons.apps_rounded, size: 18),
                     label: Text(
                       _showAllApps ? localizations.watchNextFilterApps : localizations.watchNextShowAllApps,
                       style: const TextStyle(fontSize: 12),
@@ -285,7 +285,7 @@ class _AppIcon extends StatelessWidget {
             ),
           );
         }
-        return const Icon(Icons.tv_outlined);
+        return const Icon(Icons.tv_rounded);
       },
     );
   }

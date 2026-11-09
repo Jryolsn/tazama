@@ -36,7 +36,9 @@ import '../../models/category.dart';
 class ApplicationsPanelPage extends StatefulWidget {
   static const String routeName = "applications_panel";
 
-  const ApplicationsPanelPage({super.key});
+  final int initialTab;
+
+  const ApplicationsPanelPage({super.key, this.initialTab = 0});
 
   @override
   State<ApplicationsPanelPage> createState() => _ApplicationsPanelPageState();
@@ -48,10 +50,10 @@ class _ApplicationsPanelPageState extends State<ApplicationsPanelPage> {
   bool _isSwitchingViaKeyboard = false;
 
   final List<_TabData> _tabs = [
-    _TabData(0, Icons.apps, (l) => l.allApplications),
-    _TabData(1, Icons.star, (l) => l.favoriteApps),
-    _TabData(2, Icons.visibility_off_outlined, (l) => l.hiddenApplications),
-    _TabData(3, Icons.lock_outline, (_) => 'Locked apps'),
+    _TabData(0, Icons.apps_rounded, (l) => l.allApplications),
+    _TabData(1, Icons.star_rounded, (l) => l.favoriteApps),
+    _TabData(2, Icons.visibility_off_rounded, (l) => l.hiddenApplications),
+    _TabData(3, Icons.lock_rounded, (_) => 'Locked apps'),
   ];
   
   late List<FocusNode> _tabFocusNodes;
@@ -59,6 +61,7 @@ class _ApplicationsPanelPageState extends State<ApplicationsPanelPage> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialTab.clamp(0, _tabs.length - 1);
     _tabFocusNodes = List.generate(_tabs.length, (index) => FocusNode());
   }
 
@@ -74,7 +77,7 @@ class _ApplicationsPanelPageState extends State<ApplicationsPanelPage> {
   Widget build(BuildContext context) {
     AppLocalizations localizations = AppLocalizations.of(context)!;
     if (_title.isEmpty) {
-      _title = _tabs[0].getTitle(localizations);
+      _title = _tabs[_selectedIndex].getTitle(localizations);
     }
 
     return Column(
@@ -372,20 +375,20 @@ class _LockedTabState extends State<_LockedTab> {
         _FirstRow(
           child: FocusableSettingsTile(
             autofocus: true,
-            leading: const Icon(Icons.pin_outlined),
+            leading: const Icon(Icons.pin_rounded),
             title: Text(lock.hasPin ? 'Change ${lock.secretName}' : 'Set PIN',
                 style: Theme.of(context).textTheme.bodyMedium),
             onPressed: lock.changePin,
           ),
         ),
         FocusableSettingsTile(
-          leading: const Icon(Icons.gamepad_outlined),
+          leading: const Icon(Icons.gamepad_rounded),
           title: Text('Lock type: ${lock.lockType == 'pattern' ? 'Remote pattern' : 'PIN'}',
               style: Theme.of(context).textTheme.bodyMedium),
           onPressed: () => _pickLockType(context, lock),
         ),
         FocusableSettingsTile(
-          leading: const Icon(Icons.timer_outlined),
+          leading: const Icon(Icons.timer_rounded),
           title: Text('Stay unlocked: ${lock.relockOption.label}', style: Theme.of(context).textTheme.bodyMedium),
           onPressed: () => pickRelock(context, lock),
         ),
@@ -412,7 +415,7 @@ Future<void> _pickLockType(BuildContext context, AppLockService lock) async {
           .map((type) => FocusableSettingsTile(
                 autofocus: type.key == lock.lockType,
                 frameLeading: false,
-                leading: Icon(type.key == lock.lockType ? Icons.radio_button_checked : Icons.radio_button_unchecked),
+                leading: Icon(type.key == lock.lockType ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded),
                 title: Text(type.value, style: Theme.of(dialogContext).textTheme.bodyMedium),
                 onPressed: () => Navigator.of(dialogContext).pop(type.key),
               ))
@@ -435,7 +438,7 @@ Future<void> pickRelock(BuildContext context, AppLockService lock) async {
                 autofocus: option.minutes == lock.relockMinutes,
                 frameLeading: false,
                 leading: Icon(
-                  option.minutes == lock.relockMinutes ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                  option.minutes == lock.relockMinutes ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
                 ),
                 title: Text(option.label, style: Theme.of(dialogContext).textTheme.bodyMedium),
                 onPressed: () => Navigator.of(dialogContext).pop(option.minutes),

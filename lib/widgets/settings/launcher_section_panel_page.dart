@@ -19,6 +19,8 @@
 import 'dart:async';
 
 import 'package:flauncher/providers/apps_service.dart';
+import 'package:flauncher/providers/settings_service.dart';
+import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -380,8 +382,8 @@ class _CategorySettingsState extends State<_CategorySettings>
             padding: EdgeInsets.only(top: 4),
             child: DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               autofocus: _creating,
@@ -418,8 +420,8 @@ class _CategorySettingsState extends State<_CategorySettings>
                 controller: _nameController,
                 focusNode: _textFieldFocusNode,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 onChanged: (value) {
@@ -436,8 +438,8 @@ class _CategorySettingsState extends State<_CategorySettings>
             padding: EdgeInsets.only(top: 4),
             child: DropdownButtonFormField<CategorySort>(
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               isDense: true,
@@ -473,8 +475,8 @@ class _CategorySettingsState extends State<_CategorySettings>
             padding: EdgeInsets.only(top: 4),
             child: DropdownButtonFormField<CategoryType>(
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               initialValue: _categoryType,
@@ -499,70 +501,73 @@ class _CategorySettingsState extends State<_CategorySettings>
             )
           )
         ),
-        if (_categoryType == CategoryType.grid)
-          _listTile(
-            context,
-            Text(localizations.columnCount),
-            Padding(
-              padding: EdgeInsets.only(top: 4),
-              child: DropdownButtonFormField<int>(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                initialValue: _columnsCount,
-                isDense: true,
-                isExpanded: true,
-                items: [for (int i = 5; i <= 10; i++) i]
-                    .map(
-                      (value) => DropdownMenuItem(
-                    value: value,
-                    child: Text(value.toString(), style: Theme.of(context).textTheme.bodySmall),
+        _listTile(
+          context,
+          const Text('Size'),
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Row(
+              children: [
+                for (int i = 0; i < kCategorySizeLabels.length; i++)
+                  Expanded(
+                    child: _SizeChip(
+                      label: kCategorySizeLabels[i],
+                      selected: _sizeIndex == i,
+                      onPressed: () {
+                        setState(() {
+                          _rowHeight = kCategoryRowHeights[i];
+                          _columnsCount = kCategoryColumns[i];
+                        });
+                        _notifyChange();
+                      },
+                    ),
                   ),
-                ).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _columnsCount = value!;
-                  });
-                  _notifyChange();
-                }
-              )
-            )
+              ],
+            ),
           ),
-        if (_categoryType == CategoryType.row)
-          _listTile(
-            context,
-            Text(localizations.rowHeight),
-            Padding(
-              padding: EdgeInsets.only(top: 4),
-              child: DropdownButtonFormField<int>(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: _SizePreview(type: _categoryType, rowHeight: _rowHeight, columns: _columnsCount),
+        ),
+        if (!_creating) ...[
+          Consumer<SettingsService>(
+            builder: (context, settings, _) => Column(
+              children: [
+                RoundedSwitchListTile(
+                  value: settings.showTitleFor(_category!.id),
+                  onChanged: (value) => settings.setCategoryShowTitle(_category!.id, value),
+                  title: Text('Show title', style: Theme.of(context).textTheme.bodyMedium),
+                  secondary: const Icon(Icons.title_rounded),
                 ),
-                initialValue: _rowHeight,
-                isDense: true,
-                isExpanded: true,
-                items: [for (int i = 80; i <= 150; i += 10) i]
-                    .map(
-                      (value) => DropdownMenuItem(
-                    value: value,
-                    child: Text(value.toString(), style: Theme.of(context).textTheme.bodySmall),
-                  ),
-                ).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _rowHeight = value!;
-                  });
-                  _notifyChange();
-                }
-              )
-            )
-          )
+                RoundedSwitchListTile(
+                  value: settings.showAppNamesFor(_category!.id),
+                  onChanged: (value) => settings.setCategoryShowAppNames(_category!.id, value),
+                  title: Text('Show app names', style: Theme.of(context).textTheme.bodyMedium),
+                  secondary: const Icon(Icons.label_rounded),
+                ),
+              ],
+            ),
+          ),
+        ],
       ]
     );
+  }
+
+  /// Current size step, picked from row height or column count.
+  int get _sizeIndex {
+    if (_categoryType == CategoryType.grid) {
+      return _nearestIndex(kCategoryColumns, _columnsCount);
+    }
+    return _nearestIndex(kCategoryRowHeights, _rowHeight);
+  }
+
+  static int _nearestIndex(List<int> values, int value) {
+    int best = 0;
+    for (int i = 1; i < values.length; i++) {
+      if ((values[i] - value).abs() < (values[best] - value).abs()) best = i;
+    }
+    return best;
   }
 
   void _notifyChange()
@@ -685,8 +690,8 @@ class _LauncherSpacerSettingsState extends State<_LauncherSpacerSettings>
         padding: EdgeInsets.only(top: 4),
         child: DropdownButtonFormField<int>(
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
           isDense: true,
@@ -743,3 +748,110 @@ Widget _listTile(BuildContext context, Widget title, Widget subtitle, {Widget? t
       trailing: trailing,
     )
 );
+
+/// Size steps for a category: S, M, L, XL.
+const List<String> kCategorySizeLabels = ['S', 'M', 'L', 'XL'];
+const List<int> kCategoryRowHeights = [80, 110, 140, 170];
+const List<int> kCategoryColumns = [8, 6, 5, 4];
+
+class _SizeChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  const _SizeChip({required this.label, required this.selected, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = accent.computeLuminance() > 0.4 ? const Color(0xFF1A1238) : Colors.white;
+    return SettingsFocusCard(
+      onPressed: onPressed,
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      padding: EdgeInsets.zero,
+      radius: 99,
+      builder: (context, highlighted) => AnimatedContainer(
+        duration: SettingsStyle.focusDurationFor(context),
+        height: 34,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(99),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: selected ? onAccent : Colors.white.withValues(alpha: highlighted ? 1 : 0.8),
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Small live sketch of how the category's cards will sit on the home screen.
+class _SizePreview extends StatelessWidget {
+  final CategoryType type;
+  final int rowHeight;
+  final int columns;
+
+  const _SizePreview({required this.type, required this.rowHeight, required this.columns});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+    return LayoutBuilder(builder: (context, constraints) {
+      final width = constraints.maxWidth;
+      const gap = 6.0;
+      // The home screen is ~1280 dp wide on a TV; scale cards to the panel.
+      final scale = width / 1280 * 1.6;
+      final double cardW;
+      final int perRow;
+      final int rows;
+      if (type == CategoryType.grid) {
+        perRow = columns;
+        cardW = (width - gap * (columns - 1)) / columns;
+        rows = 2;
+      } else {
+        cardW = rowHeight * 16 / 9 * scale;
+        perRow = ((width + gap) / (cardW + gap)).ceil();
+        rows = 1;
+      }
+      final cardH = cardW * 9 / 16;
+      Widget card(int i) => AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: cardW,
+            height: cardH,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(cardH * 0.18),
+              color: i == 1 ? accent.withValues(alpha: 0.35) : Colors.white.withValues(alpha: 0.1),
+              border: i == 1 ? Border.all(color: accent.withValues(alpha: 0.8)) : null,
+            ),
+          );
+      return ClipRect(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (int r = 0; r < rows; r++)
+              Padding(
+                padding: EdgeInsets.only(bottom: r == rows - 1 ? 0 : gap),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < perRow; i++) ...[
+                        if (i > 0) const SizedBox(width: gap),
+                        card(r * perRow + i),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    });
+  }
+}

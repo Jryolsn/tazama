@@ -46,7 +46,7 @@ class CategoryCleanRow extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesBelowIcons);
+    final showAppNames = context.select<SettingsService, bool>((s) => s.showAppNamesFor(category.id));
     Widget categoryContent;
     if (applications.isEmpty) {
       categoryContent = categoryContainerEmptyState(context);

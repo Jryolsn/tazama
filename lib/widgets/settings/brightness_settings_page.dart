@@ -90,13 +90,13 @@ class BrightnessSettingsPage extends StatelessWidget {
                                 children: [
                                   ElevatedButton.icon(
                                     onPressed: brightnessService.requestPermission,
-                                    icon: const Icon(Icons.settings),
+                                    icon: const Icon(Icons.settings_rounded),
                                     label: Text(localizations.grantPermission),
                                   ),
                                   const SizedBox(height: 8),
                                   TextButton.icon(
                                     onPressed: brightnessService.checkPermission,
-                                    icon: const Icon(Icons.refresh),
+                                    icon: const Icon(Icons.refresh_rounded),
                                     label: Text(localizations.checkStatus),
                                   ),
                                 ],
@@ -113,13 +113,13 @@ class BrightnessSettingsPage extends StatelessWidget {
                         'Dim screen',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      secondary: Icon(brightnessService.isDimNow ? Icons.nightlight : Icons.nightlight_outlined),
+                      secondary: Icon(brightnessService.isDimNow ? Icons.nightlight_rounded : Icons.nightlight_rounded),
                       value: brightnessService.isDimNow,
                       onChanged: (value) => brightnessService.setDimNow(value),
                     ),
                     BrightnessSlider(
                       label: 'Screen brightness',
-                      icon: Icons.nightlight,
+                      icon: Icons.nightlight_rounded,
                       isCurrentSlot: brightnessService.isDimNow,
                       brightness: brightnessService.dimNowBrightness,
                       onChanged: (value) => brightnessService.setDimNowBrightness(value),
@@ -132,7 +132,7 @@ class BrightnessSettingsPage extends StatelessWidget {
                         localizations.enableBrightnessScheduler,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      secondary: Icon(isEnabled ? Icons.schedule : Icons.schedule_outlined),
+                      secondary: Icon(isEnabled ? Icons.schedule_rounded : Icons.schedule_rounded),
                       value: isEnabled,
                       onChanged: (value) => brightnessService.setEnabled(value),
                     ),
@@ -174,7 +174,7 @@ class BrightnessSettingsPage extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.science_outlined, color: Colors.redAccent, size: 20),
+                                const Icon(Icons.science_rounded, color: Colors.redAccent, size: 20),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -365,15 +365,15 @@ class BrightnessSliderState extends State<BrightnessSlider> {
 IconData _iconForSlot(TimeSlot slot) {
     switch (slot) {
       case TimeSlot.morning:
-        return Icons.wb_twilight;
+        return Icons.wb_twilight_rounded;
       case TimeSlot.day:
-        return Icons.wb_sunny;
+        return Icons.wb_sunny_rounded;
       case TimeSlot.afternoon:
         return Icons.sunny;
       case TimeSlot.evening:
-        return Icons.nights_stay;
+        return Icons.nights_stay_rounded;
       case TimeSlot.night:
-        return Icons.bedtime;
+        return Icons.bedtime_rounded;
   }
 }
 

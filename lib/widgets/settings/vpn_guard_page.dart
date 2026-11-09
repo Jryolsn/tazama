@@ -59,7 +59,7 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                 child: Row(children: [
-                  Icon(status.up ? Icons.lock : Icons.lock_open,
+                  Icon(status.up ? Icons.lock_rounded : Icons.lock_open_rounded,
                       size: 18, color: status.up ? Colors.lightGreenAccent : Colors.orangeAccent),
                   const SizedBox(width: 8),
                   Expanded(child: Text(statusText, style: body)),
@@ -75,20 +75,20 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
                 ),
               FocusableSettingsTile(
                 autofocus: true,
-                leading: const Icon(Icons.block),
+                leading: const Icon(Icons.block_rounded),
                 title: Text(
                     'When VPN is off: ${vpn.mode == 'warn' ? 'Warn (can open anyway)' : 'Block'}',
                     style: body),
                 onPressed: () => _pickMode(context, vpn),
               ),
               FocusableSettingsTile(
-                leading: const Icon(Icons.vpn_key_outlined),
+                leading: const Icon(Icons.vpn_key_rounded),
                 title: Text('VPN app: $vpnAppName', style: body),
                 onPressed: () => _pickVpnApp(context, vpn),
               ),
               FocusableSettingsTile(
                 showChevron: true,
-                leading: const Icon(Icons.settings_ethernet),
+                leading: const Icon(Icons.settings_ethernet_rounded),
                 title: Text('Android VPN settings (always-on, block without VPN)', style: body),
                 onPressed: () async {
                   final opened = await vpn.openSystemVpnSettings();
@@ -148,7 +148,7 @@ Future<void> _pickMode(BuildContext context, VpnGuardService vpn) async {
           .map((mode) => FocusableSettingsTile(
                 autofocus: mode.key == vpn.mode,
                 frameLeading: false,
-                leading: Icon(mode.key == vpn.mode ? Icons.radio_button_checked : Icons.radio_button_unchecked),
+                leading: Icon(mode.key == vpn.mode ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded),
                 title: Text(mode.value, style: Theme.of(dialogContext).textTheme.bodyMedium),
                 onPressed: () => Navigator.of(dialogContext).pop(mode.key),
               ))
@@ -176,7 +176,7 @@ Future<void> _pickVpnApp(BuildContext context, VpnGuardService vpn) async {
                     autofocus: app.packageName == current,
                     frameLeading: false,
                     leading: Icon(
-                        app.packageName == current ? Icons.radio_button_checked : Icons.radio_button_unchecked),
+                        app.packageName == current ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded),
                     title: Text(app.name, style: Theme.of(dialogContext).textTheme.bodyMedium),
                     onPressed: () => Navigator.of(dialogContext).pop(app.packageName),
                   ))

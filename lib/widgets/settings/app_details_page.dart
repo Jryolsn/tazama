@@ -38,7 +38,7 @@ class AppDetailsPage extends StatelessWidget {
                 if (snapshot.hasData) {
                   return Image.memory(snapshot.data!, width: 50, height: 50);
                 }
-                return const Icon(Icons.android, size: 50);
+                return const Icon(Icons.android_rounded, size: 50);
               },
             ),
             const SizedBox(width: 16),
@@ -68,7 +68,7 @@ class AppDetailsPage extends StatelessWidget {
             children: [
               _buildListTile(
                 context,
-                icon: Icons.open_in_new,
+                icon: Icons.open_in_new_rounded,
                 title: localizations.open,
                 onTap: () async {
                   await appsService.launchApp(application);
@@ -77,13 +77,13 @@ class AppDetailsPage extends StatelessWidget {
               ),
               _buildListTile(
                 context,
-                icon: appsService.isAppInFavorites(application) ? Icons.star : Icons.star_border,
+                icon: appsService.isAppInFavorites(application) ? Icons.star_rounded : Icons.star_border_rounded,
                 title: appsService.isAppInFavorites(application) ? localizations.removeFromFavorites : localizations.addToFavorites,
                 onTap: () => appsService.toggleFavorite(application),
               ),
               _buildListTile(
                 context,
-                icon: application.hidden ? Icons.visibility : Icons.visibility_off_outlined,
+                icon: application.hidden ? Icons.visibility_rounded : Icons.visibility_off_rounded,
                 title: application.hidden ? localizations.show : localizations.hide,
                 onTap: () {
                    if (application.hidden) {
@@ -95,20 +95,20 @@ class AppDetailsPage extends StatelessWidget {
               ),
               _buildListTile(
                 context,
-                icon: appLock.isLocked(application.packageName) ? Icons.lock_open : Icons.lock_outline,
+                icon: appLock.isLocked(application.packageName) ? Icons.lock_open_rounded : Icons.lock_rounded,
                 title: appLock.isLocked(application.packageName) ? 'Unlock' : 'Lock',
                 onTap: () => appLock.toggleLock(application.packageName),
               ),
               _buildListTile(
                 context,
-                icon: vpnGuard.isGuarded(application.packageName) ? Icons.vpn_lock : Icons.vpn_key_outlined,
+                icon: vpnGuard.isGuarded(application.packageName) ? Icons.vpn_lock_rounded : Icons.vpn_key_rounded,
                 title: vpnGuard.isGuarded(application.packageName) ? "Don't require VPN" : 'Require VPN',
                 onTap: () => vpnGuard.toggleGuarded(application.packageName),
               ),
               if (!application.hidden)
                 _buildListTile(
                   context,
-                  icon: Icons.add_box_outlined,
+                  icon: Icons.add_box_rounded,
                   title: localizations.addToCategory,
                   onTap: () => showDialog<Category>(
                     context: context,
@@ -118,13 +118,13 @@ class AppDetailsPage extends StatelessWidget {
               const SettingsSectionDivider(),
               _buildListTile(
                 context,
-                icon: Icons.info_outlined,
+                icon: Icons.info_rounded,
                 title: localizations.appInfo,
                 onTap: () => appsService.openAppInfo(application),
               ),
               _buildListTile(
                 context,
-                icon: Icons.delete_outlined,
+                icon: Icons.delete_rounded,
                 title: localizations.uninstall,
                 onTap: () async {
                     await appsService.uninstallApp(application);
