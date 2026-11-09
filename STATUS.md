@@ -17,6 +17,11 @@ _Last updated: 2026-11-09_
 - Home layout setting (Settings > Home layout) with thumbnails: Rows (default), Orbit (big centered
   clock, floating cards), Aurora (clock column left, sections right).
 - Watch next: sharper images and more card sizes.
+- Home Assistant: Settings > Smart home > Home Assistant (URL + long-lived token in encrypted storage).
+  Hold Home = HA panel over any app (chosen entities: toggle, scenes, sensors, camera snapshots,
+  Left/Right dims lights, optional own dashboard in a WebView signed in with the token).
+  Hold Back = quick panel (short Back unchanged). Customizable: order, names, side, width,
+  hold Home opens dashboard, camera refresh. Not yet tested on a TV.
 - Migration on the test TV, then the main TV.
 - Point Obtainium at Jryolsn/tazama.
 

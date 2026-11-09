@@ -35,8 +35,8 @@ import android.view.accessibility.AccessibilityEvent;
  *    recents, a link, casting from a phone), its sound is paused and the PIN screen covers it.
  * 4. The VPN guard: an app that needs VPN is covered by VpnGateActivity while no VPN is up, and is
  *    paused and covered at once if the VPN drops while it is open.
- * 2. Opening the quick panel (QuickPanelActivity) by holding Home or with a spare remote button (the YouTube
- *    button by default), so brightness and the lock can be changed without leaving the app that is open.
+ * 2. Opening the quick panel (QuickPanelActivity) by holding Back or with a spare remote button (the YouTube
+ *    button by default), and the Home Assistant panel by holding Home, so brightness and the lock can be changed without leaving the app that is open.
  * 5. Replace the current launcher: while Arc isn't the default home app, Home opens Arc, and the stock
  *    home screen is swapped for Arc whenever it shows up (boot, leaving an app), so it can stay installed.
  *
@@ -330,12 +330,13 @@ public class ArcAccessibilityService extends AccessibilityService {
     protected boolean onKeyEvent(KeyEvent event) {
         Log.d("ArcKeys", "key " + event.getKeyCode() + " action " + event.getAction() + " repeat " + event.getRepeatCount());
         if (event.getKeyCode() == KeyEvent.KEYCODE_HOME) return onHomeKey(event);
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) return onBackKey(event);
         int quickKey = (int) prefs(this).getLong(KEY_QUICK_KEY, KeyEvent.KEYCODE_UNKNOWN);
         boolean isQuickKey = event.getKeyCode() == quickKey
                 || (quickKey == KeyEvent.KEYCODE_UNKNOWN && isDefaultQuickKey(event.getKeyCode()));
         if (!isQuickKey) return false;
         if (event.getAction() == KeyEvent.ACTION_UP) {
-            if (QuickPanelActivity.isShowing()) hidePanel(); else showPanel();
+            if (QuickPanelActivity.isShowing(QuickPanelActivity.MODE_QUICK)) hidePanel(); else showPanel();
         }
         return true; // the button does nothing else while Arc owns it
     }
@@ -344,11 +345,31 @@ public class ArcAccessibilityService extends AccessibilityService {
     private boolean homeLongPressed;
     private final Runnable homeLongPress = () -> {
         homeLongPressed = true;
+        QuickPanelActivity.show(this, QuickPanelActivity.MODE_HOME_ASSISTANT);
+    };
+
+    private boolean backLongPressed;
+    private final Runnable backLongPress = () -> {
+        backLongPressed = true;
         showPanel();
     };
 
+    /** Holding Back opens the quick panel; a normal press is sent as Back on release. */
+    private boolean onBackKey(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (event.getRepeatCount() == 0) {
+                backLongPressed = false;
+                handler.postDelayed(backLongPress, LONG_PRESS_MS);
+            }
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            handler.removeCallbacks(backLongPress);
+            if (!backLongPressed) performGlobalAction(GLOBAL_ACTION_BACK);
+        }
+        return true;
+    }
+
     /**
-     * Holding Home opens the quick panel; a normal press still goes home (sent on release instead,
+     * Holding Home opens the Home Assistant panel; a normal press still goes home (sent on release instead,
      * since we can't tell the two apart before then).
      */
     private boolean onHomeKey(KeyEvent event) {
