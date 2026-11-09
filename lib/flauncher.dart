@@ -79,7 +79,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) => _openSettingsIfAsked());
   }
 
-  /// The quick panel (hold Home / YouTube button) can ask Arc to open its settings.
+  /// The quick panel (hold Back / YouTube button) can ask Arc to open its settings.
   Future<void> _openSettingsIfAsked() async {
     try {
       final open = await const MethodChannel('me.efesser.flauncher/method').invokeMethod<bool>('consumeOpenSettings');
