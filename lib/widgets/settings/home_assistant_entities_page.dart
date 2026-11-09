@@ -21,7 +21,9 @@ class _HomeAssistantEntitiesPageState extends State<HomeAssistantEntitiesPage> {
 
   static const _domainOrder = [
     'light', 'switch', 'scene', 'script', 'camera', 'cover', 'fan', 'lock',
-    'media_player', 'climate', 'sensor', 'binary_sensor', 'input_boolean',
+    'media_player', 'climate', 'sensor', 'binary_sensor', 'input_boolean', 'automation',
+    'button', 'input_button', 'vacuum', 'siren', 'humidifier', 'water_heater', 'weather',
+    'person', 'device_tracker',
   ];
 
   @override
@@ -70,7 +72,7 @@ class _HomeAssistantEntitiesPageState extends State<HomeAssistantEntitiesPage> {
           autofocus: children.length == 1,
           value: chosen.contains(entity.entityId),
           onChanged: (value) => ha.setPanelEntity(entity.entityId, value),
-          title: Text(entity.name, style: body),
+          title: Text(ha.nameOf(entity), style: body),
           subtitle: Text(entity.displayState, style: small),
           secondary: Icon(haEntityIcon(entity)),
         ));

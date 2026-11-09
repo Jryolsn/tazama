@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flauncher/providers/home_assistant_service.dart';
+import 'package:flauncher/widgets/home_assistant_dashboard.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 String haDomainLabel(String domain) => switch (domain) {
@@ -18,8 +20,25 @@ String haDomainLabel(String domain) => switch (domain) {
       'media_player' => 'Media players',
       'climate' => 'Climate',
       'sensor' => 'Sensors',
+      'automation' => Icons.smart_toy_rounded,
+      'button' || 'input_button' => Icons.radio_button_checked_rounded,
+      'vacuum' => Icons.cleaning_services_rounded,
+      'siren' => Icons.campaign_rounded,
+      'humidifier' => Icons.water_drop_rounded,
+      'water_heater' => Icons.hot_tub_rounded,
+      'weather' => Icons.wb_cloudy_rounded,
+      'person' || 'device_tracker' => entity.state == 'home' ? Icons.person_rounded : Icons.person_outline_rounded,
       'binary_sensor' => 'Binary sensors',
       'input_boolean' => 'Helpers',
+      'automation' => 'Automations',
+      'button' || 'input_button' => 'Buttons',
+      'vacuum' => 'Vacuums',
+      'siren' => 'Sirens',
+      'humidifier' => 'Humidifiers',
+      'water_heater' => 'Water heaters',
+      'weather' => 'Weather',
+      'person' => 'People',
+      'device_tracker' => 'Devices',
       _ => domain,
     };
 
@@ -34,6 +53,14 @@ IconData haEntityIcon(HaEntity entity) => switch (entity.domain) {
       'lock' => entity.state == 'locked' ? Icons.lock_rounded : Icons.lock_open_rounded,
       'media_player' => entity.state == 'playing' ? Icons.pause_circle_rounded : Icons.play_circle_rounded,
       'climate' => Icons.thermostat_rounded,
+      'automation' => Icons.smart_toy_rounded,
+      'button' || 'input_button' => Icons.radio_button_checked_rounded,
+      'vacuum' => Icons.cleaning_services_rounded,
+      'siren' => Icons.campaign_rounded,
+      'humidifier' => Icons.water_drop_rounded,
+      'water_heater' => Icons.hot_tub_rounded,
+      'weather' => Icons.wb_cloudy_rounded,
+      'person' || 'device_tracker' => entity.state == 'home' ? Icons.person_rounded : Icons.person_outline_rounded,
       'binary_sensor' => entity.isOn ? Icons.sensors_rounded : Icons.sensors_off_rounded,
       _ => Icons.sensors_rounded,
     };
@@ -60,11 +87,21 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
   void initState() {
     super.initState();
     _refresh();
+    final ha = context.read<HomeAssistantService>();
     _poll = Timer.periodic(const Duration(seconds: 4), (_) => _refresh());
-    _cameras = Timer.periodic(const Duration(seconds: 3), (_) {
+    _cameras = Timer.periodic(Duration(seconds: ha.cameraRefreshSeconds), (_) {
       if (mounted) setState(() => _snapshot++);
     });
+    if (ha.holdHomeOpensDashboard && ha.isConfigured && ha.dashboardPath != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openDashboard(ha);
+      });
+    }
   }
+
+  void _openDashboard(HomeAssistantService ha) => Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => HomeAssistantDashboard(ha: ha, path: ha.dashboardPath!),
+      ));
 
   @override
   void dispose() {
@@ -95,6 +132,13 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
     }
   }
 
+  Future<void> _dim(HaEntity entity, int step) async {
+    final ok = await context
+        .read<HomeAssistantService>()
+        .callService('light', 'turn_on', entity.entityId, {'brightness_step_pct': step});
+    if (ok) await _refresh();
+  }
+
   void _showCamera(HaEntity entity) => showDialog(
         context: context,
         builder: (_) => ChangeNotifierProvider.value(
@@ -115,7 +159,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: Text('Connect your Home Assistant server in the launcher settings.', style: body),
       ));
-    } else if (ha.panelEntities.isEmpty) {
+    } else if (ha.panelEntities.isEmpty && ha.dashboardPath == null) {
       children.add(Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: Text('No controls chosen yet. Pick them under Home Assistant > Panel controls.', style: body),
@@ -123,6 +167,17 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
     } else if (!_loaded) {
       children.add(const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator())));
     } else {
+      if (ha.dashboardPath != null) {
+        children.add(_EntityKey(
+          child: FocusableSettingsTile(
+            autofocus: true,
+            leading: const Icon(Icons.space_dashboard_rounded),
+            title: Text('Open dashboard', style: body),
+            showChevron: true,
+            onPressed: () => _openDashboard(ha),
+          ),
+        ));
+      }
       if (_failed) {
         children.add(Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -138,6 +193,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
             child: _CameraTile(
               autofocus: autofocus,
               entity: entity,
+              name: ha.nameOf(entity),
               image: ha.cameraSnapshotUri(entity.entityId, _snapshot),
               headers: ha.authHeaders,
               onPressed: () => _activate(entity),
@@ -147,13 +203,17 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
         }
         final actionable = HomeAssistantService.primaryAction(entity) != null;
         children.add(_EntityKey(
-          child: FocusableSettingsTile(
+          child: _Dimmable(
+            enabled: entity.dimmable && !entity.unavailable,
+            onStep: (step) => _dim(entity, step),
+            child: FocusableSettingsTile(
             autofocus: autofocus,
             leading: Icon(haEntityIcon(entity),
                 color: entity.isOn ? Theme.of(context).colorScheme.primary : null),
-            title: Text(entity.name, style: body, overflow: TextOverflow.ellipsis),
+            title: Text(ha.nameOf(entity), style: body, overflow: TextOverflow.ellipsis),
             trailing: Text(entity.unavailable ? 'unavailable' : entity.displayState, style: small),
             onPressed: actionable && !entity.unavailable ? () => _activate(entity) : _refresh,
+          ),
           ),
         ));
       }
@@ -182,6 +242,37 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
   }
 }
 
+/// Left/Right on a dimmable light changes its brightness.
+class _Dimmable extends StatelessWidget {
+  final bool enabled;
+  final ValueChanged<int> onStep;
+  final Widget child;
+
+  const _Dimmable({required this.enabled, required this.onStep, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!enabled) return child;
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onKeyEvent: (_, event) {
+        if (event is KeyUpEvent) return KeyEventResult.ignored;
+        if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          onStep(10);
+          return KeyEventResult.handled;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          onStep(-10);
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: child,
+    );
+  }
+}
+
 /// Marks a row that is an entity, to know which one gets the first focus.
 class _EntityKey extends StatelessWidget {
   final Widget child;
@@ -194,13 +285,14 @@ class _EntityKey extends StatelessWidget {
 
 class _CameraTile extends StatelessWidget {
   final HaEntity entity;
+  final String name;
   final Uri image;
   final Map<String, String> headers;
   final bool autofocus;
   final VoidCallback onPressed;
 
   const _CameraTile(
-      {required this.entity, required this.image, required this.headers, required this.autofocus, required this.onPressed});
+      {required this.entity, required this.name, required this.image, required this.headers, required this.autofocus, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +320,7 @@ class _CameraTile extends StatelessWidget {
                   Positioned(
                     left: 10,
                     bottom: 8,
-                    child: Text(entity.name,
+                    child: Text(name,
                         style: const TextStyle(color: Colors.white, shadows: [Shadow(blurRadius: 6)])),
                   ),
                 ]),

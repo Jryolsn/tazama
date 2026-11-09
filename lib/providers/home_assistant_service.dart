@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -13,11 +14,20 @@ class HomeAssistantService extends ChangeNotifier {
   static const _urlKey = 'home_assistant_url';
   static const _tokenKey = 'home_assistant_token';
   static const _entitiesKey = 'home_assistant_entities';
+  static const _dashboardKey = 'home_assistant_dashboard';
+  static const _aliasesKey = 'home_assistant_aliases';
+  static const _sideKey = 'home_assistant_panel_side';
+  static const _wideKey = 'home_assistant_panel_wide';
+  static const _holdHomeKey = 'home_assistant_hold_home';
+  static const _cameraRefreshKey = 'home_assistant_camera_refresh';
+  static const cameraRefreshChoices = [1, 2, 3, 5, 10, 30];
 
   /// Domains the panel can show or control.
   static const supportedDomains = {
     'light', 'switch', 'fan', 'input_boolean', 'scene', 'script', 'cover', 'lock',
-    'media_player', 'climate', 'sensor', 'binary_sensor', 'camera',
+    'media_player', 'climate', 'sensor', 'binary_sensor', 'camera', 'automation',
+    'button', 'input_button', 'vacuum', 'siren', 'humidifier', 'water_heater', 'weather',
+    'person', 'device_tracker',
   };
 
   final SharedPreferences _prefs;
@@ -50,6 +60,79 @@ class HomeAssistantService extends ChangeNotifier {
     final list = [...panelEntities]..remove(entityId);
     if (shown) list.add(entityId);
     await _prefs.setStringList(_entitiesKey, list);
+    notifyListeners();
+  }
+
+  /// Url path of the dashboard opened from the panel ('lovelace' is the default one), or null for none.
+  String? get dashboardPath => _prefs.getString(_dashboardKey);
+
+  Future<void> setDashboardPath(String? path) async {
+    if (path == null) {
+      await _prefs.remove(_dashboardKey);
+    } else {
+      await _prefs.setString(_dashboardKey, path);
+    }
+    notifyListeners();
+  }
+
+  String? get token => _token;
+
+  Map<String, String> get aliases {
+    try {
+      return (jsonDecode(_prefs.getString(_aliasesKey) ?? '{}') as Map).cast<String, String>();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  /// The user's own name for an entity, or null to use Home Assistant's.
+  Future<void> setAlias(String entityId, String? alias) async {
+    final map = aliases;
+    if (alias == null || alias.trim().isEmpty) {
+      map.remove(entityId);
+    } else {
+      map[entityId] = alias.trim();
+    }
+    await _prefs.setString(_aliasesKey, jsonEncode(map));
+    notifyListeners();
+  }
+
+  String nameOf(HaEntity entity) => aliases[entity.entityId] ?? entity.name;
+
+  Future<void> movePanelEntity(String entityId, int delta) async {
+    final list = [...panelEntities];
+    final from = list.indexOf(entityId);
+    final to = from + delta;
+    if (from < 0 || to < 0 || to >= list.length) return;
+    list
+      ..removeAt(from)
+      ..insert(to, entityId);
+    await _prefs.setStringList(_entitiesKey, list);
+    notifyListeners();
+  }
+
+  bool get panelOnRight => _prefs.getString(_sideKey) != 'left';
+  Future<void> setPanelOnRight(bool right) async {
+    await _prefs.setString(_sideKey, right ? 'right' : 'left');
+    notifyListeners();
+  }
+
+  bool get panelWide => _prefs.getBool(_wideKey) ?? false;
+  Future<void> setPanelWide(bool wide) async {
+    await _prefs.setBool(_wideKey, wide);
+    notifyListeners();
+  }
+
+  /// Holding Home goes straight to the dashboard instead of the controls.
+  bool get holdHomeOpensDashboard => (_prefs.getString(_holdHomeKey) ?? 'panel') == 'dashboard';
+  Future<void> setHoldHomeOpensDashboard(bool value) async {
+    await _prefs.setString(_holdHomeKey, value ? 'dashboard' : 'panel');
+    notifyListeners();
+  }
+
+  int get cameraRefreshSeconds => _prefs.getInt(_cameraRefreshKey) ?? 3;
+  Future<void> setCameraRefreshSeconds(int seconds) async {
+    await _prefs.setInt(_cameraRefreshKey, seconds);
     notifyListeners();
   }
 
@@ -176,12 +259,12 @@ class HomeAssistantService extends ChangeNotifier {
     }
   }
 
-  Future<bool> callService(String domain, String service, String entityId) async {
+  Future<bool> callService(String domain, String service, String entityId, [Map<String, dynamic>? data]) async {
     if (!isConfigured) return false;
     try {
       final response = await http
           .post(Uri.parse('$url/api/services/$domain/$service'),
-              headers: _headers, body: jsonEncode({'entity_id': entityId}))
+              headers: _headers, body: jsonEncode({'entity_id': entityId, ...?data}))
           .timeout(const Duration(seconds: 8));
       return response.statusCode == 200;
     } catch (_) {
@@ -191,7 +274,10 @@ class HomeAssistantService extends ChangeNotifier {
 
   /// The main action for OK on an entity, or null when it can only be shown.
   static (String domain, String service)? primaryAction(HaEntity entity) => switch (entity.domain) {
-        'light' || 'switch' || 'fan' || 'input_boolean' => (entity.domain, 'toggle'),
+        'light' || 'switch' || 'fan' || 'input_boolean' || 'automation' || 'siren' || 'humidifier' =>
+          (entity.domain, 'toggle'),
+        'button' || 'input_button' => (entity.domain, 'press'),
+        'vacuum' => ('vacuum', entity.state == 'cleaning' ? 'return_to_base' : 'start'),
         'scene' => ('scene', 'turn_on'),
         'script' => ('script', 'turn_on'),
         'cover' => ('cover', 'toggle'),
@@ -204,6 +290,34 @@ class HomeAssistantService extends ChangeNotifier {
     final action = primaryAction(entity);
     if (action == null) return false;
     return callService(action.$1, action.$2, entity.entityId);
+  }
+
+  /// Dashboards from the websocket API (the REST API has no list), as url path -> title.
+  Future<Map<String, String>?> fetchDashboards() async {
+    if (!isConfigured) return null;
+    WebSocket? socket;
+    try {
+      final wsUrl = url!.replaceFirst(RegExp('^http'), 'ws');
+      socket = await WebSocket.connect('$wsUrl/api/websocket').timeout(const Duration(seconds: 8));
+      final messages = socket.map((m) => jsonDecode(m as String) as Map<String, dynamic>).asBroadcastStream();
+      await messages.firstWhere((m) => m['type'] == 'auth_required').timeout(const Duration(seconds: 8));
+      socket.add(jsonEncode({'type': 'auth', 'access_token': _token}));
+      final auth = await messages.firstWhere((m) => m['type'] != 'auth_required').timeout(const Duration(seconds: 8));
+      if (auth['type'] != 'auth_ok') return null;
+      socket.add(jsonEncode({'id': 1, 'type': 'lovelace/dashboards/list'}));
+      final reply = await messages.firstWhere((m) => m['id'] == 1).timeout(const Duration(seconds: 8));
+      final result = <String, String>{'lovelace': 'Overview'};
+      for (final d in (reply['result'] as List? ?? const [])) {
+        final map = d as Map<String, dynamic>;
+        final path = map['url_path'] as String?;
+        if (path != null) result[path] = map['title'] as String? ?? path;
+      }
+      return result;
+    } catch (_) {
+      return null;
+    } finally {
+      await socket?.close();
+    }
   }
 
   /// A fresh snapshot of a camera; [bust] makes the URL unique so the image is not cached.
@@ -228,14 +342,31 @@ class HaEntity {
   String get domain => entityId.split('.').first;
   String get name => attributes['friendly_name'] as String? ?? entityId;
   bool get isOn => const {'on', 'open', 'playing', 'unlocked', 'home'}.contains(state);
+  /// Light brightness in percent, or null when off or not dimmable.
+  int? get brightnessPercent {
+    final b = attributes['brightness'];
+    return b is num ? (b * 100 / 255).round() : null;
+  }
+
+  bool get dimmable {
+    final modes = attributes['supported_color_modes'];
+    return domain == 'light' && modes is List && modes.any((m) => m != 'onoff');
+  }
+
   bool get unavailable => state == 'unavailable' || state == 'unknown';
 
   String get displayState {
     final unit = attributes['unit_of_measurement'];
-    if (domain == 'climate') {
+    if (domain == 'climate' || domain == 'water_heater') {
       final current = attributes['current_temperature'];
       return current == null ? state : '$current° · $state';
     }
+    if (domain == 'weather') {
+      final t = attributes['temperature'];
+      return t == null ? state : '$t° · $state';
+    }
+    if (domain == 'button' || domain == 'input_button') return 'press';
+    if (domain == 'light' && isOn && brightnessPercent != null) return '$brightnessPercent%';
     return unit == null ? state : '$state $unit';
   }
 }

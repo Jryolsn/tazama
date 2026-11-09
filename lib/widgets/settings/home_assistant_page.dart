@@ -1,5 +1,8 @@
 import 'package:flauncher/providers/home_assistant_service.dart';
+import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
+import 'package:flauncher/widgets/settings/home_assistant_arrange_page.dart';
+import 'package:flauncher/widgets/settings/home_assistant_dashboard_page.dart';
 import 'package:flauncher/widgets/settings/home_assistant_entities_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +87,55 @@ class HomeAssistantPage extends StatelessWidget {
                   showChevron: true,
                   onPressed: () => Navigator.of(context).pushNamed(HomeAssistantEntitiesPage.routeName),
                 ),
+              if (ha.state == HaConnectionState.connected)
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.space_dashboard_rounded),
+                  title: Text('Dashboard', style: body),
+                  subtitle: Text(ha.dashboardPath ?? 'None · show one of your own dashboards from the panel',
+                      style: small),
+                  showChevron: true,
+                  onPressed: () => Navigator.of(context).pushNamed(HomeAssistantDashboardPage.routeName),
+                ),
+              if (ha.state == HaConnectionState.connected) ...[
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.reorder_rounded),
+                  title: Text('Arrange controls', style: body),
+                  subtitle: Text('Order, names and removal', style: small),
+                  showChevron: true,
+                  onPressed: () => Navigator.of(context).pushNamed(HomeAssistantArrangePage.routeName),
+                ),
+                const SettingsGroupLabel('Panel'),
+                FocusableSettingsTile(
+                  leading: Icon(ha.panelOnRight ? Icons.align_horizontal_right_rounded : Icons.align_horizontal_left_rounded),
+                  title: Text('Side: ${ha.panelOnRight ? 'Right' : 'Left'}', style: body),
+                  onPressed: () => ha.setPanelOnRight(!ha.panelOnRight),
+                ),
+                RoundedSwitchListTile(
+                  value: ha.panelWide,
+                  onChanged: ha.setPanelWide,
+                  title: Text('Wide panel', style: body),
+                  subtitle: Text('More room for cameras', style: small),
+                  secondary: const Icon(Icons.width_wide_rounded),
+                ),
+                if (ha.dashboardPath != null)
+                  RoundedSwitchListTile(
+                    value: ha.holdHomeOpensDashboard,
+                    onChanged: ha.setHoldHomeOpensDashboard,
+                    title: Text('Hold Home opens the dashboard', style: body),
+                    subtitle: Text('Back returns to the controls', style: small),
+                    secondary: const Icon(Icons.space_dashboard_rounded),
+                  ),
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.videocam_rounded),
+                  title: Text('Camera refresh: every ${ha.cameraRefreshSeconds} s', style: body),
+                  onPressed: () {
+                    const choices = HomeAssistantService.cameraRefreshChoices;
+                    final i = choices.indexOf(ha.cameraRefreshSeconds);
+                    ha.setCameraRefreshSeconds(choices[(i + 1) % choices.length]);
+                  },
+                ),
+                const SettingsGroupLabel('Server'),
+              ],
               if (ha.url != null || ha.hasToken)
                 FocusableSettingsTile(
                   leading: const Icon(Icons.link_off_rounded),

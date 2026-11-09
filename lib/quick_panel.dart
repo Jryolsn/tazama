@@ -237,30 +237,33 @@ class _QuickPanel extends StatelessWidget {
   }
 }
 
-/// The Home Assistant panel, on the right so it is easy to tell from quick settings.
+/// The Home Assistant panel; by default on the right so it is easy to tell from quick settings.
 class _HomeAssistantSheet extends StatelessWidget {
   const _HomeAssistantSheet({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    final ha = context.watch<HomeAssistantService>();
+    final right = ha.panelOnRight;
+    return Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
             GestureDetector(
               onTap: _close,
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                    colors: [Color(0x66000000), Color(0x00000000)],
+                    begin: right ? Alignment.centerRight : Alignment.centerLeft,
+                    end: right ? Alignment.centerLeft : Alignment.centerRight,
+                    colors: const [Color(0x66000000), Color(0x00000000)],
                   ),
                 ),
               ),
             ),
             SidePanelDialog(
-              width: SettingsStyle.panelWidth,
-              isRightSide: true,
+              width: SettingsStyle.panelWidth * (ha.panelWide ? 1.6 : 1),
+              isRightSide: right,
               child: Actions(
                 actions: {BackIntent: CallbackAction<BackIntent>(onInvoke: (_) => _close())},
                 child: HomeAssistantPanel(
@@ -271,6 +274,7 @@ class _HomeAssistantSheet extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 /// The app the panel was opened over: always in view above the list.
