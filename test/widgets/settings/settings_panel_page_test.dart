@@ -80,6 +80,8 @@ void main() {
 
     await _pumpWidgetWithProviders(tester, settingsService, appsService);
 
+    await tester.ensureVisible(find.text("System"));
+    await tester.pumpAndSettle();
     await tester.tap(find.text("System"));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key("GeneralSettingsPage")), findsOneWidget);

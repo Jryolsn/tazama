@@ -75,6 +75,10 @@ const String WIFI_USAGE_WEEKLY = "weekly";
 const String WIFI_USAGE_MONTHLY = "monthly";
 
 // Accent color presets (hex values)
+const String HOME_LAYOUT_ROWS = "rows";
+const String HOME_LAYOUT_ORBIT = "orbit";
+const String HOME_LAYOUT_AURORA = "aurora";
+
 const String ACCENT_COLOR_LAVENDER = "B49CFF";
 const String ACCENT_COLOR_PURPLE = "7C4DFF";
 const String ACCENT_COLOR_TEAL = "00BFA5";
@@ -216,6 +220,14 @@ class SettingsService extends ChangeNotifier {
 
   Future<void> setShowAppNamesBelowIcons(bool show) async {
     return set(_showAppNamesBelowIcons, show);
+  }
+
+  /// Home screen layout: "rows" (default dock + rows), "orbit" or "aurora".
+  String get homeLayout => _sharedPreferences.getString("home_layout") ?? HOME_LAYOUT_ROWS;
+
+  Future<void> setHomeLayout(String layout) async {
+    await _sharedPreferences.setString("home_layout", layout);
+    notifyListeners();
   }
 
   // Per-category overrides; fall back to the global switches when unset.

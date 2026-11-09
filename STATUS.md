@@ -14,8 +14,8 @@ _Last updated: 2026-11-09_
 - Settings redesign (same PR): floating panel, pill rows, rounded icons, groups Home screen /
   Appearance / TV and system, Quick panel page removed (feature kept). Categories get size S-XL,
   live preview, per-category title and app-name switches; "Edit <category>" in the app menu.
-- Home layout setting with a small preview per option: Rows (today), Orbit (centered dock),
-  Aurora (side panel + pill grid).
+- Home layout setting (Settings > Home layout) with thumbnails: Rows (default), Orbit (big centered
+  clock, floating cards), Aurora (clock column left, sections right).
 - Watch next: sharper images and more card sizes.
 - Migration on the test TV, then the main TV.
 - Point Obtainium at Jryolsn/tazama.

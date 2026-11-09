@@ -40,6 +40,7 @@ import 'package:flauncher/widgets/settings/focus_border_thickness_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_max_items_page.dart';
+import 'package:flauncher/widgets/settings/home_layout_page.dart';
 import 'package:flauncher/widgets/settings/screen_sleep_page.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
@@ -99,6 +100,8 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => SettingsPanelPage());
                     case GeneralSettingsPage.routeName:
                       return _FastPageRoute(builder: (_) => GeneralSettingsPage());
+                    case HomeLayoutPage.routeName:
+                      return _FastPageRoute(builder: (_) => const HomeLayoutPage());
                     case ScreenSleepPage.routeName:
                       return _FastPageRoute(builder: (_) => const ScreenSleepPage());
                     case LockProtectionPage.routeName:

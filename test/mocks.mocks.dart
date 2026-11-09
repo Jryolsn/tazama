@@ -1908,6 +1908,19 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as _i4.Color);
 
   @override
+  String get homeLayout => (super.noSuchMethod(
+        Invocation.getter(#homeLayout),
+        returnValue: _i19.dummyValue<String>(
+          this,
+          Invocation.getter(#homeLayout),
+        ),
+        returnValueForMissingStub: _i19.dummyValue<String>(
+          this,
+          Invocation.getter(#homeLayout),
+        ),
+      ) as String);
+
+  @override
   int get categoryUiRevision => (super.noSuchMethod(
         Invocation.getter(#categoryUiRevision),
         returnValue: 0,
@@ -2157,6 +2170,16 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
         Invocation.method(
           #setShowAppNamesBelowIcons,
           [show],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setHomeLayout(String? layout) => (super.noSuchMethod(
+        Invocation.method(
+          #setHomeLayout,
+          [layout],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),

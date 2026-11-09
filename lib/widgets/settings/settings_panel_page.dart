@@ -20,6 +20,7 @@ import 'package:flauncher/providers/update_service.dart';
 import 'package:flauncher/build_flags.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
+import 'package:flauncher/widgets/settings/home_layout_page.dart';
 import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
@@ -62,8 +63,10 @@ class SettingsPanelPage extends StatelessWidget {
             child: Column(
               children: [
                 const SettingsGroupLabel('Home screen'),
+                _link(context, Icons.dashboard_rounded, 'Home layout', HomeLayoutPage.routeName,
+                    subtitle: 'Rows, Orbit or Aurora', autofocus: true),
                 _link(context, Icons.view_agenda_rounded, 'Categories', LauncherSectionsPanelPage.routeName,
-                    subtitle: 'Order, size and layout', autofocus: true),
+                    subtitle: 'Order, size and layout'),
                 _link(context, Icons.play_circle_rounded, localizations.watchNextSectionTitle, WatchNextPanelPage.routeName),
                 _link(context, Icons.apps_rounded, localizations.applications, ApplicationsPanelPage.routeName,
                     subtitle: 'Favorites and hidden apps'),

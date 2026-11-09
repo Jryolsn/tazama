@@ -166,9 +166,10 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
                     bool showTimeInStatusBar,
                     String dateFormat,
                     String timeFormat })>(
+                // Orbit and Aurora show their own big clock.
                 selector: (context, service) => (
-                showDateInStatusBar: service.showDateInStatusBar,
-                showTimeInStatusBar: service.showTimeInStatusBar,
+                showDateInStatusBar: service.showDateInStatusBar && service.homeLayout == HOME_LAYOUT_ROWS,
+                showTimeInStatusBar: service.showTimeInStatusBar && service.homeLayout == HOME_LAYOUT_ROWS,
                 dateFormat: service.dateFormat,
                 timeFormat: service.timeFormat),
                 builder: (context, dateTimeSettings, _) {
