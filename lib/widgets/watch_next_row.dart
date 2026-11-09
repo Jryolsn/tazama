@@ -24,6 +24,7 @@ import 'package:flauncher/widgets/app_card.dart';
 import 'package:flauncher/widgets/app_card_contour_painter.dart';
 import 'package:flauncher/widgets/watch_next_hero.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
+import 'package:flauncher/widgets/category_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
@@ -137,7 +138,7 @@ class _WatchNextSectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 40, bottom: 8, top: 8),
+      padding: const EdgeInsets.only(left: 48, bottom: 8, top: 8),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -331,7 +332,10 @@ class _WatchNextCleanRowState extends State<_WatchNextCleanRow> {
     context.select<SettingsService, double>((s) => s.watchNextCardScale);
     return SizedBox(
       height: _itemHeight(context) + 24 + _kWatchNextRowVerticalSlack,
-      child: ListView.builder(
+      child: ClipRect(
+        clipper: const HorizontalClipper(),
+        child: ListView.builder(
+        clipBehavior: Clip.none,
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: _kWatchNextHorizontalPadding, vertical: 12),
@@ -350,6 +354,7 @@ class _WatchNextCleanRowState extends State<_WatchNextCleanRow> {
             handleUpNavigationToSettings: widget.handleUpNavigationToSettings,
           );
         },
+      ),
       ),
     );
   }

@@ -225,7 +225,7 @@ class SettingsService extends ChangeNotifier {
   /// Watch Next card size: "s", "m" (default) or "l".
   String get watchNextCardSize => _sharedPreferences.getString("watch_next_card_size") ?? "m";
 
-  double get watchNextCardScale => const {"s": 0.75, "m": 1.0, "l": 1.25}[watchNextCardSize] ?? 1.0;
+  double get watchNextCardScale => const {"s": 0.6, "m": 0.78, "l": 1.0}[watchNextCardSize] ?? 1.0;
 
   Future<void> setWatchNextCardSize(String size) async {
     await _sharedPreferences.setString("watch_next_card_size", size);

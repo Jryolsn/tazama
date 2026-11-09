@@ -27,8 +27,7 @@ import '../models/category.dart';
 import '../providers/settings_service.dart';
 import 'package:flauncher/nebula_theme.dart';
 
-class CategoryRow extends StatelessWidget
-{
+class CategoryRow extends StatelessWidget {
   final Category category;
   final List<App> applications;
 
@@ -36,14 +35,7 @@ class CategoryRow extends StatelessWidget
   final bool showTitle;
   final VoidCallback? onAppFocused;
 
-  CategoryRow({
-    Key? key,
-    required this.category,
-    required this.applications,
-    this.isFirstSection = false,
-    this.showTitle = true,
-    this.onAppFocused,
-  }) : super(key: key);
+  CategoryRow({Key? key, required this.category, required this.applications, this.isFirstSection = false, this.showTitle = true, this.onAppFocused}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,17 +43,20 @@ class CategoryRow extends StatelessWidget
     Widget categoryContent;
     if (applications.isEmpty) {
       categoryContent = categoryContainerEmptyState(context);
-    }
-    else {
+    } else {
       categoryContent = SizedBox(
         height: category.rowHeight.toDouble() + (showAppNames ? kAppNameLabelHeight : 0),
-        child: ListView.custom(
-          padding: const EdgeInsets.all(8),
-          scrollDirection: Axis.horizontal,
-          childrenDelegate: SliverChildBuilderDelegate(
-            childCount: applications.length,
-            findChildIndexCallback: _findChildIndex,
-            (context, index) => Padding(
+        // Clip only sideways so the focus scale and glow are not cut at the top and bottom.
+        child: ClipRect(
+          clipper: const HorizontalClipper(),
+          child: ListView.custom(
+            clipBehavior: Clip.none,
+            padding: const EdgeInsets.symmetric(horizontal: kLauncherSectionHorizontalPadding + 4, vertical: 8),
+            scrollDirection: Axis.horizontal,
+            childrenDelegate: SliverChildBuilderDelegate(
+              childCount: applications.length,
+              findChildIndexCallback: _findChildIndex,
+              (context, index) => Padding(
                 key: Key(applications[index].packageName),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: AppCard(
@@ -71,11 +66,12 @@ class CategoryRow extends StatelessWidget
                   handleUpNavigationToSettings: isFirstSection,
                   onFocused: onAppFocused,
                   onMove: (direction) => _onMove(context, direction, index),
-                  onMoveEnd: () => _onMoveEnd(context)
-                )
-            )
-          )
-        )
+                  onMoveEnd: () => _onMoveEnd(context),
+                ),
+              ),
+            ),
+          ),
+        ),
       );
     }
 
@@ -90,25 +86,22 @@ class CategoryRow extends StatelessWidget
             if (showCategoriesTitle) {
               return Padding(
                 padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text(category.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Nebula.textMuted, shadows: Nebula.textShadow)
+                child: Text(
+                  category.name,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Nebula.textMuted, shadows: Nebula.textShadow),
                 ),
               );
             }
 
             return SizedBox.shrink();
-          }
+          },
         ),
-        categoryContent
+        categoryContent,
       ],
     );
   }
 
-  int _findChildIndex(Key key) =>
-      applications.indexWhere((app) => app.packageName == (key as ValueKey<String>).value);
+  int _findChildIndex(Key key) => applications.indexWhere((app) => app.packageName == (key as ValueKey<String>).value);
 
   void _onMove(BuildContext context, AxisDirection direction, int index) {
     int newIndex = 0;
@@ -137,4 +130,15 @@ class CategoryRow extends StatelessWidget
     final appsService = context.read<AppsService>();
     appsService.saveApplicationOrderInCategory(category);
   }
+}
+
+/// Clips sideways only, leaving room above and below for focus scale and glow.
+class HorizontalClipper extends CustomClipper<Rect> {
+  const HorizontalClipper();
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTRB(0, -48, size.width, size.height + 48);
+
+  @override
+  bool shouldReclip(HorizontalClipper oldClipper) => false;
 }
