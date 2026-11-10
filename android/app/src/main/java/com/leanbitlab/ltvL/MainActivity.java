@@ -83,6 +83,8 @@ public class MainActivity extends FlutterActivity {
     private static final int REQUEST_PIN = 2001;
     /** Set by the quick panel's "All launcher settings": Arc opens its settings when it shows. */
     static volatile boolean openSettingsOnResume;
+    /** Which settings to open on resume: "settings" or "home_assistant". */
+    static volatile String openSettingsTarget;
     private MethodChannel.Result pendingPinResult;
 
     @Override
@@ -165,8 +167,10 @@ public class MainActivity extends FlutterActivity {
                     result.success(true);
                 }
                 case "consumeOpenSettings" -> {
-                    result.success(openSettingsOnResume);
+                    String target = openSettingsOnResume ? (openSettingsTarget == null ? "settings" : openSettingsTarget) : null;
+                    result.success(target);
                     openSettingsOnResume = false;
+                    openSettingsTarget = null;
                 }
                 case "appLockHasPin" -> result.success(AppLockStore.hasPin(this));
                 case "appLockGetType" -> result.success(AppLockStore.lockType(this));

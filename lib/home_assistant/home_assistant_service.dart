@@ -305,8 +305,8 @@ class HomeAssistantService extends ChangeNotifier {
     return callService(action.$1, action.$2, entity.entityId);
   }
 
-  /// Dashboards from the websocket API (the REST API has no list), as url path -> title.
-  Future<Map<String, String>?> fetchDashboards() async {
+  /// Runs websocket commands in order and returns their results (null on any failure).
+  Future<List<dynamic>?> _websocket(List<Map<String, dynamic>> commands) async {
     if (!isConfigured) return null;
     WebSocket? socket;
     try {
@@ -317,20 +317,60 @@ class HomeAssistantService extends ChangeNotifier {
       socket.add(jsonEncode({'type': 'auth', 'access_token': _token}));
       final auth = await messages.firstWhere((m) => m['type'] != 'auth_required').timeout(const Duration(seconds: 8));
       if (auth['type'] != 'auth_ok') return null;
-      socket.add(jsonEncode({'id': 1, 'type': 'lovelace/dashboards/list'}));
-      final reply = await messages.firstWhere((m) => m['id'] == 1).timeout(const Duration(seconds: 8));
-      final result = <String, String>{'lovelace': 'Overview'};
-      for (final d in (reply['result'] as List? ?? const [])) {
-        final map = d as Map<String, dynamic>;
-        final path = map['url_path'] as String?;
-        if (path != null) result[path] = map['title'] as String? ?? path;
+      final results = <dynamic>[];
+      for (final (i, command) in commands.indexed) {
+        socket.add(jsonEncode({'id': i + 1, ...command}));
+        final reply = await messages.firstWhere((m) => m['id'] == i + 1).timeout(const Duration(seconds: 10));
+        if (reply['success'] != true) return null;
+        results.add(reply['result']);
       }
-      return result;
+      return results;
     } catch (_) {
       return null;
     } finally {
       await socket?.close();
     }
+  }
+
+  /// Dashboards from the websocket API (the REST API has no list), as url path -> title.
+  Future<Map<String, String>?> fetchDashboards() async {
+    final results = await _websocket([
+      {'type': 'lovelace/dashboards/list'}
+    ]);
+    if (results == null) return null;
+    final dashboards = <String, String>{'lovelace': 'Overview'};
+    for (final d in (results[0] as List? ?? const [])) {
+      final map = d as Map<String, dynamic>;
+      final path = map['url_path'] as String?;
+      if (path != null) dashboards[path] = map['title'] as String? ?? path;
+    }
+    return dashboards;
+  }
+
+  /// Areas and entity metadata, used to group and filter entities.
+  Future<HaRegistry?> fetchRegistry() async {
+    final results = await _websocket([
+      {'type': 'config/area_registry/list'},
+      {'type': 'config/device_registry/list'},
+      {'type': 'config/entity_registry/list'},
+    ]);
+    if (results == null) return null;
+    final areas = <String, String>{
+      for (final a in results[0] as List) (a as Map)['area_id'] as String: a['name'] as String? ?? a['area_id'] as String,
+    };
+    final deviceArea = <String, String?>{
+      for (final d in results[1] as List) (d as Map)['id'] as String: d['area_id'] as String?,
+    };
+    final entityArea = <String, String>{};
+    final hidden = <String>{};
+    for (final e in results[2] as List) {
+      final map = e as Map;
+      final id = map['entity_id'] as String;
+      final area = map['area_id'] as String? ?? deviceArea[map['device_id']];
+      if (area != null) entityArea[id] = area;
+      if (map['entity_category'] != null || map['hidden_by'] != null || map['disabled_by'] != null) hidden.add(id);
+    }
+    return HaRegistry(areas, entityArea, hidden);
   }
 
   /// A fresh snapshot of a camera; [bust] makes the URL unique so the image is not cached.
@@ -382,4 +422,19 @@ class HaEntity {
     if (domain == 'light' && isOn && brightnessPercent != null) return '$brightnessPercent%';
     return unit == null ? state : '$state $unit';
   }
+}
+
+class HaRegistry {
+  /// area id -> name
+  final Map<String, String> areas;
+
+  /// entity id -> area id (own area, or its device's)
+  final Map<String, String> entityArea;
+
+  /// Diagnostic, config, hidden and disabled entities.
+  final Set<String> hidden;
+
+  HaRegistry(this.areas, this.entityArea, this.hidden);
+
+  String? areaNameOf(String entityId) => areas[entityArea[entityId]];
 }

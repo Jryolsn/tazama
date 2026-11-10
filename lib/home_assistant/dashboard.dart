@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flauncher/providers/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 

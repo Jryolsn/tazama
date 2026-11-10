@@ -19,7 +19,10 @@ _Last updated: 2026-11-09_
 - Home layout setting (Settings > Home layout) with thumbnails: Rows (default), Orbit (big centered
   clock, floating cards), Aurora (clock column left, sections right).
 - Watch next: sharper images and more card sizes.
-- Home Assistant: Settings > Smart home > Home Assistant (URL + long-lived token in encrypted storage).
+- Home Assistant module (lib/home_assistant/): full-screen settings (Connection, Controls grouped by
+  area with search/type filter, Arrange, Dashboard, Panel), opened from Settings or the HA panel.
+  Plan for next phases: /mnt project file tazama/home-assistant-plan.md (PR B camera+media, PR C notices).
+- Home Assistant: URL + long-lived token in encrypted storage.
   Hold Home = HA panel over any app (chosen entities: toggle, scenes, sensors, camera snapshots,
   Left/Right dims lights, optional own dashboard in a WebView signed in with the token).
   Hold Back = quick panel (short Back unchanged). Customizable: order, names, side, width,

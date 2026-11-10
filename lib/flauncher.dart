@@ -44,6 +44,7 @@ import 'package:flauncher/widgets/launcher_alternative_view.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
 import 'package:flauncher/widgets/wallpaper_video_background.dart';
 import 'package:flauncher/widgets/watch_next_row.dart';
+import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
@@ -82,8 +83,11 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
   /// The quick panel (hold Back / YouTube button) can ask Arc to open its settings.
   Future<void> _openSettingsIfAsked() async {
     try {
-      final open = await const MethodChannel('me.efesser.flauncher/method').invokeMethod<bool>('consumeOpenSettings');
-      if (open == true && mounted) {
+      final target = await const MethodChannel('me.efesser.flauncher/method').invokeMethod<Object?>('consumeOpenSettings');
+      if (!mounted) return;
+      if (target == 'home_assistant') {
+        openHomeAssistantSettings(context);
+      } else if (target == 'settings' || target == true) {
         showDialog(context: context, builder: (_) => const SettingsPanel());
       }
     } catch (_) {

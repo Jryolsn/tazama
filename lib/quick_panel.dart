@@ -15,10 +15,10 @@ import 'package:flauncher/actions.dart';
 import 'package:flauncher/flauncher_app.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/brightness_service.dart';
-import 'package:flauncher/providers/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/vpn_guard_service.dart';
-import 'package:flauncher/widgets/home_assistant_panel.dart';
+import 'package:flauncher/home_assistant/panel.dart';
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/brightness_settings_page.dart';
@@ -267,7 +267,7 @@ class _HomeAssistantSheet extends StatelessWidget {
               child: Actions(
                 actions: {BackIntent: CallbackAction<BackIntent>(onInvoke: (_) => _close())},
                 child: HomeAssistantPanel(
-                  onOpenSettings: () => _panelChannel.invokeMethod('openLauncherSettings'),
+                  onOpenSettings: () => _panelChannel.invokeMethod('openHomeAssistantSettings'),
                 ),
               ),
             ),
