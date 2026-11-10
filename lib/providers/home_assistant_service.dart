@@ -155,14 +155,17 @@ class HomeAssistantService extends ChangeNotifier {
     }
   }
 
-  /// Accepts "192.168.1.10:8123", "homeassistant.local" or a full URL.
+  /// Accepts "192.168.1.10:8123", "homeassistant.local" or a full URL. A bare host without
+  /// scheme or port gets HA's default port 8123; "http://host" keeps port 80.
   static String normalizeUrl(String input) {
     var value = input.trim();
     if (value.isEmpty) return value;
-    if (!value.contains('://')) value = 'http://$value';
+    final bare = !value.contains('://');
+    if (bare) value = 'http://$value';
+    final explicitPort = RegExp(r'^[a-zA-Z]+://[^/]*:\d+').hasMatch(value);
     final uri = Uri.parse(value);
-    final withPort = uri.hasPort || uri.scheme == 'https' ? uri : uri.replace(port: 8123);
-    return withPort.toString().replaceAll(RegExp(r'/+$'), '');
+    final result = bare && !explicitPort ? uri.replace(port: 8123) : uri;
+    return result.toString().replaceAll(RegExp(r'/+$'), '');
   }
 
   Future<void> setUrl(String input) async {
@@ -173,6 +176,16 @@ class HomeAssistantService extends ChangeNotifier {
       await _prefs.setString(_urlKey, value);
     }
     await _afterChange();
+    // A bare host that doesn't answer on 8123 may run on port 80 (e.g. behind a proxy).
+    final trimmed = input.trim();
+    if (_state == HaConnectionState.unreachable && !trimmed.contains('://') && !trimmed.contains(':')) {
+      await _prefs.setString(_urlKey, 'http://$trimmed'.replaceAll(RegExp(r'/+$'), ''));
+      await _afterChange();
+      if (_state == HaConnectionState.unreachable) {
+        await _prefs.setString(_urlKey, value);
+        await _afterChange();
+      }
+    }
   }
 
   Future<void> setToken(String input) async {

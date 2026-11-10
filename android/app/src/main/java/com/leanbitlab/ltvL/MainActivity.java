@@ -214,6 +214,8 @@ public class MainActivity extends FlutterActivity {
                 case "vpnOpenSystemSettings" -> result.success(tryStartActivity(new Intent(Settings.ACTION_VPN_SETTINGS)));
                 case "setDimLevel" -> result.success(DimOverlayService.apply(this, call.<Integer>argument("darkness")));
                 case "canDrawOverlays" -> result.success(Settings.canDrawOverlays(this));
+                case "promptText" -> TextPrompt.show(this, call.argument("title"), call.argument("message"),
+                        call.argument("initial"), Boolean.TRUE.equals(call.argument("secret")), call.argument("kind"), result);
                 case "requestOverlayPermission" -> {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
                     result.success(tryStartActivity(intent));

@@ -24,6 +24,7 @@ import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/reddit_subreddits_panel_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/tv_text_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -188,21 +189,5 @@ class RedditWallpaperPanelPage extends StatelessWidget {
   }
 
   Future<String?> _askText(BuildContext context, String title, String initialValue, {String? help}) =>
-      showDialog<String>(
-        context: context,
-        builder: (context) => SimpleDialog(
-          insetPadding: const EdgeInsets.only(bottom: 120),
-          contentPadding: const EdgeInsets.all(24),
-          title: Text(title),
-          children: [
-            if (help != null) Padding(padding: const EdgeInsets.only(bottom: 16), child: Text(help)),
-            TextFormField(
-              autofocus: true,
-              initialValue: initialValue,
-              keyboardType: TextInputType.text,
-              onFieldSubmitted: (value) => Navigator.of(context).pop(value),
-            ),
-          ],
-        ),
-      );
+      askTvText(context, title: title, help: help, initial: initialValue);
 }

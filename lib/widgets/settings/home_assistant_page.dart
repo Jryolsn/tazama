@@ -5,6 +5,7 @@ import 'package:flauncher/widgets/settings/home_assistant_arrange_page.dart';
 import 'package:flauncher/widgets/settings/home_assistant_dashboard_page.dart';
 import 'package:flauncher/widgets/settings/home_assistant_entities_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/tv_text_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -54,7 +55,7 @@ class HomeAssistantPage extends StatelessWidget {
                 subtitle: Text(ha.url ?? 'e.g. 192.168.1.10:8123', style: small),
                 onPressed: () async {
                   final value = await _askText(context, 'Server address', ha.url ?? '',
-                      help: 'IP or host name of Home Assistant. Port 8123 is added if none is given.');
+                      help: 'IP or host name, e.g. 192.168.1.10 or homeassistant.local. Port 8123 is tried first, then 80.');
                   if (value != null) await ha.setUrl(value);
                 },
               ),
@@ -152,24 +153,6 @@ class HomeAssistantPage extends StatelessWidget {
 
   Future<String?> _askText(BuildContext context, String title, String initialValue,
           {String? help, bool obscure = false}) =>
-      showDialog<String>(
-        context: context,
-        builder: (context) => SimpleDialog(
-          insetPadding: const EdgeInsets.only(bottom: 120),
-          contentPadding: const EdgeInsets.all(24),
-          title: Text(title),
-          children: [
-            if (help != null) Padding(padding: const EdgeInsets.only(bottom: 16), child: Text(help)),
-            TextFormField(
-              autofocus: true,
-              initialValue: initialValue,
-              obscureText: obscure,
-              autocorrect: false,
-              enableSuggestions: false,
-              keyboardType: obscure ? TextInputType.visiblePassword : TextInputType.url,
-              onFieldSubmitted: (value) => Navigator.of(context).pop(value),
-            ),
-          ],
-        ),
-      );
+      askTvText(context,
+          title: title, help: help, initial: initialValue, secret: obscure, kind: obscure ? TvTextKind.text : TvTextKind.url);
 }
