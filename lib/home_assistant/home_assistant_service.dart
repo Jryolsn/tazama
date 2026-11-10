@@ -378,6 +378,7 @@ class HomeAssistantService extends ChangeNotifier {
     }
     final entityArea = <String, String>{};
     final entityDevice = <String, String>{};
+    final entityPlatform = <String, String>{};
     final hidden = <String>{};
     for (final e in results[2] as List) {
       final map = e as Map;
@@ -385,10 +386,12 @@ class HomeAssistantService extends ChangeNotifier {
       final deviceId = map['device_id'] as String?;
       final area = map['area_id'] as String? ?? deviceArea[deviceId];
       if (area != null) entityArea[id] = area;
+      final platform = map['platform'] as String?;
+      if (platform != null) entityPlatform[id] = platform;
       if (deviceId != null && deviceName[deviceId] != null) entityDevice[id] = deviceName[deviceId]!;
       if (map['entity_category'] != null || map['hidden_by'] != null || map['disabled_by'] != null) hidden.add(id);
     }
-    return HaRegistry(areas, entityArea, hidden, entityDevice);
+    return HaRegistry(areas, entityArea, hidden, entityDevice, entityPlatform);
   }
 
   /// URL of the camera's HLS stream (needs HA's `stream` integration), or null if it has none.
@@ -491,7 +494,18 @@ class HaRegistry {
   /// entity id -> name of the device it belongs to
   final Map<String, String> entityDevice;
 
-  HaRegistry(this.areas, this.entityArea, this.hidden, this.entityDevice);
+  /// entity id -> integration (platform) that provides it, e.g. `hue`
+  final Map<String, String> entityPlatform;
+
+  HaRegistry(this.areas, this.entityArea, this.hidden, this.entityDevice, this.entityPlatform);
+
+  /// The integration as a readable name: `tplink_deco` -> `Tplink deco`.
+  String? integrationOf(String entityId) {
+    final id = entityPlatform[entityId];
+    if (id == null || id.isEmpty) return null;
+    final text = id.replaceAll('_', ' ');
+    return text[0].toUpperCase() + text.substring(1);
+  }
 
   String? areaNameOf(String entityId) => areas[entityArea[entityId]];
   String? deviceNameOf(String entityId) => entityDevice[entityId];

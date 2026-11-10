@@ -5,7 +5,16 @@ import 'package:flauncher/widgets/tv_text_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Picks the panel's entities among many: grouped by area, filtered by type, searchable.
+enum _GroupBy {
+  room('Room'),
+  device('Device'),
+  integration('Integration');
+
+  final String label;
+  const _GroupBy(this.label);
+}
+
+/// Picks the panel's entities among many: grouped by room, device or integration, filtered by type, searchable.
 class EntitiesSection extends StatefulWidget {
   final HaData data;
 
@@ -22,6 +31,7 @@ class _EntitiesSectionState extends State<EntitiesSection> {
     'humidifier', 'water_heater', 'weather', 'person', 'device_tracker',
   ];
 
+  _GroupBy _groupBy = _GroupBy.room;
   String _query = '';
   String? _domain; // null = all types
   bool _chosenOnly = false;
@@ -58,7 +68,11 @@ class _EntitiesSectionState extends State<EntitiesSection> {
     }).toList();
 
     // Area -> device -> entities. Areas and devices with no name go last.
-    String areaOf(HaEntity e) => registry?.areaNameOf(e.entityId) ?? '';
+    String areaOf(HaEntity e) => switch (_groupBy) {
+          _GroupBy.room => registry?.areaNameOf(e.entityId) ?? '',
+          _GroupBy.device => registry?.deviceNameOf(e.entityId) ?? '',
+          _GroupBy.integration => registry?.integrationOf(e.entityId) ?? '',
+        };
     String deviceOf(HaEntity e) => registry?.deviceNameOf(e.entityId) ?? '';
     int byName(String a, String b) {
       if (a.isEmpty != b.isEmpty) return a.isEmpty ? 1 : -1;
@@ -74,6 +88,11 @@ class _EntitiesSectionState extends State<EntitiesSection> {
       return byDomain != 0 ? byDomain : ha.nameOf(a).toLowerCase().compareTo(ha.nameOf(b).toLowerCase());
     });
 
+    final noGroupLabel = switch (_groupBy) {
+      _GroupBy.room => 'No area',
+      _GroupBy.device => 'No device',
+      _GroupBy.integration => 'Other',
+    };
     final searching = _query.isNotEmpty || _domain != null || _chosenOnly;
 
     final rows = <Widget>[
@@ -88,6 +107,16 @@ class _EntitiesSectionState extends State<EntitiesSection> {
           final value = await askTvText(context, title: 'Search', initial: _query);
           if (value != null && mounted) setState(() => _query = value.trim());
         },
+      ),
+      _CompactRow(
+        icon: Icons.account_tree_rounded,
+        title: 'Group by: ${_groupBy.label}',
+        onPressed: registry == null
+            ? null
+            : () => setState(() {
+                  _groupBy = _GroupBy.values[(_groupBy.index + 1) % _GroupBy.values.length];
+                  _open.clear();
+                }),
       ),
       _CompactRow(
         icon: Icons.filter_list_rounded,
@@ -133,7 +162,7 @@ class _EntitiesSectionState extends State<EntitiesSection> {
       final chosenHere = group.where((e) => chosen.contains(e.entityId)).length;
       rows.add(_CompactRow(
         icon: open ? Icons.expand_more_rounded : Icons.chevron_right_rounded,
-        title: '${area.isEmpty ? 'No area' : area}  (${group.length})',
+        title: '${area.isEmpty ? noGroupLabel : area}  (${group.length})',
         trailing: chosenHere == 0 ? null : '$chosenHere chosen',
         bold: true,
         onPressed: searching
@@ -146,7 +175,7 @@ class _EntitiesSectionState extends State<EntitiesSection> {
 
       String? device;
       for (final entity in group) {
-        final entityDevice = deviceOf(entity);
+        final entityDevice = _groupBy == _GroupBy.device ? '' : deviceOf(entity);
         if (entityDevice != device && entityDevice.isNotEmpty) {
           device = entityDevice;
           rows.add(Padding(
