@@ -368,19 +368,30 @@ class HomeAssistantService extends ChangeNotifier {
     final areas = <String, String>{
       for (final a in results[0] as List) (a as Map)['area_id'] as String: a['name'] as String? ?? a['area_id'] as String,
     };
-    final deviceArea = <String, String?>{
-      for (final d in results[1] as List) (d as Map)['id'] as String: d['area_id'] as String?,
-    };
+    final deviceArea = <String, String?>{};
+    final deviceName = <String, String>{};
+    for (final d in results[1] as List) {
+      final map = d as Map;
+      final id = map['id'] as String;
+      deviceArea[id] = map['area_id'] as String?;
+      deviceName[id] = (map['name_by_user'] ?? map['name'] ?? id).toString();
+    }
     final entityArea = <String, String>{};
+    final entityDevice = <String, String>{};
+    final entityPlatform = <String, String>{};
     final hidden = <String>{};
     for (final e in results[2] as List) {
       final map = e as Map;
       final id = map['entity_id'] as String;
-      final area = map['area_id'] as String? ?? deviceArea[map['device_id']];
+      final deviceId = map['device_id'] as String?;
+      final area = map['area_id'] as String? ?? deviceArea[deviceId];
       if (area != null) entityArea[id] = area;
+      final platform = map['platform'] as String?;
+      if (platform != null) entityPlatform[id] = platform;
+      if (deviceId != null && deviceName[deviceId] != null) entityDevice[id] = deviceName[deviceId]!;
       if (map['entity_category'] != null || map['hidden_by'] != null || map['disabled_by'] != null) hidden.add(id);
     }
-    return HaRegistry(areas, entityArea, hidden);
+    return HaRegistry(areas, entityArea, hidden, entityDevice, entityPlatform);
   }
 
   /// URL of the camera's HLS stream (needs HA's `stream` integration), or null if it has none.
@@ -480,7 +491,22 @@ class HaRegistry {
   /// Diagnostic, config, hidden and disabled entities.
   final Set<String> hidden;
 
-  HaRegistry(this.areas, this.entityArea, this.hidden);
+  /// entity id -> name of the device it belongs to
+  final Map<String, String> entityDevice;
+
+  /// entity id -> integration (platform) that provides it, e.g. `hue`
+  final Map<String, String> entityPlatform;
+
+  HaRegistry(this.areas, this.entityArea, this.hidden, this.entityDevice, this.entityPlatform);
+
+  /// The integration as a readable name: `tplink_deco` -> `Tplink deco`.
+  String? integrationOf(String entityId) {
+    final id = entityPlatform[entityId];
+    if (id == null || id.isEmpty) return null;
+    final text = id.replaceAll('_', ' ');
+    return text[0].toUpperCase() + text.substring(1);
+  }
 
   String? areaNameOf(String entityId) => areas[entityArea[entityId]];
+  String? deviceNameOf(String entityId) => entityDevice[entityId];
 }
