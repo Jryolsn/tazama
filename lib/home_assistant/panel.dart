@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flauncher/providers/home_assistant_service.dart';
-import 'package:flauncher/widgets/home_assistant_dashboard.dart';
+import 'package:flauncher/home_assistant/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/dashboard.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
@@ -154,7 +154,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
     } else if (ha.panelEntities.isEmpty && ha.dashboardPath == null) {
       children.add(Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Text('No controls chosen yet. Pick them under Home Assistant > Panel controls.', style: body),
+        child: Text('No controls chosen yet. Pick them in Home Assistant settings > Controls.', style: body),
       ));
     } else if (!_loaded) {
       children.add(const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator())));

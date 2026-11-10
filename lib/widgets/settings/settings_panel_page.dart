@@ -20,7 +20,7 @@ import 'package:flauncher/providers/update_service.dart';
 import 'package:flauncher/build_flags.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
-import 'package:flauncher/widgets/settings/home_assistant_page.dart';
+import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flauncher/widgets/settings/home_layout_page.dart';
 import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
@@ -76,8 +76,13 @@ class SettingsPanelPage extends StatelessWidget {
                 _link(context, Icons.palette_rounded, 'Color, cards and focus', MiscPanelPage.routeName),
                 _link(context, Icons.schedule_rounded, 'Clock and status bar', StatusBarPanelPage.routeName),
                 const SettingsGroupLabel('Smart home'),
-                _link(context, Icons.home_rounded, 'Home Assistant', HomeAssistantPage.routeName,
-                    subtitle: 'Connect your server'),
+                FocusableSettingsTile(
+                  showChevron: true,
+                  leading: const Icon(Icons.home_rounded),
+                  title: Text('Home Assistant', style: Theme.of(context).textTheme.bodyMedium),
+                  subtitle: Text('Connection, controls and panel', style: Theme.of(context).textTheme.bodySmall),
+                  onPressed: () => openHomeAssistantSettings(context, closeSettingsPanel: true),
+                ),
                 const SettingsGroupLabel('TV and system'),
                 _link(context, Icons.lock_rounded, 'Lock and protection', LockProtectionPage.routeName,
                     subtitle: 'App lock, VPN guard'),

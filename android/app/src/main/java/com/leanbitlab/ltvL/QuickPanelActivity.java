@@ -92,8 +92,10 @@ public class QuickPanelActivity extends FlutterActivity {
                     VpnGuard.setGuarded(app, call.argument("packageName"), Boolean.TRUE.equals(call.argument("guarded")));
                     result.success(null);
                 }
-                case "openLauncherSettings" -> {
+                case "openLauncherSettings", "openHomeAssistantSettings" -> {
                     if (panel != null) panel.close();
+                    MainActivity.openSettingsTarget =
+                            call.method.equals("openHomeAssistantSettings") ? "home_assistant" : "settings";
                     MainActivity.openSettingsOnResume = true;
                     app.startActivity(new Intent(app, MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));

@@ -17,7 +17,7 @@
  */
 
 import 'package:flauncher/providers/app_lock_service.dart';
-import 'package:flauncher/providers/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/providers/vpn_guard_service.dart';
 import 'dart:async';
 
