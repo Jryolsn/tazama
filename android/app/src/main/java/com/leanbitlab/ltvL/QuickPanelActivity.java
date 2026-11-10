@@ -110,6 +110,8 @@ public class QuickPanelActivity extends FlutterActivity {
             switch (call.method) {
                 case "setDimLevel" -> result.success(DimOverlayService.apply(app, call.<Integer>argument("darkness")));
                 case "canDrawOverlays" -> result.success(Settings.canDrawOverlays(app));
+                case "showNotice" -> result.success(ArcAccessibilityService.showNotice(
+                        call.argument("text"), call.argument("seconds") == null ? 8 : call.<Integer>argument("seconds"), call.argument("corner")));
                 case "appLockGetLocked" -> result.success(new ArrayList<>(AppLockStore.lockedPackages(app)));
                 case "appLockHasPin" -> result.success(AppLockStore.hasPin(app));
                 case "appLockGetType" -> result.success(AppLockStore.lockType(app));

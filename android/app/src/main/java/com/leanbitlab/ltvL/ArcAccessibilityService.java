@@ -101,6 +101,66 @@ public class ArcAccessibilityService extends AccessibilityService {
         return true;
     }
 
+    /** Shows a short notice in a corner over whatever is on screen. False when the service isn't running or the TV is asleep. */
+    static boolean showNotice(String text, int seconds, String corner) {
+        ArcAccessibilityService service = instance;
+        if (service == null) return false;
+        android.os.PowerManager power = service.getSystemService(android.os.PowerManager.class);
+        if (power != null && !power.isInteractive()) return false;
+        service.handler.post(() -> service.displayNotice(text, seconds, corner));
+        return true;
+    }
+
+    private TextView noticeView;
+    private final Runnable hideNotice = this::removeNotice;
+
+    private void displayNotice(String text, int seconds, String corner) {
+        removeNotice();
+        TextView view = new TextView(this);
+        view.setText(text);
+        view.setTextSize(18);
+        view.setTextColor(Color.WHITE);
+        view.setMaxLines(3);
+        view.setMaxWidth(Math.round(480 * getResources().getDisplayMetrics().density));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(Color.argb(225, 21, 18, 44));
+        bg.setStroke(2, Color.argb(120, 180, 156, 255));
+        bg.setCornerRadius(40);
+        view.setBackground(bg);
+        int pad = Math.round(12 * getResources().getDisplayMetrics().density);
+        view.setPadding(pad * 2, pad, pad * 2, pad);
+        int gravity = switch (corner == null ? "top_right" : corner) {
+            case "top_left" -> Gravity.TOP | Gravity.START;
+            case "bottom_left" -> Gravity.BOTTOM | Gravity.START;
+            case "bottom_right" -> Gravity.BOTTOM | Gravity.END;
+            default -> Gravity.TOP | Gravity.END;
+        };
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                PixelFormat.TRANSLUCENT);
+        params.gravity = gravity;
+        params.x = pad * 3;
+        params.y = pad * 3;
+        noticeView = view;
+        getSystemService(WindowManager.class).addView(view, params);
+        handler.postDelayed(hideNotice, Math.max(2, seconds) * 1000L);
+    }
+
+    private void removeNotice() {
+        handler.removeCallbacks(hideNotice);
+        if (noticeView != null) {
+            try {
+                getSystemService(WindowManager.class).removeView(noticeView);
+            } catch (IllegalArgumentException ignored) {
+                // already gone
+            }
+            noticeView = null;
+        }
+    }
+
     /** The app on screen under Arc's own windows, or null when the service isn't running. */
     static String foregroundPackage() {
         ArcAccessibilityService service = instance;
