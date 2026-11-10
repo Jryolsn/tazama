@@ -22,6 +22,7 @@ import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/tv_text_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -416,18 +417,22 @@ class _CategorySettingsState extends State<_CategorySettings>
             Text(localizations.customName),
             Padding(
               padding: EdgeInsets.only(top: 4),
-              child: TextFormField(
-                controller: _nameController,
+              child: OutlinedButton(
                 focusNode: _textFieldFocusNode,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  alignment: Alignment.centerLeft,
                 ),
-                onChanged: (value) {
-                  _name = value;
+                onPressed: () async {
+                  final value = await askTvText(context, title: localizations.customName, initial: _name);
+                  if (value == null || !mounted) return;
+                  setState(() {
+                    _name = value;
+                    _nameController.text = value;
+                  });
                   _notifyChange();
                 },
+                child: Text(_name.isEmpty ? '...' : _name, style: Theme.of(context).textTheme.bodyMedium),
               )
             )
           ),

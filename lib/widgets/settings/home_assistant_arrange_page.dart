@@ -2,6 +2,7 @@ import 'package:flauncher/providers/home_assistant_service.dart';
 import 'package:flauncher/widgets/home_assistant_panel.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/tv_text_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -88,21 +89,8 @@ class _HomeAssistantArrangePageState extends State<HomeAssistantArrangePage> {
         await ha.setPanelEntity(id, false);
       case 'rename':
         if (!context.mounted) return;
-        final name = await showDialog<String>(
-          context: context,
-          builder: (context) => SimpleDialog(
-            insetPadding: const EdgeInsets.only(bottom: 120),
-            contentPadding: const EdgeInsets.all(24),
-            title: const Text('Name in the panel'),
-            children: [
-              TextFormField(
-                autofocus: true,
-                initialValue: ha.aliases[id] ?? _states[id]?.name ?? '',
-                onFieldSubmitted: (value) => Navigator.of(context).pop(value),
-              ),
-            ],
-          ),
-        );
+        final name = await askTvText(context,
+            title: 'Name in the panel', initial: ha.aliases[id] ?? _states[id]?.name ?? '');
         if (name != null) await ha.setAlias(id, name);
     }
   }
