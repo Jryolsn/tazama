@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/camera_view.dart';
 import 'package:flauncher/home_assistant/dashboard.dart';
+import 'package:flauncher/home_assistant/media_card.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
@@ -71,9 +73,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
   Map<String, HaEntity> _states = {};
   bool _loaded = false;
   bool _failed = false;
-  int _snapshot = 0;
   Timer? _poll;
-  Timer? _cameras;
 
   @override
   void initState() {
@@ -81,9 +81,6 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
     _refresh();
     final ha = context.read<HomeAssistantService>();
     _poll = Timer.periodic(const Duration(seconds: 4), (_) => _refresh());
-    _cameras = Timer.periodic(Duration(seconds: ha.cameraRefreshSeconds), (_) {
-      if (mounted) setState(() => _snapshot++);
-    });
     if (ha.holdHomeOpensDashboard && ha.isConfigured && ha.dashboardPath != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _openDashboard(ha);
@@ -98,7 +95,6 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
   @override
   void dispose() {
     _poll?.cancel();
-    _cameras?.cancel();
     super.dispose();
   }
 
@@ -186,9 +182,18 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
               autofocus: autofocus,
               entity: entity,
               name: ha.nameOf(entity),
-              image: ha.cameraSnapshotUri(entity.entityId, _snapshot),
-              headers: ha.authHeaders,
               onPressed: () => _activate(entity),
+            ),
+          ));
+          continue;
+        }
+        if (entity.domain == 'media_player') {
+          children.add(_EntityKey(
+            child: HaMediaCard(
+              autofocus: autofocus,
+              entity: entity,
+              name: ha.nameOf(entity),
+              onChanged: () => Future.delayed(const Duration(milliseconds: 300), _refresh),
             ),
           ));
           continue;
@@ -275,16 +280,41 @@ class _EntityKey extends StatelessWidget {
   Widget build(BuildContext context) => child;
 }
 
-class _CameraTile extends StatelessWidget {
+class _CameraTile extends StatefulWidget {
   final HaEntity entity;
   final String name;
-  final Uri image;
-  final Map<String, String> headers;
   final bool autofocus;
   final VoidCallback onPressed;
 
-  const _CameraTile(
-      {required this.entity, required this.name, required this.image, required this.headers, required this.autofocus, required this.onPressed});
+  const _CameraTile({required this.entity, required this.name, required this.autofocus, required this.onPressed});
+
+  @override
+  State<_CameraTile> createState() => _CameraTileState();
+}
+
+class _CameraTileState extends State<_CameraTile> {
+  bool _focused = false;
+  bool _live = false;
+  Timer? _liveDelay;
+
+  void _onFocus(bool focused) {
+    setState(() => _focused = focused);
+    _liveDelay?.cancel();
+    if (focused) {
+      // Only one tile streams at a time, and only once the focus has rested on it.
+      _liveDelay = Timer(const Duration(milliseconds: 700), () {
+        if (mounted) setState(() => _live = true);
+      });
+    } else {
+      setState(() => _live = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _liveDelay?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -292,96 +322,54 @@ class _CameraTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: Focus(
-        autofocus: autofocus,
-        child: Builder(builder: (context) {
-          final focused = Focus.of(context).hasFocus;
-          return GestureDetector(
-            onTap: onPressed,
-            child: Actions(
-              actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => onPressed())},
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: focused ? accent : Colors.white12, width: focused ? 2 : 1),
-                  boxShadow: focused ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 16)] : null,
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Stack(children: [
-                  AspectRatio(aspectRatio: 16 / 9, child: _Snapshot(image: image, headers: headers)),
-                  Positioned(
-                    left: 10,
-                    bottom: 8,
-                    child: Text(name,
-                        style: const TextStyle(color: Colors.white, shadows: [Shadow(blurRadius: 6)])),
-                  ),
-                ]),
+        autofocus: widget.autofocus,
+        onFocusChange: _onFocus,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: Actions(
+            actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => widget.onPressed())},
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _focused ? accent : Colors.white12, width: _focused ? 2 : 1),
+                boxShadow: _focused ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 16)] : null,
               ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(children: [
+                AspectRatio(
+                    aspectRatio: 16 / 9, child: HaCameraView(entityId: widget.entity.entityId, live: _live)),
+                Positioned(
+                  left: 10,
+                  bottom: 8,
+                  child: Text(widget.name, style: const TextStyle(color: Colors.white, shadows: [Shadow(blurRadius: 6)])),
+                ),
+              ]),
             ),
-          );
-        }),
+          ),
+        ),
       ),
     );
   }
 }
 
-/// Keeps showing the previous frame while the next snapshot loads.
-class _Snapshot extends StatelessWidget {
-  final Uri image;
-  final Map<String, String> headers;
-
-  const _Snapshot({required this.image, required this.headers});
-
-  @override
-  Widget build(BuildContext context) => Image.network(
-        image.toString(),
-        headers: headers,
-        fit: BoxFit.cover,
-        gaplessPlayback: true,
-        errorBuilder: (_, __, ___) =>
-            const ColoredBox(color: Colors.black26, child: Center(child: Icon(Icons.videocam_off_rounded))),
-      );
-}
-
-class _CameraDialog extends StatefulWidget {
+/// Full-size live camera with sound. Back closes it.
+class _CameraDialog extends StatelessWidget {
   final HaEntity entity;
 
   const _CameraDialog({required this.entity});
 
   @override
-  State<_CameraDialog> createState() => _CameraDialogState();
-}
-
-class _CameraDialogState extends State<_CameraDialog> {
-  int _snapshot = 0;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() => _snapshot++));
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ha = context.watch<HomeAssistantService>();
-    return Dialog(
-      insetPadding: const EdgeInsets.all(48),
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Focus(
-        autofocus: true,
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: _Snapshot(image: ha.cameraSnapshotUri(widget.entity.entityId, _snapshot), headers: ha.authHeaders),
+  Widget build(BuildContext context) => Dialog(
+        insetPadding: const EdgeInsets.all(48),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Focus(
+          autofocus: true,
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: HaCameraView(entityId: entity.entityId, live: true, sound: true),
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

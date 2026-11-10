@@ -21,6 +21,8 @@ _Last updated: 2026-11-09_
 - Watch next: sharper images and more card sizes.
 - Home Assistant module (lib/home_assistant/): full-screen settings (Connection, Controls grouped by
   area with search/type filter, Arrange, Dashboard, Panel), opened from Settings or the HA panel.
+  Camera tiles stream live (HLS via video_player) once focused; full-size view has sound if the stream carries AAC.
+  Media players show cover, title, progress, volume (Left/Right).
   Plan for next phases: /mnt project file tazama/home-assistant-plan.md (PR B camera+media, PR C notices).
 - Home Assistant: URL + long-lived token in encrypted storage.
   Hold Home = HA panel over any app (chosen entities: toggle, scenes, sensors, camera snapshots,

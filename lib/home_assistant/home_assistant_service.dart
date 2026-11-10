@@ -373,6 +373,24 @@ class HomeAssistantService extends ChangeNotifier {
     return HaRegistry(areas, entityArea, hidden);
   }
 
+  /// URL of the camera's HLS stream (needs HA's `stream` integration), or null if it has none.
+  Future<Uri?> fetchHlsUrl(String entityId) async {
+    final results = await _websocket([
+      {'type': 'camera/stream', 'entity_id': entityId, 'format': 'hls'}
+    ]);
+    final path = results != null && results[0] is Map ? (results[0] as Map)['url'] as String? : null;
+    return path == null ? null : Uri.parse(path.startsWith('http') ? path : '$url$path');
+  }
+
+  Future<bool> setVolume(String entityId, double level) =>
+      callService('media_player', 'volume_set', entityId, {'volume_level': level.clamp(0.0, 1.0)});
+
+  /// Absolute URL for a relative path such as a media player's `entity_picture`.
+  Uri? absoluteUrl(String? path) {
+    if (path == null || path.isEmpty) return null;
+    return Uri.parse(path.startsWith('http') ? path : '$url$path');
+  }
+
   /// A fresh snapshot of a camera; [bust] makes the URL unique so the image is not cached.
   Uri cameraSnapshotUri(String entityId, int bust) => Uri.parse('$url/api/camera_proxy/$entityId?t=$bust');
 
@@ -395,6 +413,24 @@ class HaEntity {
   String get domain => entityId.split('.').first;
   String get name => attributes['friendly_name'] as String? ?? entityId;
   bool get isOn => const {'on', 'open', 'playing', 'unlocked', 'home'}.contains(state);
+  String? get mediaTitle => attributes['media_title'] as String?;
+  String? get mediaArtist => (attributes['media_artist'] ?? attributes['media_series_title']) as String?;
+  String? get picture => attributes['entity_picture'] as String?;
+  double? get volume => (attributes['volume_level'] as num?)?.toDouble();
+  double? get mediaDuration => (attributes['media_duration'] as num?)?.toDouble();
+
+  /// Playback position now, extrapolated from the last update while playing.
+  double? get mediaPosition {
+    final position = (attributes['media_position'] as num?)?.toDouble();
+    if (position == null) return null;
+    final updated = DateTime.tryParse(attributes['media_position_updated_at']?.toString() ?? '');
+    if (state != 'playing' || updated == null) return position;
+    final elapsed = DateTime.now().difference(updated).inMilliseconds / 1000;
+    final total = mediaDuration;
+    final now = position + elapsed;
+    return total == null ? now : now.clamp(0, total).toDouble();
+  }
+
   /// Light brightness in percent, or null when off or not dimmable.
   int? get brightnessPercent {
     final b = attributes['brightness'];
