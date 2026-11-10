@@ -1,4 +1,5 @@
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/notices.dart';
 import 'package:flauncher/home_assistant/panel.dart';
 import 'package:flauncher/home_assistant/settings/entities_section.dart';
 import 'package:flauncher/nebula_theme.dart';
@@ -16,7 +17,7 @@ void openHomeAssistantSettings(BuildContext context, {bool closeSettingsPanel = 
   navigator.push(MaterialPageRoute(builder: (_) => const HomeAssistantScreen()));
 }
 
-enum _Section { connection, controls, arrange, dashboard, panel }
+enum _Section { connection, controls, arrange, dashboard, notices, panel }
 
 /// Home Assistant settings as a full screen: a menu on the left, the chosen section on the right.
 class HomeAssistantScreen extends StatefulWidget {
@@ -111,6 +112,9 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
                               item(_Section.dashboard, Icons.space_dashboard_rounded, 'Dashboard',
                                   ha.dashboardPath ?? 'None',
                                   enabled: connected),
+                              item(_Section.notices, Icons.notifications_active_rounded, 'Notices',
+                                  context.watch<HaNoticeSettings>().enabled ? 'On' : 'Off',
+                                  enabled: connected),
                               item(_Section.panel, Icons.view_sidebar_rounded, 'Panel', 'Side, width, cameras'),
                             ],
                           ),
@@ -149,6 +153,9 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
         return const _PanelSection();
       case _Section.dashboard:
         return const _DashboardSection();
+      case _Section.notices:
+        final data = _data;
+        return data == null ? const Center(child: CircularProgressIndicator()) : _NoticesSection(data: data);
       case _Section.controls:
       case _Section.arrange:
         final data = _data;
@@ -404,6 +411,108 @@ class _DashboardSectionState extends State<_DashboardSection> {
           ),
         for (final entry in dashboards.entries) option(entry.key, entry.value),
       ],
+    ]);
+  }
+}
+
+class _NoticesSection extends StatefulWidget {
+  final HaData data;
+
+  const _NoticesSection({required this.data});
+
+  @override
+  State<_NoticesSection> createState() => _NoticesSectionState();
+}
+
+class _NoticesSectionState extends State<_NoticesSection> {
+  bool _showAll = false;
+
+  String _cornerLabel(String corner) => switch (corner) {
+        'top_left' => 'Top left',
+        'bottom_right' => 'Bottom right',
+        'bottom_left' => 'Bottom left',
+        _ => 'Top right',
+      };
+
+  T _next<T>(List<T> choices, T current) => choices[(choices.indexOf(current) + 1) % choices.length];
+
+  @override
+  Widget build(BuildContext context) {
+    final notices = context.watch<HaNoticeSettings>();
+    final ha = context.watch<HomeAssistantService>();
+    final small = Theme.of(context).textTheme.bodySmall;
+    final chosen = notices.sensors.toSet();
+
+    final sensors = widget.data.states.values.where((e) => e.domain == 'binary_sensor').where((e) {
+      if (_showAll || chosen.contains(e.entityId)) return true;
+      return HaNoticeSettings.alertClasses.contains(e.attributes['device_class']);
+    }).toList()
+      ..sort((a, b) => ha.nameOf(a).toLowerCase().compareTo(ha.nameOf(b).toLowerCase()));
+
+    return _SectionList(title: 'Notices', children: [
+      RoundedSwitchListTile(
+        value: notices.enabled,
+        onChanged: notices.setEnabled,
+        title: const Text('Show notices on the TV'),
+        subtitle: Text('A small message in a corner over whatever you are watching', style: small),
+        secondary: const Icon(Icons.notifications_active_rounded),
+      ),
+      FocusableSettingsTile(
+        leading: const Icon(Icons.crop_free_rounded),
+        title: Text('Position: ${_cornerLabel(notices.corner)}'),
+        onPressed: () => notices.setCorner(_next(HaNoticeSettings.corners, notices.corner)),
+      ),
+      FocusableSettingsTile(
+        leading: const Icon(Icons.timer_rounded),
+        title: Text('Shown for ${notices.seconds} s'),
+        onPressed: () => notices.setSeconds(_next(HaNoticeSettings.secondsChoices, notices.seconds)),
+      ),
+      FocusableSettingsTile(
+        leading: const Icon(Icons.hourglass_bottom_rounded),
+        title: Text('At most once every ${notices.cooldown} s per sensor'),
+        onPressed: () => notices.setCooldown(_next(HaNoticeSettings.cooldownChoices, notices.cooldown)),
+      ),
+      RoundedSwitchListTile(
+        value: notices.listenForEvents,
+        onChanged: notices.setListenForEvents,
+        title: const Text('Notices from Home Assistant automations'),
+        subtitle: Text(
+            'Fire the event tazama_notify with data message (and optional title, emoji, seconds) from an automation.',
+            style: small),
+        secondary: const Icon(Icons.bolt_rounded),
+      ),
+      FocusableSettingsTile(
+        leading: const Icon(Icons.play_circle_outline_rounded),
+        title: const Text('Show a test notice'),
+        onPressed: () async {
+          final shown = await showTvNotice('\u{1F6B6} Test notice', seconds: notices.seconds, corner: notices.corner);
+          if (!shown && context.mounted) {
+            ScaffoldMessenger.maybeOf(context)?.showSnackBar(const SnackBar(
+                content: Text('Could not show it: turn on the Tazama accessibility service in Android settings.')));
+          }
+        },
+      ),
+      const SettingsGroupLabel('Sensors that trigger a notice'),
+      for (final sensor in sensors)
+        RoundedSwitchListTile(
+          value: chosen.contains(sensor.entityId),
+          onChanged: (v) => notices.setSensor(sensor.entityId, v),
+          title: Text(ha.nameOf(sensor), maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text(
+              [
+                widget.data.registry?.areaNameOf(sensor.entityId),
+                sensor.attributes['device_class']?.toString(),
+              ].whereType<String>().join(' · '),
+              style: small),
+          secondary: Text(HaNoticeSettings.emojiFor(sensor), style: const TextStyle(fontSize: 22)),
+        ),
+      RoundedSwitchListTile(
+        value: _showAll,
+        onChanged: (v) => setState(() => _showAll = v),
+        title: const Text('Show all binary sensors'),
+        subtitle: Text('By default only motion, doors, smoke, water and similar', style: small),
+        secondary: const Icon(Icons.visibility_rounded),
+      ),
     ]);
   }
 }

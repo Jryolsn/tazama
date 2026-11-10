@@ -16,6 +16,7 @@ import 'package:flauncher/flauncher_app.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/brightness_service.dart';
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
+import 'package:flauncher/home_assistant/notices.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/vpn_guard_service.dart';
 import 'package:flauncher/home_assistant/panel.dart';
@@ -57,6 +58,8 @@ Future<void> quickPanelMain() async {
   final brightness = BrightnessService(prefs);
   final lock = AppLockService();
   final homeAssistant = HomeAssistantService(prefs);
+  final notices = HaNoticeSettings(prefs);
+  HaNoticeListener(homeAssistant, notices, prefs).start();
 
   _panelChannel.setMethodCallHandler((call) async {
     if (call.method == 'hidden') {
@@ -93,6 +96,7 @@ Future<void> quickPanelMain() async {
       ChangeNotifierProvider.value(value: brightness),
       ChangeNotifierProvider.value(value: lock),
       ChangeNotifierProvider.value(value: homeAssistant),
+      ChangeNotifierProvider.value(value: notices),
     ],
     child: const _QuickPanelApp(),
   ));

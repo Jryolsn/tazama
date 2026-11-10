@@ -136,6 +136,16 @@ class HomeAssistantService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Re-reads address and token without testing the connection (cheap enough to poll).
+  Future<void> refreshConfig() async {
+    await _prefs.reload();
+    try {
+      _token = await _secure.read(key: _tokenKey);
+    } catch (_) {
+      _token = null;
+    }
+  }
+
   /// Picks up changes made by the other engine (launcher or panel).
   Future<void> reload() async {
     await _prefs.reload();

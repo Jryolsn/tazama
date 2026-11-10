@@ -22,6 +22,9 @@ _Last updated: 2026-11-09_
 - Home Assistant module (lib/home_assistant/): full-screen settings (Connection, Controls grouped by
   area with search/type filter, Arrange, Dashboard, Panel), opened from Settings or the HA panel.
   Camera tiles stream live (HLS via video_player) once focused; full-size view has sound if the stream carries AAC.
+  Notices: Settings > Home Assistant > Notices. The quick panel engine (always loaded) keeps a websocket to HA and
+  shows an emoji+text overlay (accessibility service) when chosen binary sensors turn on, or on a `tazama_notify`
+  event fired from an HA automation (message, title, emoji, seconds).
   Media players show cover, title, progress, volume (Left/Right).
   Plan for next phases: /mnt project file tazama/home-assistant-plan.md (PR B camera+media, PR C notices).
 - Home Assistant: URL + long-lived token in encrypted storage.
