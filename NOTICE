@@ -10,6 +10,10 @@ icon, banner and application id (com.jryolsn.tazama), app lock, dim screen,
 quick panel, VPN guard, "Replace current launcher", sideload build and
 release workflow, TV setup scripts and the "Nebula" visual style. The full list is in the git history.
 
+The phone camera view downloads the scrcpy server (https://github.com/Genymobile/scrcpy,
+Apache License 2.0) at build time and bundles it, and uses dadb
+(https://github.com/mobile-dev-inc/dadb, Apache License 2.0).
+
 The Nunito font (assets/fonts) is licensed under the SIL Open Font License 1.1,
 see assets/fonts/OFL.txt.
 

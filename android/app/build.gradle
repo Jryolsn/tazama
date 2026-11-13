@@ -152,6 +152,11 @@ android {
     }
 }
 
+dependencies {
+    // adb client used by the phone camera view
+    implementation 'dev.mobile:dadb:2.0.0'
+}
+
 flutter {
     source '../..'
 }
