@@ -222,6 +222,11 @@ class _QuickPanel extends StatelessWidget {
                             const SettingsSectionDivider(),
                           ],
                           FocusableSettingsTile(
+                            leading: const Icon(Icons.videocam_outlined),
+                            title: Text('Phone camera', style: textStyle),
+                            onPressed: () => _panelChannel.invokeMethod('openPhoneCamera'),
+                          ),
+                          FocusableSettingsTile(
                             leading: const Icon(Icons.settings_outlined),
                             title: Text('All launcher settings', style: textStyle),
                             showChevron: true,
