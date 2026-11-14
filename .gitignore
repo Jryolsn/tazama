@@ -100,5 +100,8 @@ android/fastlane/google_play_api_key.json
 android/fastlane/README.md
 
 
-# Downloaded by CI (see build-apk.yml)
-android/app/src/main/assets/scrcpy-server.jar
+# Tazama Camera (phone app) build output
+camera-app/.gradle/
+camera-app/build/
+camera-app/app/build/
+camera-app/local.properties

@@ -153,8 +153,8 @@ android {
 }
 
 dependencies {
-    // adb client used by the phone camera view
-    implementation 'dev.mobile:dadb:2.0.0'
+    // QR code for pairing the phone camera
+    implementation 'com.google.zxing:core:3.5.3'
 }
 
 flutter {

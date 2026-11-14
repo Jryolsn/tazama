@@ -1,0 +1,42 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "com.jryolsn.tazama.camera"
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.jryolsn.tazama.camera"
+        minSdk 30
+        targetSdk 35
+        versionCode((project.findProperty("versionCode") ?: "1") as int)
+        versionName(project.findProperty("versionName") ?: "1.0")
+    }
+
+    signingConfigs {
+        // Same fixed, non-secret sideload key as the TV app.
+        sideload {
+            storeFile file("../../android/app/sideload.keystore")
+            storePassword "android"
+            keyAlias "sideload"
+            keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.sideload
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "com.journeyapps:zxing-android-embedded:4.3.0"
+}
