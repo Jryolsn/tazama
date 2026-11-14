@@ -301,8 +301,8 @@ class _CameraTileState extends State<_CameraTile> {
     setState(() => _focused = focused);
     _liveDelay?.cancel();
     if (focused) {
-      // Only one tile streams at a time, and only once the focus has rested on it.
-      _liveDelay = Timer(const Duration(milliseconds: 700), () {
+      // In focused-only mode, wait until the focus rests so scrolling past doesn't start streams.
+      _liveDelay = Timer(const Duration(milliseconds: 300), () {
         if (mounted) setState(() => _live = true);
       });
     } else {
@@ -338,7 +338,10 @@ class _CameraTileState extends State<_CameraTile> {
               clipBehavior: Clip.antiAlias,
               child: Stack(children: [
                 AspectRatio(
-                    aspectRatio: 16 / 9, child: HaCameraView(entityId: widget.entity.entityId, live: _live)),
+                    aspectRatio: 16 / 9,
+                    child: HaCameraView(
+                        entityId: widget.entity.entityId,
+                        live: _live || context.watch<HomeAssistantService>().liveAllCameras)),
                 Positioned(
                   left: 10,
                   bottom: 8,
