@@ -44,6 +44,7 @@ import 'package:flauncher/widgets/launcher_alternative_view.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
 import 'package:flauncher/widgets/wallpaper_video_background.dart';
 import 'package:flauncher/widgets/watch_next_row.dart';
+import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -87,6 +88,8 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
       if (!mounted) return;
       if (target == 'home_assistant') {
         openHomeAssistantSettings(context);
+      } else if (target == 'media_panel') {
+        showDialog(context: context, builder: (_) => const SettingsPanel(initialRoute: MediaPanelSettingsPage.routeName));
       } else if (target == 'settings' || target == true) {
         showDialog(context: context, builder: (_) => const SettingsPanel());
       }

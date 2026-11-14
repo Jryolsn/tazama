@@ -16,8 +16,6 @@ class HomeAssistantService extends ChangeNotifier {
   static const _entitiesKey = 'home_assistant_entities';
   static const _dashboardKey = 'home_assistant_dashboard';
   static const _aliasesKey = 'home_assistant_aliases';
-  static const _sideKey = 'home_assistant_panel_side';
-  static const _wideKey = 'home_assistant_panel_wide';
   static const _holdHomeKey = 'home_assistant_hold_home';
   static const _cameraRefreshKey = 'home_assistant_camera_refresh';
   static const cameraRefreshChoices = [1, 2, 3, 5, 10, 30];
@@ -111,18 +109,6 @@ class HomeAssistantService extends ChangeNotifier {
       ..removeAt(from)
       ..insert(to, entityId);
     await _prefs.setStringList(_entitiesKey, list);
-    notifyListeners();
-  }
-
-  bool get panelOnRight => _prefs.getString(_sideKey) != 'left';
-  Future<void> setPanelOnRight(bool right) async {
-    await _prefs.setString(_sideKey, right ? 'right' : 'left');
-    notifyListeners();
-  }
-
-  bool get panelWide => _prefs.getBool(_wideKey) ?? false;
-  Future<void> setPanelWide(bool wide) async {
-    await _prefs.setBool(_wideKey, wide);
     notifyListeners();
   }
 

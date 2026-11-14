@@ -98,10 +98,13 @@ public class QuickPanelActivity extends FlutterActivity {
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     result.success(null);
                 }
-                case "openLauncherSettings", "openHomeAssistantSettings" -> {
+                case "openLauncherSettings", "openHomeAssistantSettings", "openMediaPanelSettings" -> {
                     if (panel != null) panel.close();
-                    MainActivity.openSettingsTarget =
-                            call.method.equals("openHomeAssistantSettings") ? "home_assistant" : "settings";
+                    MainActivity.openSettingsTarget = switch (call.method) {
+                        case "openHomeAssistantSettings" -> "home_assistant";
+                        case "openMediaPanelSettings" -> "media_panel";
+                        default -> "settings";
+                    };
                     MainActivity.openSettingsOnResume = true;
                     app.startActivity(new Intent(app, MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));

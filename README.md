@@ -9,7 +9,8 @@ It is based on [Arc Launcher](https://github.com/meddouribadis/arclauncher) and 
 - **App lock** with PIN or remote pattern, also when an app is opened by casting.
 - **Dim screen** on top of every app, on a schedule or on demand.
 - **Quick panel**: hold Back (or the YouTube button) for brightness and quick settings over whatever is playing.
-- **Home Assistant**: connect your server (Settings > Smart home), then hold Home for lights, scenes, sensors and cameras over whatever is playing.
+- **Media panel**: hold Home for your own cards over whatever is playing: RTSP cameras (no Home Assistant needed) and Home Assistant (Settings > Media panel).
+- **Home Assistant**: connect your server (Settings > Home Assistant), then add it as a card for lights, scenes, sensors and cameras.
 - **VPN guard**: chosen apps only run while a VPN is up.
 - **Replace current launcher**: Home opens Tazama without disabling the stock launcher.
 

@@ -22,6 +22,7 @@ import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
 import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
@@ -75,12 +76,14 @@ class SettingsPanelPage extends StatelessWidget {
                 _link(context, Icons.wallpaper_rounded, localizations.wallpaper, WallpaperPanelPage.routeName),
                 _link(context, Icons.palette_rounded, 'Color, cards and focus', MiscPanelPage.routeName),
                 _link(context, Icons.schedule_rounded, 'Clock and status bar', StatusBarPanelPage.routeName),
-                const SettingsGroupLabel('Smart home'),
+                const SettingsGroupLabel('Media and smart home'),
+                _link(context, Icons.view_sidebar_rounded, 'Media panel', MediaPanelSettingsPage.routeName,
+                    subtitle: 'Hold Home: cameras and more'),
                 FocusableSettingsTile(
                   showChevron: true,
                   leading: const Icon(Icons.home_rounded),
                   title: Text('Home Assistant', style: Theme.of(context).textTheme.bodyMedium),
-                  subtitle: Text('Connection, controls and panel', style: Theme.of(context).textTheme.bodySmall),
+                  subtitle: Text('Connection, controls and cameras', style: Theme.of(context).textTheme.bodySmall),
                   onPressed: () => openHomeAssistantSettings(context, closeSettingsPanel: true),
                 ),
                 const SettingsGroupLabel('TV and system'),

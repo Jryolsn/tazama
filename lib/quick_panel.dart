@@ -1,6 +1,6 @@
 /*
  * Arc quick settings: a trimmed settings panel that opens on top of whatever app is playing
- * (hold Back or the YouTube button; hold Home for Home Assistant), built from the same widgets as Arc's own settings.
+ * (hold Back or the YouTube button; hold Home for the media panel), built from the same widgets as Arc's own settings.
  *
  * It runs in its own Flutter engine inside QuickPanelActivity, a see-through activity, so it sits under
  * Arc's dim layer and is dimmed along with the picture.
@@ -19,7 +19,8 @@ import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/home_assistant/notices.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/vpn_guard_service.dart';
-import 'package:flauncher/home_assistant/panel.dart';
+import 'package:flauncher/media_panel/media_panel.dart';
+import 'package:flauncher/media_panel/media_panel_service.dart';
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/brightness_settings_page.dart';
@@ -36,7 +37,7 @@ const _panelChannel = MethodChannel('arc/quick_panel');
 /// Goes up by one each time the panel is shown, so it starts fresh (focus on the first row, current values).
 final _shown = ValueNotifier<int>(0);
 
-/// Which panel is up: 'quick' (hold Back), 'ha' (hold Home), or null once closed so timers stop.
+/// Which panel is up: 'quick' (hold Back), 'ha' (hold Home, the media panel), or null once closed so timers stop.
 final _mode = ValueNotifier<String?>(null);
 
 /// The app the panel was opened over, and the VPN status (from the accessibility service).
@@ -58,6 +59,7 @@ Future<void> quickPanelMain() async {
   final brightness = BrightnessService(prefs);
   final lock = AppLockService();
   final homeAssistant = HomeAssistantService(prefs);
+  final mediaPanel = MediaPanelService(prefs);
   final notices = HaNoticeSettings(prefs);
   HaNoticeListener(homeAssistant, notices, prefs).start();
 
@@ -69,7 +71,7 @@ Future<void> quickPanelMain() async {
     if (call.method == 'shown') {
       final mode = call.arguments is String ? call.arguments as String : 'quick';
       if (mode == 'ha') {
-        await homeAssistant.reload();
+        await Future.wait([homeAssistant.reload(), mediaPanel.reload()]);
         _mode.value = mode;
         _shown.value++;
         return null;
@@ -96,6 +98,7 @@ Future<void> quickPanelMain() async {
       ChangeNotifierProvider.value(value: brightness),
       ChangeNotifierProvider.value(value: lock),
       ChangeNotifierProvider.value(value: homeAssistant),
+      ChangeNotifierProvider.value(value: mediaPanel),
       ChangeNotifierProvider.value(value: notices),
     ],
     child: const _QuickPanelApp(),
@@ -134,7 +137,7 @@ class _QuickPanelApp extends StatelessWidget {
             builder: (context, mode, _) => ValueListenableBuilder<int>(
               valueListenable: _shown,
               builder: (context, shown, _) => switch (mode) {
-                'ha' => _HomeAssistantSheet(key: ValueKey(shown)),
+                'ha' => _MediaSheet(key: ValueKey(shown)),
                 'quick' => _QuickPanel(key: ValueKey(shown)),
                 _ => const SizedBox.shrink(),
               },
@@ -246,14 +249,14 @@ class _QuickPanel extends StatelessWidget {
   }
 }
 
-/// The Home Assistant panel; by default on the right so it is easy to tell from quick settings.
-class _HomeAssistantSheet extends StatelessWidget {
-  const _HomeAssistantSheet({super.key});
+/// The media panel; by default on the right so it is easy to tell from quick settings.
+class _MediaSheet extends StatelessWidget {
+  const _MediaSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ha = context.watch<HomeAssistantService>();
-    final right = ha.panelOnRight;
+    final panel = context.watch<MediaPanelService>();
+    final right = panel.panelOnRight;
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
@@ -271,12 +274,12 @@ class _HomeAssistantSheet extends StatelessWidget {
               ),
             ),
             SidePanelDialog(
-              width: SettingsStyle.panelWidth * (ha.panelWide ? 1.6 : 1),
+              width: SettingsStyle.panelWidth * (panel.panelWide ? 1.6 : 1),
               isRightSide: right,
               child: Actions(
                 actions: {BackIntent: CallbackAction<BackIntent>(onInvoke: (_) => _close())},
-                child: HomeAssistantPanel(
-                  onOpenSettings: () => _panelChannel.invokeMethod('openHomeAssistantSettings'),
+                child: MediaPanel(
+                  onOpenSettings: () => _panelChannel.invokeMethod('openMediaPanelSettings'),
                 ),
               ),
             ),

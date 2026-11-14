@@ -17,6 +17,7 @@
  */
 
 import 'package:flauncher/providers/app_lock_service.dart';
+import 'package:flauncher/media_panel/media_panel_service.dart';
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/home_assistant/notices.dart';
 import 'package:flauncher/providers/vpn_guard_service.dart';
@@ -64,6 +65,7 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(create: (_) => AppLockService()),
         ChangeNotifierProvider(create: (_) => HomeAssistantService(sharedPreferences), lazy: false),
+        ChangeNotifierProvider(create: (_) => MediaPanelService(sharedPreferences), lazy: false),
         ChangeNotifierProvider(create: (_) => HaNoticeSettings(sharedPreferences)),
         ChangeNotifierProvider(create: (_) => VpnGuardService(), lazy: false),
         ChangeNotifierProvider(
