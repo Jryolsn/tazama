@@ -17,7 +17,8 @@ After the handshake both sides send `type byte, length int, payload`.
 
 TV to phone:
 - 1 SET: key, value. Keys: `facing` (back, front, next), `size` (WxH), `fps`, `bitrate`, `zoom` (in, out, ratio),
-  `torch` (on, off, toggle), `exposure` (up, down, -2..2 EV), `rotation` (auto, 0, 90, 180, 270).
+  `torch` (on, off, toggle), `exposure` (up, down, -2..2 EV), `rotation` (auto, 0, 90, 180, 270),
+  `stabilization` (on, off), `focus` (auto, far).
 - 2 START: open the camera and stream.
 
 Phone to TV:

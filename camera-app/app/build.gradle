@@ -38,5 +38,6 @@ android {
 }
 
 dependencies {
-    implementation "com.journeyapps:zxing-android-embedded:4.3.0"
+    // Google's QR scanner (Play services): no camera permission or own scanner screen needed.
+    implementation "com.google.android.gms:play-services-code-scanner:16.1.0"
 }

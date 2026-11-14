@@ -11,8 +11,8 @@ quick panel, VPN guard, "Replace current launcher", sideload build and
 release workflow, TV setup scripts and the "Nebula" visual style. The full list is in the git history.
 
 Phone camera uses ZXing (https://github.com/zxing/zxing, Apache License 2.0) for the
-pairing QR code, and the phone app (camera-app/) uses zxing-android-embedded
-(https://github.com/journeyapps/zxing-android-embedded, Apache License 2.0) to scan it.
+pairing QR code; the phone app (camera-app/) scans it with Google's code scanner
+(Play services).
 
 The Nunito font (assets/fonts) is licensed under the SIL Open Font License 1.1,
 see assets/fonts/OFL.txt.

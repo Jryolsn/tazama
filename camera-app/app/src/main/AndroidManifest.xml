@@ -35,11 +35,5 @@
             android:name=".CameraService"
             android:exported="false"
             android:foregroundServiceType="camera" />
-
-        <!-- QR scanner from zxing-android-embedded: follow the phone's orientation. -->
-        <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
     </application>
 </manifest>
