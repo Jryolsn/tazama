@@ -678,19 +678,15 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         pairing.setOrientation(LinearLayout.HORIZONTAL);
         pairing.setGravity(Gravity.CENTER);
         pairing.setBackgroundColor(Color.BLACK);
-        ImageView qr = new ImageView(this);
-        qr.setImageBitmap(qrBitmap(qrText(), 480));
-        pairing.addView(qr, new LinearLayout.LayoutParams(dp(220), dp(220)));
-        TextView steps = new TextView(this);
-        steps.setTextColor(Color.WHITE);
-        steps.setTextSize(18);
-        steps.setPadding(dp(32), 0, 0, 0);
-        steps.setText("Pair your phone\n\n"
-                + "1. Install Tazama Camera on the phone\n    (Obtainium: github.com/Jryolsn/tazama)\n"
-                + "2. Open it and tap \"Scan TV code\"\n\n"
-                + "No luck with the QR code? Tap \"Enter code instead\"\nand type  "
-                + pairCode.substring(0, 3) + " " + pairCode.substring(3));
-        pairing.addView(steps);
+        // Step 1: get the phone app (direct APK of the release matching this TV build). Step 2: pair.
+        pairing.addView(pairingStep("1. Get the phone app",
+                qrBitmap(appDownloadUrl(), 480),
+                "Scan with the phone's camera and install\nTazama Camera. Or use Obtainium:\n"
+                        + "github.com/Jryolsn/tazama, filter \"camera\""));
+        pairing.addView(pairingStep("2. Pair",
+                qrBitmap(qrText(), 480),
+                "In Tazama Camera tap \"Scan TV code\".\nOr tap \"Enter code instead\" and type\n"
+                        + pairCode.substring(0, 3) + " " + pairCode.substring(3)));
         pairing.setVisibility(View.GONE);
         root.addView(pairing, new FrameLayout.LayoutParams(-1, -1));
 
@@ -752,6 +748,42 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         updateMenuLabels();
 
         setContentView(root);
+    }
+
+    private LinearLayout pairingStep(String title, Bitmap qr, String text) {
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setGravity(Gravity.CENTER_HORIZONTAL);
+        col.setPadding(dp(36), 0, dp(36), 0);
+        TextView t = new TextView(this);
+        t.setTextColor(Color.WHITE);
+        t.setTextSize(22);
+        t.setText(title);
+        t.setPadding(0, 0, 0, dp(12));
+        col.addView(t);
+        ImageView image = new ImageView(this);
+        image.setImageBitmap(qr);
+        col.addView(image, new LinearLayout.LayoutParams(dp(190), dp(190)));
+        TextView d = new TextView(this);
+        d.setTextColor(0xFFCCCCDD);
+        d.setTextSize(15);
+        d.setGravity(Gravity.CENTER_HORIZONTAL);
+        d.setPadding(0, dp(12), 0, 0);
+        d.setText(text);
+        col.addView(d);
+        return col;
+    }
+
+    /** The phone APK published in the same GitHub release as this TV build. */
+    private String appDownloadUrl() {
+        String version = null;
+        try {
+            version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception ignored) {
+        }
+        if (version == null || version.isEmpty()) return "https://github.com/Jryolsn/tazama/releases";
+        return "https://github.com/Jryolsn/tazama/releases/download/v" + version
+                + "/tazama-camera-" + version + "-arm64-v8a.apk";
     }
 
     private void cycle(String key, String[] values, int dir) {
