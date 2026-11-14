@@ -53,6 +53,8 @@ final class CameraStreamer {
     private boolean torch;
     private int exposure; // EV steps, -2..2
     private String rotationMode = "auto";
+    private boolean stabilization;
+    private boolean focusFar;
     private int deviceRotation;
 
     private Sink sink;
@@ -124,8 +126,9 @@ final class CameraStreamer {
                     if ("in".equals(value)) zoom *= 1.25f;
                     else if ("out".equals(value)) zoom /= 1.25f;
                     else zoom = Float.parseFloat(value);
-                    zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
                     if (Math.abs(zoom - 1f) < 0.05f) zoom = 1f;
+                    // Before the camera is open the range is unknown; open() clamps it.
+                    if (chars != null) zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
                     updateRequest();
                 }
                 case "torch" -> {
@@ -137,6 +140,14 @@ final class CameraStreamer {
                     else if ("down".equals(value)) exposure--;
                     else exposure = Integer.parseInt(value);
                     exposure = Math.max(-2, Math.min(2, exposure));
+                    updateRequest();
+                }
+                case "stabilization" -> {
+                    stabilization = "on".equals(value);
+                    updateRequest();
+                }
+                case "focus" -> {
+                    focusFar = "far".equals(value);
                     updateRequest();
                 }
                 case "rotation" -> {
@@ -391,7 +402,11 @@ final class CameraStreamer {
             b.addTarget(encoderSurface);
             b.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, fpsRange);
             int[] afModes = chars.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
-            if (afModes != null) {
+            Float minFocus = chars.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+            if (focusFar && minFocus != null && minFocus > 0) {
+                b.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
+                b.set(CaptureRequest.LENS_FOCUS_DISTANCE, 0f); // infinity
+            } else if (afModes != null) {
                 for (int m : afModes) {
                     if (m == CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO) {
                         b.set(CaptureRequest.CONTROL_AF_MODE, m);
@@ -399,6 +414,9 @@ final class CameraStreamer {
                     }
                 }
             }
+            // Electronic stabilization buffers frames, so it is off unless asked for.
+            b.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, stabilization
+                    ? CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_ON : CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_OFF);
             b.set(CaptureRequest.FLASH_MODE, torch && hasTorch ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 b.set(CaptureRequest.CONTROL_ZOOM_RATIO, zoom);

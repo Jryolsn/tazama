@@ -22,8 +22,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,23 +168,19 @@ public class MainActivity extends Activity {
     }
 
     private void scan() {
-        new IntentIntegrator(this)
-                .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-                .setPrompt("Scan the QR code on the TV")
-                .setBeepEnabled(false)
-                .setOrientationLocked(false)
-                .initiateScan();
+        GmsBarcodeScannerOptions options = new GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                .build();
+        GmsBarcodeScanning.getClient(this, options).startScan()
+                .addOnSuccessListener(barcode -> onScanned(barcode.getRawValue()))
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "The scanner could not start (" + e.getMessage() + "). Use \"Enter code instead\".",
+                        Toast.LENGTH_LONG).show());
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result == null) {
-            super.onActivityResult(requestCode, resultCode, data);
-            return;
-        }
-        if (result.getContents() == null) return;
-        String tv = store.pairFromQr(result.getContents());
+    private void onScanned(String text) {
+        if (text == null) return;
+        String tv = store.pairFromQr(text);
         Toast.makeText(this, tv == null ? "That is not a Tazama TV code." : "Paired with " + tv, Toast.LENGTH_LONG).show();
         if (tv != null && !CameraService.running && hasPermissions()) startCameraService();
         refresh();

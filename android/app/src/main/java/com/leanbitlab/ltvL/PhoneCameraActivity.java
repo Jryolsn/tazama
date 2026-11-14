@@ -99,7 +99,10 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
     private TextureView texture;
     private TextView status, info, hint;
     private LinearLayout pairing, menu;
-    private Button lightBtn, cameraBtn, zoomBtn, brightnessBtn, qualityBtn, fpsBtn, rotationBtn;
+    private Button lightBtn, cameraBtn, zoomBtn, brightnessBtn, qualityBtn, fpsBtn, rotationBtn,
+            mirrorBtn, stabilizationBtn, focusBtn;
+    /** Left/Right (and OK) on a menu row: -1 or +1. */
+    private final Map<Button, java.util.function.IntConsumer> steps = new java.util.HashMap<>();
     private final Handler ui = new Handler(Looper.getMainLooper());
 
     // Connection
@@ -326,7 +329,9 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
     private static final int OK = 0, DENIED = 1, UNREACHABLE = 2, ENDED = 3;
 
     private void connectLoop() {
+        // One calm message per phase instead of a new text for every attempt.
         long searchingSince = System.currentTimeMillis();
+        boolean lostStream = false;
         boolean codeTurn = false;
         while (running) {
             Set<String> paired = pairedPhones();
@@ -357,7 +362,6 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
             boolean streamed = false;
             for (Phone p : candidates) {
                 if (!running) return;
-                showStatus("Connecting to " + p.name + "…");
                 int r = session(p, MODE_AUTH);
                 if (r == ENDED) {
                     streamed = true;
@@ -366,15 +370,18 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
             }
             if (streamed) {
                 searchingSince = System.currentTimeMillis();
-                if (running) showStatus("The phone stopped the stream. Reconnecting…");
-                sleep(500);
+                lostStream = true;
+                sleep(300);
                 continue;
             }
-            if (System.currentTimeMillis() - searchingSince > 3000) {
-                showStatus("Can't find your phone.\n\nOpen Tazama Camera on the phone (needed once after it restarts)\n"
-                        + "and check that it is on the same Wi-Fi as the TV.\n\nPress OK to pair a phone.");
+            String phoneName = lastId == null ? "your phone" : prefs.getString("name." + lastId, "your phone");
+            if (System.currentTimeMillis() - searchingSince > 5000) {
+                showStatus("Can't reach " + phoneName + ".\n\n"
+                        + "Open Tazama Camera on the phone (needed once after it restarts)\n"
+                        + "and check that it is on the same Wi-Fi as the TV.\n\n"
+                        + "Still trying. Press OK to pair another phone, Back to exit.");
             } else {
-                showStatus("Looking for your phone…");
+                showStatus((lostStream ? "Connection lost. Reconnecting to " : "Connecting to ") + phoneName + "…");
             }
             sleep(1000);
         }
@@ -422,6 +429,10 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
             send(T_SET, "size", prefs.getString("size", SIZES[0]));
             send(T_SET, "fps", prefs.getString("fps", FPS[0]));
             send(T_SET, "rotation", prefs.getString("rotation", "auto"));
+            send(T_SET, "zoom", String.valueOf(prefs.getFloat("zoom", 1f)));
+            send(T_SET, "exposure", String.valueOf(prefs.getInt("exposure", 0)));
+            send(T_SET, "stabilization", prefs.getString("stabilization", "off"));
+            send(T_SET, "focus", prefs.getString("focus", "auto"));
             sendRaw(T_START, new byte[0]);
             readLoop(in);
             return ENDED;
@@ -642,6 +653,7 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         Matrix m = new Matrix();
         m.setScale(boxW / vw, boxH / vh, vw / 2f, vh / 2f);
         m.postRotate(rotation, vw / 2f, vh / 2f);
+        if (prefs.getBoolean("mirror", false)) m.postScale(-1f, 1f, vw / 2f, vh / 2f);
         texture.setTransform(m);
     }
 
@@ -707,14 +719,27 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         menu.setOrientation(LinearLayout.VERTICAL);
         menu.setPadding(dp(12), dp(12), dp(12), dp(12));
         menu.setBackground(round(0xCC101018));
-        lightBtn = menuButton(v -> set("torch", "toggle"));
-        cameraBtn = menuButton(v -> set("facing", "next"));
-        zoomBtn = menuButton(v -> set("zoom", "1"));
-        brightnessBtn = menuButton(v -> set("exposure", String.valueOf(exposure >= 2 ? -2 : exposure + 1)));
-        qualityBtn = menuButton(v -> cycle("size", SIZES));
-        fpsBtn = menuButton(v -> cycle("fps", FPS));
-        rotationBtn = menuButton(v -> cycle("rotation", ROTATIONS));
-        Button forget = menuButton(v -> {
+        lightBtn = menuButton(d -> set("torch", "toggle"));
+        cameraBtn = menuButton(d -> set("facing", "next"));
+        zoomBtn = menuButton(d -> set("zoom", d > 0 ? "in" : "out"));
+        zoomBtn.setOnClickListener(v -> set("zoom", "1"));
+        brightnessBtn = menuButton(d -> {
+            int ex = Math.max(-2, Math.min(2, exposure + d));
+            prefs.edit().putInt("exposure", ex).apply();
+            set("exposure", String.valueOf(ex));
+        });
+        qualityBtn = menuButton(d -> cycle("size", SIZES, d));
+        fpsBtn = menuButton(d -> cycle("fps", FPS, d));
+        rotationBtn = menuButton(d -> cycle("rotation", ROTATIONS, d));
+        mirrorBtn = menuButton(d -> {
+            prefs.edit().putBoolean("mirror", !prefs.getBoolean("mirror", false)).apply();
+            applyTransform();
+            updateMenuLabels();
+        });
+        stabilizationBtn = menuButton(d -> cycle("stabilization", new String[]{"off", "on"}, d));
+        focusBtn = menuButton(d -> cycle("focus", new String[]{"auto", "far"}, d));
+        Button forget = menuButton(null);
+        forget.setOnClickListener(v -> {
             forgetPhones();
             closeQuietlyAsync();
             hideMenu();
@@ -729,11 +754,11 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         setContentView(root);
     }
 
-    private void cycle(String key, String[] values) {
+    private void cycle(String key, String[] values, int dir) {
         String now = prefs.getString(key, values[0]);
         int i = 0;
         for (int k = 0; k < values.length; k++) if (values[k].equals(now)) i = k;
-        String next = values[(i + 1) % values.length];
+        String next = values[((i + dir) % values.length + values.length) % values.length];
         prefs.edit().putString(key, next).apply();
         set(key, next);
         updateMenuLabels();
@@ -751,7 +776,7 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         exposure = ex;
         size = sz;
         fpsNow = String.valueOf(fps);
-        prefs.edit().putString("facing", f).apply();
+        prefs.edit().putString("facing", f).putFloat("zoom", z).putInt("exposure", ex).apply();
         applyTransform();
         updateMenuLabels();
         if (changedCamera) flashInfo(("front".equals(f) ? "Front" : "Back") + " camera");
@@ -761,7 +786,7 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
 
     private void updateMenuLabels() {
         lightBtn.setText(!hasTorch ? "Light: not on this camera" : "Light: " + (torch ? "on" : "off"));
-        cameraBtn.setText("Camera: " + facing);
+        cameraBtn.setText("Camera: " + facing + "  ◀ ▶");
         zoomBtn.setText(String.format(Locale.ROOT, "Zoom: %.1fx  ◀ ▶", zoom));
         brightnessBtn.setText("Brightness: " + (exposure > 0 ? "+" : "") + exposure);
         String q = prefs.getString("size", SIZES[0]);
@@ -771,6 +796,10 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         fpsBtn.setText("Frame rate: " + f + (fpsNow.isEmpty() || fpsNow.equals(f) ? "" : " (phone: " + fpsNow + ")"));
         String r = prefs.getString("rotation", "auto");
         rotationBtn.setText("Rotation: " + ("auto".equals(r) ? "auto" : r + "°"));
+        mirrorBtn.setText("Mirror: " + (prefs.getBoolean("mirror", false) ? "on" : "off"));
+        stabilizationBtn.setText("Stabilization: " + prefs.getString("stabilization", "off")
+                + ("off".equals(prefs.getString("stabilization", "off")) ? " (fastest)" : ""));
+        focusBtn.setText("Focus: " + ("far".equals(prefs.getString("focus", "auto")) ? "far (fixed)" : "auto"));
     }
 
     private void showMenu() {
@@ -842,16 +871,14 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        // Up/Down in the menu move focus; while the zoom row is focused they zoom instead.
-        if (menu.getVisibility() == View.VISIBLE && zoomBtn.isFocused() && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT) {
-                set("zoom", "out");
-                return true;
-            }
-            if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                set("zoom", "in");
-                return true;
-            }
+        // In the menu Up/Down move between rows and Left/Right change the focused row.
+        int code = event.getKeyCode();
+        if (menu.getVisibility() == View.VISIBLE && event.getAction() == KeyEvent.ACTION_DOWN
+                && (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT)) {
+            View focused = getCurrentFocus();
+            java.util.function.IntConsumer step = focused instanceof Button ? steps.get(focused) : null;
+            if (step != null) step.accept(code == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
+            return true;
         }
         return super.dispatchKeyEvent(event);
     }
@@ -866,12 +893,12 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
     private void showStatus(String text) {
         ui.post(() -> {
             if (pairing.getVisibility() == View.VISIBLE) return;
-            status.setText(text);
+            if (!text.contentEquals(status.getText())) status.setText(text);
             status.setVisibility(View.VISIBLE);
         });
     }
 
-    private Button menuButton(View.OnClickListener l) {
+    private Button menuButton(java.util.function.IntConsumer step) {
         Button b = new Button(this);
         b.setAllCaps(false);
         b.setTextColor(Color.WHITE);
@@ -882,7 +909,10 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         bg.addState(new int[]{android.R.attr.state_focused}, round(0xFF6E5BD8));
         bg.addState(new int[]{}, new ColorDrawable(Color.TRANSPARENT));
         b.setBackground(bg);
-        b.setOnClickListener(l);
+        if (step != null) {
+            steps.put(b, step);
+            b.setOnClickListener(v -> step.accept(1));
+        }
         menu.addView(b, new LinearLayout.LayoutParams(-1, dp(40)));
         return b;
     }
