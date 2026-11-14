@@ -17,7 +17,7 @@ void openHomeAssistantSettings(BuildContext context, {bool closeSettingsPanel = 
   navigator.push(MaterialPageRoute(builder: (_) => const HomeAssistantScreen()));
 }
 
-enum _Section { connection, controls, arrange, dashboard, cameras, notices, panel }
+enum _Section { connection, controls, arrange, dashboard, cameras, notices }
 
 /// Home Assistant settings as a full screen: a menu on the left, the chosen section on the right.
 class HomeAssistantScreen extends StatefulWidget {
@@ -112,12 +112,11 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
                               item(_Section.dashboard, Icons.space_dashboard_rounded, 'Dashboard',
                                   ha.dashboardPath ?? 'None',
                                   enabled: connected),
-                              item(_Section.cameras, Icons.videocam_rounded, 'Cameras', 'Direct streams, live',
+                              item(_Section.cameras, Icons.videocam_rounded, 'Cameras', 'Direct streams, live, refresh',
                                   enabled: connected),
                               item(_Section.notices, Icons.notifications_active_rounded, 'Notices',
                                   context.watch<HaNoticeSettings>().enabled ? 'On' : 'Off',
                                   enabled: connected),
-                              item(_Section.panel, Icons.view_sidebar_rounded, 'Panel', 'Side, width, refresh'),
                             ],
                           ),
                         ),
@@ -145,14 +144,12 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
   }
 
   Widget _content(HomeAssistantService ha, bool connected) {
-    if (_section != _Section.connection && _section != _Section.panel && !connected) {
+    if (_section != _Section.connection && !connected) {
       return const _Message('Connect to Home Assistant first.');
     }
     switch (_section) {
       case _Section.connection:
         return _ConnectionSection(onConnected: _load);
-      case _Section.panel:
-        return const _PanelSection();
       case _Section.dashboard:
         return const _DashboardSection();
       case _Section.cameras:
@@ -325,39 +322,6 @@ class _ConnectionSection extends StatelessWidget {
   }
 }
 
-class _PanelSection extends StatelessWidget {
-  const _PanelSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final ha = context.watch<HomeAssistantService>();
-    final small = Theme.of(context).textTheme.bodySmall;
-    return _SectionList(title: 'Panel (hold Home)', children: [
-      FocusableSettingsTile(
-        leading: Icon(ha.panelOnRight ? Icons.align_horizontal_right_rounded : Icons.align_horizontal_left_rounded),
-        title: Text('Side: ${ha.panelOnRight ? 'Right' : 'Left'}'),
-        onPressed: () => ha.setPanelOnRight(!ha.panelOnRight),
-      ),
-      RoundedSwitchListTile(
-        value: ha.panelWide,
-        onChanged: ha.setPanelWide,
-        title: const Text('Wide panel'),
-        subtitle: Text('More room for cameras', style: small),
-        secondary: const Icon(Icons.width_wide_rounded),
-      ),
-      FocusableSettingsTile(
-        leading: const Icon(Icons.videocam_rounded),
-        title: Text('Camera refresh: every ${ha.cameraRefreshSeconds} s'),
-        onPressed: () {
-          const choices = HomeAssistantService.cameraRefreshChoices;
-          final i = choices.indexOf(ha.cameraRefreshSeconds);
-          ha.setCameraRefreshSeconds(choices[(i + 1) % choices.length]);
-        },
-      ),
-    ]);
-  }
-}
-
 class _CamerasSection extends StatelessWidget {
   final HaData data;
 
@@ -376,6 +340,16 @@ class _CamerasSection extends StatelessWidget {
         title: const Text('Live as soon as the panel opens'),
         subtitle: Text('Off: only the focused camera plays live', style: small),
         secondary: const Icon(Icons.play_circle_rounded),
+      ),
+      FocusableSettingsTile(
+        leading: const Icon(Icons.refresh_rounded),
+        title: Text('Picture refresh: every ${ha.cameraRefreshSeconds} s'),
+        subtitle: Text('For cameras that are not playing live', style: small),
+        onPressed: () {
+          const choices = HomeAssistantService.cameraRefreshChoices;
+          final i = choices.indexOf(ha.cameraRefreshSeconds);
+          ha.setCameraRefreshSeconds(choices[(i + 1) % choices.length]);
+        },
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),

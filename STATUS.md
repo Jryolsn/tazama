@@ -3,6 +3,9 @@
 _Last updated: 2026-11-14_
 
 ## Now
+- Media panel (hold Home) replaces the HA-only panel: user-added cards (RTSP camera without HA, Home Assistant),
+  order/rename/remove, side and width (Settings > Media panel, `lib/media_panel/`). Existing HA users get an HA card
+  automatically. Next: move Phone camera here, "Now playing" card, more card types.
 - Phone camera: Tazama Camera phone app (camera-app/) streams the phone camera to the TV over Wi-Fi
   (H.264, low latency), paired by QR code; remote controls camera, zoom, light, quality. Replaces the adb prototype.
   Not yet tested on the TV.

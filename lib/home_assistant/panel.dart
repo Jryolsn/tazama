@@ -59,17 +59,18 @@ IconData haEntityIcon(HaEntity entity) => switch (entity.domain) {
       _ => Icons.sensors_rounded,
     };
 
-/// Controls for the chosen Home Assistant entities, shown over the app that is open.
-class HomeAssistantPanel extends StatefulWidget {
-  final VoidCallback onOpenSettings;
+/// The Home Assistant card of the media panel: the chosen entities and the dashboard.
+class HomeAssistantSection extends StatefulWidget {
+  final String title;
+  final bool autofocus;
 
-  const HomeAssistantPanel({super.key, required this.onOpenSettings});
+  const HomeAssistantSection({super.key, required this.title, this.autofocus = false});
 
   @override
-  State<HomeAssistantPanel> createState() => _HomeAssistantPanelState();
+  State<HomeAssistantSection> createState() => _HomeAssistantSectionState();
 }
 
-class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
+class _HomeAssistantSectionState extends State<HomeAssistantSection> {
   Map<String, HaEntity> _states = {};
   bool _loaded = false;
   bool _failed = false;
@@ -141,7 +142,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
     final body = Theme.of(context).textTheme.bodyMedium;
     final small = Theme.of(context).textTheme.bodySmall;
 
-    final children = <Widget>[];
+    final children = <Widget>[SettingsGroupLabel(ha.locationName ?? widget.title)];
     if (!ha.isConfigured) {
       children.add(Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -158,7 +159,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
       if (ha.dashboardPath != null) {
         children.add(_EntityKey(
           child: FocusableSettingsTile(
-            autofocus: true,
+            autofocus: widget.autofocus,
             leading: const Icon(Icons.space_dashboard_rounded),
             title: Text('Open dashboard', style: body),
             showChevron: true,
@@ -175,7 +176,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
       for (final id in ha.panelEntities) {
         final entity = _states[id];
         if (entity == null) continue;
-        final autofocus = children.whereType<_EntityKey>().isEmpty;
+        final autofocus = widget.autofocus && children.whereType<_EntityKey>().isEmpty;
         if (entity.domain == 'camera') {
           children.add(_EntityKey(
             child: _CameraTile(
@@ -215,27 +216,7 @@ class _HomeAssistantPanelState extends State<HomeAssistantPanel> {
         ));
       }
     }
-    children
-      ..add(const SettingsSectionDivider())
-      ..add(FocusableSettingsTile(
-        autofocus: children.whereType<_EntityKey>().isEmpty,
-        leading: const Icon(Icons.settings_outlined),
-        title: Text('Home Assistant settings', style: body),
-        showChevron: true,
-        onPressed: widget.onOpenSettings,
-      ));
-
-    return Column(
-      children: [
-        SettingsPageHeader(title: ha.locationName ?? 'Home Assistant'),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: children),
-          ),
-        ),
-      ],
-    );
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
   }
 }
 
