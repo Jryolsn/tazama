@@ -17,7 +17,7 @@ void openHomeAssistantSettings(BuildContext context, {bool closeSettingsPanel = 
   navigator.push(MaterialPageRoute(builder: (_) => const HomeAssistantScreen()));
 }
 
-enum _Section { connection, controls, arrange, dashboard, notices, panel }
+enum _Section { connection, controls, arrange, dashboard, cameras, notices, panel }
 
 /// Home Assistant settings as a full screen: a menu on the left, the chosen section on the right.
 class HomeAssistantScreen extends StatefulWidget {
@@ -112,10 +112,12 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
                               item(_Section.dashboard, Icons.space_dashboard_rounded, 'Dashboard',
                                   ha.dashboardPath ?? 'None',
                                   enabled: connected),
+                              item(_Section.cameras, Icons.videocam_rounded, 'Cameras', 'Direct streams, live',
+                                  enabled: connected),
                               item(_Section.notices, Icons.notifications_active_rounded, 'Notices',
                                   context.watch<HaNoticeSettings>().enabled ? 'On' : 'Off',
                                   enabled: connected),
-                              item(_Section.panel, Icons.view_sidebar_rounded, 'Panel', 'Side, width, cameras'),
+                              item(_Section.panel, Icons.view_sidebar_rounded, 'Panel', 'Side, width, refresh'),
                             ],
                           ),
                         ),
@@ -153,6 +155,9 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
         return const _PanelSection();
       case _Section.dashboard:
         return const _DashboardSection();
+      case _Section.cameras:
+        final data = _data;
+        return data == null ? const Center(child: CircularProgressIndicator()) : _CamerasSection(data: data);
       case _Section.notices:
         final data = _data;
         return data == null ? const Center(child: CircularProgressIndicator()) : _NoticesSection(data: data);
@@ -349,6 +354,56 @@ class _PanelSection extends StatelessWidget {
           ha.setCameraRefreshSeconds(choices[(i + 1) % choices.length]);
         },
       ),
+    ]);
+  }
+}
+
+class _CamerasSection extends StatelessWidget {
+  final HaData data;
+
+  const _CamerasSection({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final ha = context.watch<HomeAssistantService>();
+    final small = Theme.of(context).textTheme.bodySmall;
+    final cameras = data.states.values.where((e) => e.domain == 'camera').toList()
+      ..sort((a, b) => ha.nameOf(a).toLowerCase().compareTo(ha.nameOf(b).toLowerCase()));
+    return _SectionList(title: 'Cameras', children: [
+      RoundedSwitchListTile(
+        value: ha.liveAllCameras,
+        onChanged: ha.setLiveAllCameras,
+        title: const Text('Live as soon as the panel opens'),
+        subtitle: Text('Off: only the focused camera plays live', style: small),
+        secondary: const Icon(Icons.play_circle_rounded),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+        child: Text(
+          'Direct stream: the TV plays the camera itself over RTSP, with less delay and with sound. '
+          'Without it the picture comes through Home Assistant. Most cameras can give an RTSP address; '
+          'some need a camera account created in their own app first.',
+          style: small,
+        ),
+      ),
+      for (final camera in cameras)
+        FocusableSettingsTile(
+          leading: Icon(ha.rtspUrlOf(camera.entityId) != null ? Icons.bolt_rounded : Icons.videocam_outlined),
+          title: Text(ha.nameOf(camera), maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text(
+            ha.rtspUrlOf(camera.entityId) != null ? 'Direct stream (RTSP)' : 'Through Home Assistant',
+            style: small,
+          ),
+          onPressed: () async {
+            final value = await askTvText(context,
+                title: 'Direct stream for ${ha.nameOf(camera)}',
+                initial: ha.rtspUrlOf(camera.entityId) ?? '',
+                kind: TvTextKind.url,
+                help: 'e.g. rtsp://user:password@192.168.1.20:554/stream2. Leave empty to go through Home Assistant.');
+            if (value != null) await ha.setRtspUrl(camera.entityId, value);
+          },
+        ),
+      if (cameras.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text('No cameras in Home Assistant.', style: small)),
     ]);
   }
 }

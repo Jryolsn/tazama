@@ -21,6 +21,8 @@ class HomeAssistantService extends ChangeNotifier {
   static const _holdHomeKey = 'home_assistant_hold_home';
   static const _cameraRefreshKey = 'home_assistant_camera_refresh';
   static const cameraRefreshChoices = [1, 2, 3, 5, 10, 30];
+  static const _rtspKey = 'home_assistant_rtsp';
+  static const _livePreviewsKey = 'home_assistant_live_previews';
 
   /// Domains the panel can show or control.
   static const supportedDomains = {
@@ -34,6 +36,7 @@ class HomeAssistantService extends ChangeNotifier {
   final FlutterSecureStorage _secure;
 
   String? _token;
+  Map<String, String> _rtsp = const {};
   HaConnectionState _state = HaConnectionState.notConfigured;
   String? _locationName;
   String? _version;
@@ -136,14 +139,48 @@ class HomeAssistantService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Re-reads address and token without testing the connection (cheap enough to poll).
-  Future<void> refreshConfig() async {
-    await _prefs.reload();
+  /// All camera tiles in the panel play live as soon as it opens; otherwise only the focused one.
+  bool get liveAllCameras => _prefs.getBool(_livePreviewsKey) ?? true;
+  Future<void> setLiveAllCameras(bool value) async {
+    await _prefs.setBool(_livePreviewsKey, value);
+    notifyListeners();
+  }
+
+  /// Direct stream address (e.g. rtsp://user:pass@192.168.1.20:554/stream2) that the TV plays
+  /// itself instead of going through Home Assistant. Kept encrypted, since it holds a password.
+  String? rtspUrlOf(String entityId) => _rtsp[entityId];
+
+  Future<void> setRtspUrl(String entityId, String? value) async {
+    final map = {..._rtsp};
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) {
+      map.remove(entityId);
+    } else {
+      map[entityId] = trimmed.contains('://') ? trimmed : 'rtsp://$trimmed';
+    }
+    _rtsp = map;
+    await _secure.write(key: _rtspKey, value: jsonEncode(map));
+    notifyListeners();
+  }
+
+  Future<void> _loadSecrets() async {
     try {
       _token = await _secure.read(key: _tokenKey);
     } catch (_) {
       _token = null;
     }
+    try {
+      final raw = await _secure.read(key: _rtspKey);
+      _rtsp = raw == null ? const {} : Map<String, String>.from(jsonDecode(raw) as Map);
+    } catch (_) {
+      _rtsp = const {};
+    }
+  }
+
+  /// Re-reads address and token without testing the connection (cheap enough to poll).
+  Future<void> refreshConfig() async {
+    await _prefs.reload();
+    await _loadSecrets();
   }
 
   /// Picks up changes made by the other engine (launcher or panel).
@@ -153,11 +190,7 @@ class HomeAssistantService extends ChangeNotifier {
   }
 
   Future<void> _load() async {
-    try {
-      _token = await _secure.read(key: _tokenKey);
-    } catch (_) {
-      _token = null;
-    }
+    await _loadSecrets();
     if (isConfigured) {
       await testConnection();
     } else {

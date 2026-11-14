@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-/// A camera picture: live HLS video when [live] is set and the camera has a stream,
-/// otherwise refreshed snapshots.
+/// A camera picture: live video when [live] is set, otherwise refreshed snapshots. A direct
+/// RTSP address set for the camera is played first (low delay, with sound); HA's HLS stream is the fallback.
 class HaCameraView extends StatefulWidget {
   final String entityId;
   final bool live;
@@ -19,6 +19,7 @@ class HaCameraView extends StatefulWidget {
 }
 
 class _HaCameraViewState extends State<HaCameraView> {
+  static final _options = VideoPlayerOptions(mixWithOthers: true);
   VideoPlayerController? _video;
   Timer? _snapshotTimer;
   int _snapshot = 0;
@@ -52,32 +53,32 @@ class _HaCameraViewState extends State<HaCameraView> {
 
   Future<void> _startStream() async {
     final ha = context.read<HomeAssistantService>();
+    final rtsp = ha.rtspUrlOf(widget.entityId);
+    if (rtsp != null && await _play(VideoPlayerController.networkUrl(Uri.parse(rtsp), videoPlayerOptions: _options))) return;
+    if (!mounted || !widget.live) return;
     final url = await ha.fetchHlsUrl(widget.entityId);
     if (!mounted || !widget.live) return;
-    if (url == null) {
-      setState(() => _streamFailed = true);
-      return;
+    if (url == null || !await _play(VideoPlayerController.networkUrl(url, httpHeaders: ha.authHeaders, videoPlayerOptions: _options))) {
+      if (mounted) setState(() => _streamFailed = true);
     }
-    final controller = VideoPlayerController.networkUrl(
-      url,
-      httpHeaders: ha.authHeaders,
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
+  }
+
+  /// Starts [controller]; true once it plays (or the view no longer wants it).
+  Future<bool> _play(VideoPlayerController controller) async {
     try {
       await controller.initialize();
       await controller.setVolume(widget.sound ? 1 : 0);
-      await controller.setLooping(true);
       await controller.play();
     } catch (_) {
       await controller.dispose();
-      if (mounted) setState(() => _streamFailed = true);
-      return;
+      return false;
     }
     if (!mounted || !widget.live) {
       await controller.dispose();
-      return;
+      return true;
     }
     setState(() => _video = controller);
+    return true;
   }
 
   void _stopStream() {

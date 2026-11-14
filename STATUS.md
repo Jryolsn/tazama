@@ -24,7 +24,9 @@ _Last updated: 2026-11-14_
 - Watch next: sharper images and more card sizes.
 - Home Assistant module (lib/home_assistant/): full-screen settings (Connection, Controls grouped by
   area with search/type filter, Arrange, Dashboard, Panel), opened from Settings or the HA panel.
-  Camera tiles stream live (HLS via video_player) once focused; full-size view has sound if the stream carries AAC.
+  Camera tiles stream live as soon as the panel opens (setting: or only the focused one). Per camera an optional
+  direct RTSP address (encrypted, Settings > Home Assistant > Cameras) is played first via video_player (ExoPlayer RTSP,
+  low delay, G.711/AAC sound); HA's HLS stream is the fallback.
   Notices: Settings > Home Assistant > Notices. The quick panel engine (always loaded) keeps a websocket to HA and
   shows an emoji+text overlay (accessibility service) when chosen binary sensors turn on, or on a `tazama_notify`
   event fired from an HA automation (message, title, emoji, seconds).
