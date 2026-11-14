@@ -39,12 +39,6 @@ jobs:
           echo "name=${VERSION_BASE}.${GITHUB_RUN_NUMBER}${suffix}" >> "$GITHUB_OUTPUT"
           # Above the upstream versionCode (4128) that earlier builds carried, so updates are never downgrades.
           echo "code=$((5000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
-      - name: Fetch scrcpy server (phone camera)
-        run: |
-          mkdir -p android/app/src/main/assets
-          curl -fsSL -o android/app/src/main/assets/scrcpy-server.jar \
-            https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-server-v5.0.1
-          echo "764eb6f79811d5211fe9df341120882ba9994c7a61b897d7bf3fb662e53bc536  android/app/src/main/assets/scrcpy-server.jar" | sha256sum -c -
       - run: flutter pub get
       - name: Build release APK (no self-updater)
         env:
@@ -54,10 +48,22 @@ jobs:
           flutter build apk --release --flavor github
           --build-name=${{ steps.version.outputs.name }}
           --build-number=${{ steps.version.outputs.code }}
-      - name: Rename APK
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+      # The phone half of Phone camera (camera-app/). Named arm64-v8a so Obtainium on the 32-bit TVs
+      # skips it and the 64-bit phone picks it.
+      - name: Build Tazama Camera (phone app)
+        working-directory: camera-app
+        run: >
+          gradle --no-daemon assembleRelease
+          -PversionName=${{ steps.version.outputs.name }}
+          -PversionCode=${{ steps.version.outputs.code }}
+      - name: Rename APKs
         run: |
           mkdir -p dist
           cp build/app/outputs/flutter-apk/*armeabi-v7a*.apk "dist/tazama-${{ steps.version.outputs.name }}-armeabi-v7a.apk"
+          cp camera-app/app/build/outputs/apk/release/app-release.apk "dist/tazama-camera-${{ steps.version.outputs.name }}-arm64-v8a.apk"
       - uses: actions/upload-artifact@v4
         with:
           name: tazama

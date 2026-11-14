@@ -7,7 +7,3 @@
 -keep class io.flutter.plugins.**  { *; }
 -dontwarn io.flutter.embedding.**
 -dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
-## dadb (phone camera)
--dontwarn dadb.**
--dontwarn okio.**
--dontwarn org.codehaus.mojo.animal_sniffer.*

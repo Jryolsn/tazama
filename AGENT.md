@@ -10,6 +10,8 @@ Targets Chromecast with Google TV (HD "boreal" and 4K "sabrina"), armeabi-v7a.
 - `lib/` Flutter app. `lib/quick_panel.dart` is a second entry point (`quickPanelMain`).
 - `android/app/src/main/java/` native side. The Java package is still `com.omeda.arc`
   (upstream); the application id is `com.jryolsn.tazama`. Do not rename the package without need.
+- `camera-app/` Tazama Camera, the phone app for Phone camera (plain Gradle project, Java). Protocol: `camera-app/PROTOCOL.md`.
+  TV side: `android/.../PhoneCameraActivity.java`.
 - `tools/tv/` adb setup/restore scripts for TVs.
 - `.github/workflows/build-apk.yml` builds, signs with `android/app/sideload.keystore` and publishes releases.
 

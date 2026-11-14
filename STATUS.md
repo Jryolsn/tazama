@@ -1,8 +1,11 @@
 # Status
 
-_Last updated: 2026-11-09_
+_Last updated: 2026-11-14_
 
 ## Now
+- Phone camera: Tazama Camera phone app (camera-app/) streams the phone camera to the TV over Wi-Fi
+  (H.264, low latency), paired by QR code; remote controls camera, zoom, light, quality. Replaces the adb prototype.
+  Not yet tested on the TV.
 - Split off from the Arc Launcher fork (Jryolsn/arclauncher) into this repository as **Tazama**.
 - New application id `com.jryolsn.tazama`: TVs need a one-time install of Tazama and removal of the old
   `com.jryolsn.arc` (settings, PIN, home and accessibility setup must be redone).
