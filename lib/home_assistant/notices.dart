@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,20 +56,32 @@ class HaNoticeSettings extends ChangeNotifier {
 
   Future<void> reload() => _prefs.reload();
 
-  /// Emoji that stands in for an icon, picked from the sensor's device class.
-  static String emojiFor(HaEntity entity) => switch (entity.attributes['device_class']) {
-        'motion' || 'moving' => '\u{1F6B6}',
-        'occupancy' || 'presence' => '\u{1F64B}',
-        'door' || 'garage_door' || 'opening' => '\u{1F6AA}',
-        'window' => '\u{1FA9F}',
-        'smoke' || 'heat' => '\u{1F525}',
-        'gas' || 'carbon_monoxide' => '⚠️',
-        'moisture' => '\u{1F4A7}',
-        'sound' => '\u{1F50A}',
-        'vibration' || 'tamper' => '\u{1F4F3}',
-        'lock' => '\u{1F512}',
-        _ => '\u{1F514}',
-      };
+  /// Icon for a sensor notice, picked from the sensor's device class.
+  static IconData iconFor(HaEntity entity) => iconNamed(entity.attributes['device_class']?.toString());
+
+  /// Icon for a device class or a short name (also accepts `mdi:` names) sent by an automation.
+  static IconData iconNamed(String? name) {
+    final n = (name ?? '').toLowerCase().replaceFirst('mdi:', '');
+    bool has(List<String> keys) => keys.any(n.contains);
+    if (has(['motion', 'moving', 'walk', 'run'])) return Icons.directions_walk_rounded;
+    if (has(['occupancy', 'presence', 'person', 'account', 'home'])) return Icons.person_rounded;
+    if (has(['doorbell', 'bell-ring'])) return Icons.doorbell_rounded;
+    if (has(['garage'])) return Icons.garage_rounded;
+    if (has(['door', 'opening'])) return Icons.door_front_door_rounded;
+    if (has(['window'])) return Icons.window_rounded;
+    if (has(['smoke', 'heat', 'fire'])) return Icons.local_fire_department_rounded;
+    if (has(['gas', 'carbon', 'alert', 'warning', 'problem', 'safety'])) return Icons.warning_rounded;
+    if (has(['moisture', 'water', 'leak'])) return Icons.water_drop_rounded;
+    if (has(['sound', 'volume', 'speaker'])) return Icons.volume_up_rounded;
+    if (has(['vibration', 'tamper'])) return Icons.vibration_rounded;
+    if (has(['lock'])) return Icons.lock_rounded;
+    if (has(['package', 'mail', 'delivery'])) return Icons.inventory_2_rounded;
+    if (has(['camera', 'cctv'])) return Icons.videocam_rounded;
+    if (has(['washing', 'laundry', 'dishwasher'])) return Icons.local_laundry_service_rounded;
+    if (has(['battery'])) return Icons.battery_alert_rounded;
+    if (has(['temperature', 'thermometer'])) return Icons.thermostat_rounded;
+    return Icons.notifications_rounded;
+  }
 
   /// Sensor kinds worth showing first in the picker.
   static const alertClasses = {
@@ -78,11 +91,41 @@ class HaNoticeSettings extends ChangeNotifier {
 }
 
 /// Shows a notice on the TV through the native overlay. Returns false when it could not be shown.
-Future<bool> showTvNotice(String text, {required int seconds, required String corner}) async {
+Future<bool> showTvNotice(String title,
+    {String? message, IconData icon = Icons.notifications_rounded, required int seconds, required String corner}) async {
   try {
-    return await _channel.invokeMethod<bool>('showNotice', {'text': text, 'seconds': seconds, 'corner': corner}) ?? false;
+    return await _channel.invokeMethod<bool>('showNotice', {
+          'title': title,
+          'message': message,
+          'icon': await _iconPng(icon),
+          'seconds': seconds,
+          'corner': corner,
+        }) ??
+        false;
   } catch (_) {
     return false;
+  }
+}
+
+/// Renders an icon glyph to PNG so the native overlay can show it without its own icon set.
+Future<Uint8List?> _iconPng(IconData icon) async {
+  try {
+    const size = 64.0;
+    final recorder = ui.PictureRecorder();
+    final painter = TextPainter(
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(fontFamily: icon.fontFamily, package: icon.fontPackage, fontSize: size, color: const Color(0xFFF2F3F5)),
+      ),
+    )..layout();
+    painter.paint(Canvas(recorder), Offset((size - painter.width) / 2, (size - painter.height) / 2));
+    final image = await recorder.endRecording().toImage(size.toInt(), size.toInt());
+    final data = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
+    return data?.buffer.asUint8List();
+  } catch (_) {
+    return null;
   }
 }
 
@@ -91,7 +134,7 @@ Future<bool> showTvNotice(String text, {required int seconds, required String co
 /// Runs in the always-loaded quick panel engine. Two sources:
 /// * the chosen binary sensors turning on, and
 /// * a `tazama_notify` event fired by a Home Assistant automation, with `message`, optional `title`,
-///   `emoji` and `seconds`.
+///   `icon` (for example `door` or `mdi:door`) and `seconds`.
 class HaNoticeListener {
   final HomeAssistantService ha;
   final HaNoticeSettings settings;
@@ -191,9 +234,12 @@ class HaNoticeListener {
       final message = data['message']?.toString() ?? '';
       if (message.isEmpty) return;
       final title = data['title']?.toString();
-      final emoji = data['emoji']?.toString() ?? '\u{1F514}';
-      showTvNotice('$emoji ${title == null || title.isEmpty ? '' : '$title: '}$message',
-          seconds: (data['seconds'] as num?)?.toInt() ?? settings.seconds, corner: settings.corner);
+      final hasTitle = title != null && title.isNotEmpty;
+      showTvNotice(hasTitle ? title : message,
+          message: hasTitle ? message : null,
+          icon: HaNoticeSettings.iconNamed(data['icon']?.toString() ?? title),
+          seconds: (data['seconds'] as num?)?.toInt() ?? settings.seconds,
+          corner: settings.corner);
       return;
     }
     // Sensor trigger.
@@ -206,7 +252,23 @@ class HaNoticeListener {
     if (last != null && now.difference(last).inSeconds < settings.cooldown) return;
     _lastShown[entityId] = now;
     final entity = HaEntity.fromJson(to);
-    showTvNotice('${HaNoticeSettings.emojiFor(entity)} ${ha.nameOf(entity)}',
-        seconds: settings.seconds, corner: settings.corner);
+    showTvNotice(ha.nameOf(entity),
+        message: _stateText(entity), icon: HaNoticeSettings.iconFor(entity), seconds: settings.seconds, corner: settings.corner);
   }
 }
+
+/// Short state line for a sensor that just turned on.
+String? _stateText(HaEntity entity) => switch (entity.attributes['device_class']) {
+      'motion' || 'moving' => 'Motion detected',
+      'occupancy' || 'presence' => 'Someone is here',
+      'door' || 'garage_door' || 'opening' || 'window' => 'Opened',
+      'smoke' => 'Smoke detected',
+      'heat' => 'Heat detected',
+      'gas' || 'carbon_monoxide' => 'Gas detected',
+      'moisture' => 'Water detected',
+      'sound' => 'Sound detected',
+      'vibration' => 'Vibration detected',
+      'tamper' => 'Tampering detected',
+      'lock' => 'Unlocked',
+      _ => null,
+    };

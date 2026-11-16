@@ -33,7 +33,7 @@ class RightPanelDialog extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         insetPadding: EdgeInsets.only(left: MediaQuery.of(context).size.width - width),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.horizontal(left: Radius.circular(28))
+          borderRadius: BorderRadius.horizontal(left: Radius.circular(10))
         ),
         child: Align(
           alignment: Alignment.centerRight,

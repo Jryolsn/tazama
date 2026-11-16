@@ -92,6 +92,6 @@ class GradientPanelPage extends StatelessWidget {
           color: hasFocus ? Colors.white.withValues(alpha: 0.9) : Colors.white.withValues(alpha: 0.10),
           width: hasFocus ? 2 : 1,
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(6),
       );
 }

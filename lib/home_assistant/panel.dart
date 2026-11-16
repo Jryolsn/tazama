@@ -312,17 +312,17 @@ class _CameraTileState extends State<_CameraTile> {
     final accent = Theme.of(context).colorScheme.primary;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Focus(
+      child: Actions(
+        actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => widget.onPressed())},
+        child: Focus(
         autofocus: widget.autofocus,
         onFocusChange: _onFocus,
         child: GestureDetector(
           onTap: widget.onPressed,
-          child: Actions(
-            actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => widget.onPressed())},
-            child: AnimatedContainer(
+          child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: _focused ? accent : Colors.white12, width: _focused ? 2 : 1),
                 boxShadow: _focused ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 16)] : null,
               ),

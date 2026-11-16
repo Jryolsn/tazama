@@ -102,33 +102,72 @@ public class ArcAccessibilityService extends AccessibilityService {
     }
 
     /** Shows a short notice in a corner over whatever is on screen. False when the service isn't running or the TV is asleep. */
-    static boolean showNotice(String text, int seconds, String corner) {
+    static boolean showNotice(String title, String message, byte[] icon, int seconds, String corner) {
         ArcAccessibilityService service = instance;
         if (service == null) return false;
         android.os.PowerManager power = service.getSystemService(android.os.PowerManager.class);
         if (power != null && !power.isInteractive()) return false;
-        service.handler.post(() -> service.displayNotice(text, seconds, corner));
+        service.handler.post(() -> service.displayNotice(title, message, icon, seconds, corner));
         return true;
     }
 
-    private TextView noticeView;
+    private View noticeView;
     private final Runnable hideNotice = this::removeNotice;
 
-    private void displayNotice(String text, int seconds, String corner) {
+    private void displayNotice(String title, String message, byte[] icon, int seconds, String corner) {
         removeNotice();
-        TextView view = new TextView(this);
-        view.setText(text);
-        view.setTextSize(18);
-        view.setTextColor(Color.WHITE);
-        view.setMaxLines(3);
-        view.setMaxWidth(Math.round(480 * getResources().getDisplayMetrics().density));
+        float dp = getResources().getDisplayMetrics().density;
+
+        android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+        card.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+        card.setGravity(Gravity.CENTER_VERTICAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.argb(225, 21, 18, 44));
-        bg.setStroke(2, Color.argb(120, 180, 156, 255));
-        bg.setCornerRadius(40);
-        view.setBackground(bg);
-        int pad = Math.round(12 * getResources().getDisplayMetrics().density);
-        view.setPadding(pad * 2, pad, pad * 2, pad);
+        bg.setColor(Color.argb(240, 24, 26, 31));
+        bg.setStroke(Math.max(1, Math.round(dp)), Color.argb(31, 255, 255, 255));
+        bg.setCornerRadius(8 * dp);
+        card.setBackground(bg);
+        card.setPadding(Math.round(8 * dp), Math.round(8 * dp), Math.round(14 * dp), Math.round(8 * dp));
+        card.setElevation(8 * dp);
+
+        android.graphics.Bitmap bitmap = icon == null ? null : android.graphics.BitmapFactory.decodeByteArray(icon, 0, icon.length);
+        if (bitmap != null) {
+            android.widget.ImageView image = new android.widget.ImageView(this);
+            image.setImageBitmap(bitmap);
+            int chip = Math.round(30 * dp);
+            int inset = Math.round(6 * dp);
+            image.setPadding(inset, inset, inset, inset);
+            GradientDrawable chipBg = new GradientDrawable();
+            chipBg.setColor(Color.argb(26, 255, 255, 255));
+            chipBg.setCornerRadius(6 * dp);
+            image.setBackground(chipBg);
+            android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(chip, chip);
+            lp.setMarginEnd(Math.round(10 * dp));
+            card.addView(image, lp);
+        }
+
+        android.widget.LinearLayout texts = new android.widget.LinearLayout(this);
+        texts.setOrientation(android.widget.LinearLayout.VERTICAL);
+        TextView titleView = new TextView(this);
+        titleView.setText(title == null ? "" : title);
+        titleView.setTextSize(14);
+        titleView.setTextColor(Color.rgb(242, 243, 245));
+        titleView.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
+        titleView.setMaxLines(1);
+        titleView.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        titleView.setMaxWidth(Math.round(320 * dp));
+        texts.addView(titleView);
+        if (message != null && !message.isEmpty()) {
+            TextView messageView = new TextView(this);
+            messageView.setText(message);
+            messageView.setTextSize(12);
+            messageView.setTextColor(Color.argb(166, 242, 243, 245));
+            messageView.setMaxLines(2);
+            messageView.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            messageView.setMaxWidth(Math.round(320 * dp));
+            texts.addView(messageView);
+        }
+        card.addView(texts);
+
         int gravity = switch (corner == null ? "top_right" : corner) {
             case "top_left" -> Gravity.TOP | Gravity.START;
             case "bottom_left" -> Gravity.BOTTOM | Gravity.START;
@@ -142,10 +181,11 @@ public class ArcAccessibilityService extends AccessibilityService {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT);
         params.gravity = gravity;
-        params.x = pad * 3;
-        params.y = pad * 3;
-        noticeView = view;
-        getSystemService(WindowManager.class).addView(view, params);
+        params.x = Math.round(32 * dp);
+        params.y = Math.round(24 * dp);
+        params.windowAnimations = android.R.style.Animation_Toast;
+        noticeView = card;
+        getSystemService(WindowManager.class).addView(card, params);
         handler.postDelayed(hideNotice, Math.max(2, seconds) * 1000L);
     }
 

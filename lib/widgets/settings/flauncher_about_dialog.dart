@@ -36,7 +36,7 @@ class LTvLauncherAboutDialog extends StatelessWidget {
       applicationName: "Tazama",
       applicationVersion: "v${packageInfo.version} (${packageInfo.buildNumber})",
       applicationIcon: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(6),
         child: Image.asset("assets/icon.png", height: 72),
       ),
       applicationLegalese: "Developed by Badis Meddouri\nBased on LTvLauncher © 2026 LeanBitLab",

@@ -8,6 +8,7 @@ import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flauncher/widgets/tv_text_prompt.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 /// Opens the full-screen Home Assistant settings, closing the settings side panel first if asked.
@@ -31,6 +32,44 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
   _Section _section = _Section.connection;
   HaData? _data;
   bool _loading = false;
+  // Separate scopes keep Up/Down inside a column; Left/Right move between them.
+  final _menuScope = FocusScopeNode(debugLabel: 'ha menu');
+  final _contentScope = FocusScopeNode(debugLabel: 'ha content');
+
+  @override
+  void dispose() {
+    _menuScope.dispose();
+    _contentScope.dispose();
+    super.dispose();
+  }
+
+  /// Focuses the last focused row of the section, or its topmost one.
+  void _focusContent() {
+    final last = _contentScope.focusedChild;
+    if (last != null && last.context != null) {
+      last.requestFocus();
+      return;
+    }
+    final nodes = _contentScope.traversalDescendants.where((n) => n.canRequestFocus && n.context != null).toList()
+      ..sort((a, b) {
+        final dy = a.rect.top.compareTo(b.rect.top);
+        return dy != 0 ? dy : a.rect.left.compareTo(b.rect.left);
+      });
+    if (nodes.isNotEmpty) nodes.first.requestFocus();
+  }
+
+  KeyEventResult _menuKey(FocusNode node, KeyEvent event) {
+    if (event is KeyUpEvent || event.logicalKey != LogicalKeyboardKey.arrowRight) return KeyEventResult.ignored;
+    _focusContent();
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _contentKey(FocusNode node, KeyEvent event) {
+    if (event is KeyUpEvent || event.logicalKey != LogicalKeyboardKey.arrowLeft) return KeyEventResult.ignored;
+    final focused = FocusManager.instance.primaryFocus;
+    if (focused == null || !focused.focusInDirection(TraversalDirection.left)) _menuScope.requestFocus();
+    return KeyEventResult.handled;
+  }
 
   @override
   void initState() {
@@ -70,7 +109,7 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
               leading: Icon(icon),
               title: Text(title),
               subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-              onPressed: () => FocusScope.of(context).focusInDirection(TraversalDirection.right),
+              onPressed: _focusContent,
             ),
           ),
         );
@@ -101,7 +140,10 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
                           child: _StatusLine(ha: ha),
                         ),
                         Expanded(
-                          child: ListView(
+                          child: FocusScope(
+                            node: _menuScope,
+                            onKeyEvent: _menuKey,
+                            child: ListView(
                             children: [
                               item(_Section.connection, Icons.link_rounded, 'Connection', ha.url ?? 'Not set up'),
                               item(_Section.controls, Icons.toggle_on_rounded, 'Controls',
@@ -119,6 +161,7 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
                                   enabled: connected),
                             ],
                           ),
+                          ),
                         ),
                       ],
                     ),
@@ -131,7 +174,7 @@ class _HomeAssistantScreenState extends State<HomeAssistantScreen> {
                         borderRadius: BorderRadius.circular(SettingsStyle.cardRadius),
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: FocusTraversalGroup(child: _content(ha, connected)),
+                      child: FocusScope(node: _contentScope, onKeyEvent: _contentKey, child: _content(ha, connected)),
                     ),
                   ),
                 ],
@@ -506,7 +549,7 @@ class _NoticesSectionState extends State<_NoticesSection> {
         onChanged: notices.setListenForEvents,
         title: const Text('Notices from Home Assistant automations'),
         subtitle: Text(
-            'Fire the event tazama_notify with data message (and optional title, emoji, seconds) from an automation.',
+            'Fire the event tazama_notify with data message (and optional title, icon such as door or mdi:door, seconds) from an automation.',
             style: small),
         secondary: const Icon(Icons.bolt_rounded),
       ),
@@ -514,7 +557,7 @@ class _NoticesSectionState extends State<_NoticesSection> {
         leading: const Icon(Icons.play_circle_outline_rounded),
         title: const Text('Show a test notice'),
         onPressed: () async {
-          final shown = await showTvNotice('\u{1F6B6} Test notice', seconds: notices.seconds, corner: notices.corner);
+          final shown = await showTvNotice('Hallway', message: 'Motion detected', icon: Icons.directions_walk_rounded, seconds: notices.seconds, corner: notices.corner);
           if (!shown && context.mounted) {
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(const SnackBar(
                 content: Text('Could not show it: turn on the Tazama accessibility service in Android settings.')));
@@ -533,7 +576,7 @@ class _NoticesSectionState extends State<_NoticesSection> {
                 sensor.attributes['device_class']?.toString(),
               ].whereType<String>().join(' · '),
               style: small),
-          secondary: Text(HaNoticeSettings.emojiFor(sensor), style: const TextStyle(fontSize: 22)),
+          secondary: Icon(HaNoticeSettings.iconFor(sensor)),
         ),
       RoundedSwitchListTile(
         value: _showAll,

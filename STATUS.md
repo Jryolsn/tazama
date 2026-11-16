@@ -17,8 +17,9 @@ _Last updated: 2026-11-14_
   focus glow no longer clipped, Orbit/Aurora clocks shrink to fit, Watch Next sizes S/M/L = 0.6/0.78/1.0.
 
 ## Next
-- Nebula style (PR): night-blue/violet nebula default background, lavender accent, Nunito font,
-  rounded cards with focus glow. All existing customization stays.
+- Clean style (2026-11-16, replaces the earlier space look): graphite default background, white accent,
+  Inter font, 10 dp card corners, compact settings rows, subtle focus glow. All customization stays.
+- TV notices: compact card with a Material icon per sensor type (no emoji); automations can pass `icon`.
 - Settings redesign (same PR): floating panel, pill rows, rounded icons, groups Home screen /
   Appearance / TV and system, Quick panel page removed (feature kept). Categories get size S-XL,
   live preview, per-category title and app-name switches; "Edit <category>" in the app menu.

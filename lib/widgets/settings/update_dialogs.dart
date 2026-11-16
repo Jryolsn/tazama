@@ -201,7 +201,7 @@ class _ChangelogWidgetState extends State<_ChangelogWidget> {
         ),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: _focused
                 ? theme.colorScheme.primary

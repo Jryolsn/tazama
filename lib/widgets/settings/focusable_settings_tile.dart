@@ -61,7 +61,7 @@ class FocusableSettingsTile extends StatelessWidget {
                   height: SettingsStyle.iconChipSize,
                   decoration: BoxDecoration(
                     color: highlighted ? accentColor : accentColor.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(SettingsStyle.iconChipRadius),
                     boxShadow: highlighted
                         ? [BoxShadow(color: accentColor.withValues(alpha: 0.45), blurRadius: 14)]
                         : const [],
@@ -78,7 +78,7 @@ class FocusableSettingsTile extends StatelessWidget {
                 )
               else
                 leading!,
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
             ],
             Expanded(
               child: subtitle != null
@@ -94,7 +94,7 @@ class FocusableSettingsTile extends StatelessWidget {
                   : title,
             ),
             if (trailing != null) ...[
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               trailing!,
             ] else if (showChevron) ...[
               const SizedBox(width: 8),
