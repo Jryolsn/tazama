@@ -549,7 +549,7 @@ class _NoticesSectionState extends State<_NoticesSection> {
         onChanged: notices.setListenForEvents,
         title: const Text('Notices from Home Assistant automations'),
         subtitle: Text(
-            'Fire the event tazama_notify with data message (and optional title, emoji, seconds) from an automation.',
+            'Fire the event tazama_notify with data message (and optional title, icon such as door or mdi:door, seconds) from an automation.',
             style: small),
         secondary: const Icon(Icons.bolt_rounded),
       ),
@@ -557,7 +557,7 @@ class _NoticesSectionState extends State<_NoticesSection> {
         leading: const Icon(Icons.play_circle_outline_rounded),
         title: const Text('Show a test notice'),
         onPressed: () async {
-          final shown = await showTvNotice('\u{1F6B6} Test notice', seconds: notices.seconds, corner: notices.corner);
+          final shown = await showTvNotice('Hallway', message: 'Motion detected', icon: Icons.directions_walk_rounded, seconds: notices.seconds, corner: notices.corner);
           if (!shown && context.mounted) {
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(const SnackBar(
                 content: Text('Could not show it: turn on the Tazama accessibility service in Android settings.')));
@@ -576,7 +576,7 @@ class _NoticesSectionState extends State<_NoticesSection> {
                 sensor.attributes['device_class']?.toString(),
               ].whereType<String>().join(' · '),
               style: small),
-          secondary: Text(HaNoticeSettings.emojiFor(sensor), style: const TextStyle(fontSize: 22)),
+          secondary: Icon(HaNoticeSettings.iconFor(sensor)),
         ),
       RoundedSwitchListTile(
         value: _showAll,

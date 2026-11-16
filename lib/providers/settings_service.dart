@@ -135,7 +135,7 @@ class SettingsService extends ChangeNotifier {
 
   bool get showNetworkIndicatorInStatusBar => _sharedPreferences.getBool(_showNetworkIndicatorInStatusBar) ?? true;
 
-  String get accentColorHex => _sharedPreferences.getString(_accentColor) ?? ACCENT_COLOR_LAVENDER;
+  String get accentColorHex => _sharedPreferences.getString(_accentColor) ?? ACCENT_COLOR_WHITE;
 
   String get screensaverClockStyle => _sharedPreferences.getString(_screensaverClockStyle) ?? "minimal";
 
@@ -225,7 +225,7 @@ class SettingsService extends ChangeNotifier {
   /// Watch Next card size: "s", "m" (default) or "l".
   String get watchNextCardSize => _sharedPreferences.getString("watch_next_card_size") ?? "m";
 
-  double get watchNextCardScale => const {"s": 0.6, "m": 0.78, "l": 1.0}[watchNextCardSize] ?? 1.0;
+  double get watchNextCardScale => const {"s": 0.5, "m": 0.66, "l": 0.85}[watchNextCardSize] ?? 1.0;
 
   Future<void> setWatchNextCardSize(String size) async {
     await _sharedPreferences.setString("watch_next_card_size", size);

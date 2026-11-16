@@ -95,7 +95,7 @@ class _StreamCardState extends State<_StreamCard> {
       builder: (_) => Dialog(
         insetPadding: const EdgeInsets.all(48),
         clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Focus(
           autofocus: true,
           child: AspectRatio(aspectRatio: 16 / 9, child: StreamView(url: url, sound: true)),
@@ -120,7 +120,7 @@ class _StreamCardState extends State<_StreamCard> {
           child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: _focused ? accent : Colors.white12, width: _focused ? 2 : 1),
                 boxShadow: _focused ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 16)] : null,
               ),

@@ -42,14 +42,14 @@ class HomeLayoutPage extends StatelessWidget {
                           width: 128,
                           height: 72,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(5),
                             border: Border.all(
                               color: id == current ? accent : Colors.white.withValues(alpha: 0.12),
                               width: id == current ? 2 : 1,
                             ),
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(11),
+                            borderRadius: BorderRadius.circular(4),
                             child: CustomPaint(painter: HomeLayoutThumbnail(id, accent)),
                           ),
                         ),
@@ -93,7 +93,7 @@ class HomeLayoutThumbnail extends CustomPainter {
         ..shader = const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0B0A24), Color(0xFF2A1752)],
+          colors: [Color(0xFF1A1C22), Color(0xFF0D0E12)],
         ).createShader(Offset.zero & size),
     );
     final card = Paint()..color = Colors.white.withValues(alpha: 0.28);

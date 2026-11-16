@@ -90,7 +90,7 @@ class _ApplicationsPanelPageState extends State<ApplicationsPanelPage> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(6),
               border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
             ),
             child: Row(
@@ -203,7 +203,7 @@ class _ApplicationsPanelPageState extends State<ApplicationsPanelPage> {
               color: selected
                   ? accentColor.withValues(alpha: 0.26)
                   : (focused ? Colors.white.withValues(alpha: 0.12) : Colors.transparent),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color: focused ? Colors.white.withValues(alpha: 0.28) : Colors.transparent,
               ),

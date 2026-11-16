@@ -14,7 +14,7 @@ Phone camera uses ZXing (https://github.com/zxing/zxing, Apache License 2.0) for
 pairing QR code; the phone app (camera-app/) scans it with Google's code scanner
 (Play services).
 
-The Nunito font (assets/fonts) is licensed under the SIL Open Font License 1.1,
+The Inter font (assets/fonts) is licensed under the SIL Open Font License 1.1,
 see assets/fonts/OFL.txt.
 
 This program is distributed under the GNU General Public License version 3,

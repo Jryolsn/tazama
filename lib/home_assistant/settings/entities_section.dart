@@ -250,7 +250,7 @@ class _CompactRow extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: focused ? accent.withValues(alpha: 0.22) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: focused ? accent : Colors.transparent, width: 2),
                 ),
                 child: Row(children: [

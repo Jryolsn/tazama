@@ -104,7 +104,8 @@ class FLauncherApp extends StatelessWidget
 
 /// Arc's dark theme, also used by the quick panel that opens on top of other apps.
 ThemeData arcTheme(Color accentColor) {
-  final text = Typography.material2018().white.apply(
+  final text = Typography.material2018().englishLike.merge(Typography.material2018().white).apply(
+        fontSizeFactor: 0.9,
         fontFamily: Nebula.fontFamily,
         bodyColor: Nebula.text,
         displayColor: Nebula.text,
@@ -129,12 +130,12 @@ ThemeData arcTheme(Color accentColor) {
               style: TextButton.styleFrom(
                 foregroundColor: Nebula.text,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
               )
           ),
           dialogTheme: DialogThemeData(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(10),
               side: const BorderSide(color: Color(0x1FFFFFFF)),
             ),
             backgroundColor: Nebula.surfaceHigh,

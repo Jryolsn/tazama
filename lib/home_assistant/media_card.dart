@@ -118,13 +118,13 @@ class _HaMediaCardState extends State<HaMediaCard> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: focused ? 0.14 : 0.07),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: focused ? accent : Colors.white12, width: focused ? 2 : 1),
                 boxShadow: focused ? [BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 16)] : null,
               ),
               child: Row(children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(6),
                   child: SizedBox(
                     width: 72,
                     height: 72,
