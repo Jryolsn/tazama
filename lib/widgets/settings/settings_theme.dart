@@ -14,36 +14,36 @@ abstract final class SettingsStyle {
   static const Duration focusDuration = Duration(milliseconds: 140);
 
   /// Row card geometry.
-  static const double cardRadius = 24;
+  static const double cardRadius = 12;
   static const EdgeInsets cardMargin = EdgeInsets.symmetric(
     horizontal: 8,
-    vertical: 3,
+    vertical: 2,
   );
   static const EdgeInsets cardPadding = EdgeInsets.symmetric(
-    horizontal: 14,
-    vertical: 11,
+    horizontal: 12,
+    vertical: 8,
   );
 
   /// Page header geometry.
   static const EdgeInsets headerPadding = EdgeInsets.fromLTRB(8, 6, 8, 8);
 
   /// Leading icon chip geometry.
-  static const double iconChipSize = 34;
-  static const double iconChipRadius = 10;
-  static const double iconSize = 20;
+  static const double iconChipSize = 28;
+  static const double iconChipRadius = 8;
+  static const double iconSize = 17;
 
   /// Scale applied to the focused row (1.0 means no lift).
-  static const double focusScale = 1.025;
+  static const double focusScale = 1.0;
 
-  static const double panelWidth = 380;
-  static const double panelRadius = 32;
-  static const double panelInset = 24;
+  static const double panelWidth = 340;
+  static const double panelRadius = 18;
+  static const double panelInset = 16;
 
-  static const Color panelTop = Color(0xFF241C47);
-  static const Color panelBottom = Color(0xFF0E0B22);
+  static const Color panelTop = Color(0xFF1D1F25);
+  static const Color panelBottom = Color(0xFF121317);
 
-  static const Color rowRestFill = Color(0x0DE6DCFF); // lavender white @ 5%
-  static const Color rowFocusFill = Color(0x21E6DCFF); // lavender white @ 13%
+  static const Color rowRestFill = Color(0x0AFFFFFF); // white @ 4%
+  static const Color rowFocusFill = Color(0x1FFFFFFF); // white @ 12%
 
   static Duration focusDurationFor(BuildContext context) {
     final reduceMotion =
@@ -78,6 +78,7 @@ class SettingsPageHeader extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: textTheme.titleLarge?.copyWith(
+                fontSize: 19,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.1,
                 height: 1.15,
@@ -393,14 +394,14 @@ class SettingsChoiceChip extends StatelessWidget {
       onPressed: onPressed,
       margin: const EdgeInsets.symmetric(horizontal: 3),
       padding: EdgeInsets.zero,
-      radius: 99,
+      radius: 8,
       builder: (context, highlighted) => AnimatedContainer(
         duration: SettingsStyle.focusDurationFor(context),
-        height: 34,
+        height: 30,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: selected ? accent : Colors.transparent,
-          borderRadius: BorderRadius.circular(99),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label,

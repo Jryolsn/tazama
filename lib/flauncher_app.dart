@@ -129,12 +129,12 @@ ThemeData arcTheme(Color accentColor) {
               style: TextButton.styleFrom(
                 foregroundColor: Nebula.text,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               )
           ),
           dialogTheme: DialogThemeData(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(16),
               side: const BorderSide(color: Color(0x1FFFFFFF)),
             ),
             backgroundColor: Nebula.surfaceHigh,

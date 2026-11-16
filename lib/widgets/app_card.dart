@@ -107,7 +107,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   late final AnimationController _animation;
 
   late final CurvedAnimation _curvedAnimation;
-  static const double _focusedScale = 1.1;
+  static const double _focusedScale = 1.06;
   static const Duration _focusAnimationDuration = Duration(milliseconds: 180);
 
   @override
@@ -231,7 +231,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(Nebula.cardRadius),
                                   boxShadow: [
-                                    BoxShadow(color: _accentColor.withValues(alpha: 0.7), blurRadius: 32, spreadRadius: 4),
+                                    BoxShadow(color: _accentColor.withValues(alpha: 0.22), blurRadius: 16),
                                   ],
                                 ),
                               ),
@@ -262,7 +262,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                                     duration: _focusAnimationDuration,
                                     curve: Curves.easeInOut,
                                     opacity: shouldHighlight ? 0.0 : 1.0,
-                                    child: const ColoredBox(color: Color(0x260B0A24)),
+                                    child: const ColoredBox(color: Color(0x260D0E12)),
                                   ),
                                 ),
                               ],

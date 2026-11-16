@@ -60,12 +60,12 @@ flutter:
     - assets/
     - lib/l10n/
   fonts:
-    - family: Nunito
+    - family: Inter
       fonts:
-        - asset: assets/fonts/Nunito-300.ttf
+        - asset: assets/fonts/Inter-300.ttf
           weight: 300
-        - asset: assets/fonts/Nunito-400.ttf
-        - asset: assets/fonts/Nunito-600.ttf
+        - asset: assets/fonts/Inter-400.ttf
+        - asset: assets/fonts/Inter-500.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-600.ttf
           weight: 600
-        - asset: assets/fonts/Nunito-700.ttf
-          weight: 700

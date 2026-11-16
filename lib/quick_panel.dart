@@ -307,7 +307,7 @@ class _CurrentAppHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(children: [
             if (icon is Uint8List)

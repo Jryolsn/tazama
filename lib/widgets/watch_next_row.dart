@@ -142,6 +142,8 @@ class _WatchNextSectionTitle extends StatelessWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
           shadows: const [
             Shadow(
               color: Colors.black54,

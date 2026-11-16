@@ -220,7 +220,7 @@ class LauncherSectionPanelPage extends StatelessWidget
                            return Colors.white;
                         }),
                         shape: WidgetStatePropertyAll(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
                         ),
                         side: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.focused)) {
@@ -246,7 +246,7 @@ class LauncherSectionPanelPage extends StatelessWidget
                       backgroundColor: WidgetStatePropertyAll(Color(0xFF27272A)), // Zinc 800
                       foregroundColor: WidgetStatePropertyAll(Color(0xFFEF4444)), // Red 500
                       shape: WidgetStatePropertyAll(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
                       ),
                       side: WidgetStateProperty.resolveWith((states) {
                         if (states.contains(WidgetState.focused)) {
@@ -383,8 +383,8 @@ class _CategorySettingsState extends State<_CategorySettings>
             padding: EdgeInsets.only(top: 4),
             child: DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               autofocus: _creating,
@@ -420,7 +420,7 @@ class _CategorySettingsState extends State<_CategorySettings>
               child: OutlinedButton(
                 focusNode: _textFieldFocusNode,
                 style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   alignment: Alignment.centerLeft,
                 ),
                 onPressed: () async {
@@ -443,8 +443,8 @@ class _CategorySettingsState extends State<_CategorySettings>
             padding: EdgeInsets.only(top: 4),
             child: DropdownButtonFormField<CategorySort>(
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               isDense: true,
@@ -480,8 +480,8 @@ class _CategorySettingsState extends State<_CategorySettings>
             padding: EdgeInsets.only(top: 4),
             child: DropdownButtonFormField<CategoryType>(
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               initialValue: _categoryType,
@@ -695,8 +695,8 @@ class _LauncherSpacerSettingsState extends State<_LauncherSpacerSettings>
         padding: EdgeInsets.only(top: 4),
         child: DropdownButtonFormField<int>(
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
           isDense: true,

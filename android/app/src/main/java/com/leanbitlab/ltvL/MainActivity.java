@@ -219,7 +219,7 @@ public class MainActivity extends FlutterActivity {
                 case "setDimLevel" -> result.success(DimOverlayService.apply(this, call.<Integer>argument("darkness")));
                 case "canDrawOverlays" -> result.success(Settings.canDrawOverlays(this));
                 case "showNotice" -> result.success(ArcAccessibilityService.showNotice(
-                        call.argument("text"), call.argument("seconds") == null ? 8 : call.<Integer>argument("seconds"), call.argument("corner")));
+                        call.argument("title"), call.argument("message"), call.argument("icon"), call.argument("seconds") == null ? 8 : call.<Integer>argument("seconds"), call.argument("corner")));
                 case "promptText" -> TextPrompt.show(this, call.argument("title"), call.argument("message"),
                         call.argument("initial"), Boolean.TRUE.equals(call.argument("secret")), call.argument("kind"), result);
                 case "requestOverlayPermission" -> {

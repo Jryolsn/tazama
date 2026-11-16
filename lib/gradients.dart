@@ -34,7 +34,7 @@ class FLauncherGradient {
 mixin FLauncherGradients {
   static final nebula = FLauncherGradient(
     "4f1c8b2e-7a3d-4e61-9c55-2b0d6a9e1f73",
-    "Nebula",
+    "Graphite",
     Nebula.baseGradient,
     nebula: true,
   );

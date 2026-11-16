@@ -291,7 +291,7 @@ class BrightnessSliderState extends State<BrightnessSlider> {
                 : (widget.isCurrentSlot
                     ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.10)
                     : SettingsStyle.rowRestFill),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: widget.isCurrentSlot
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.45)

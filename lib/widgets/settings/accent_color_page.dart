@@ -205,7 +205,7 @@ class _ColorTileState extends State<_ColorTile> {
                     Color.lerp(widget.color, Colors.black, 0.14)!,
                   ],
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: ring ? Colors.white.withValues(alpha: 0.9) : Colors.white.withValues(alpha: 0.12),
                   width: 2,

@@ -464,6 +464,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   child: Text(
                     category.name,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontSize: 17,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.4,
                       color: Nebula.textMuted,
@@ -650,13 +651,13 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     final shadowEnabled = context.select<SettingsService, bool>((s) => s.dockShadowEnabled);
     final isBigPicture = context.select<SettingsService, bool>((s) => s.showWatchNextSection && s.watchNextBigPictureMode);
 
-    const dockBorderRadius = 24.0;
+    const dockBorderRadius = 14.0;
     final borderRadius = BorderRadius.circular(dockBorderRadius);
 
     final content = CustomPaint(
       foregroundPainter: const DockContourPainter(radius: dockBorderRadius, strokeWidth: 1.0),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         decoration: BoxDecoration(
           color: darkBackground
               ? Colors.black.withValues(alpha: 0.35)

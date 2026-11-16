@@ -83,7 +83,7 @@ class _SettingsPanelState extends State<SettingsPanel> {
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
-                    colors: [Color(0x990B0A24), Color(0x220B0A24)],
+                    colors: [Color(0x990D0E12), Color(0x220D0E12)],
                   ),
                 ),
               ),

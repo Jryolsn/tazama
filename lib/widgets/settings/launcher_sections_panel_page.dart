@@ -180,7 +180,7 @@ class _LauncherSectionsPanelPageState extends State<LauncherSectionsPanelPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                   decoration: BoxDecoration(
                     color: backgroundColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: focused || isMoving
                           ? colorScheme.primary.withValues(alpha: 0.75)
