@@ -4,6 +4,7 @@ import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/home_assistant/camera_view.dart';
 import 'package:flauncher/home_assistant/dashboard.dart';
 import 'package:flauncher/home_assistant/media_card.dart';
+import 'package:flauncher/media_panel/stream_view.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,10 @@ class HomeAssistantSection extends StatefulWidget {
   final String title;
   final bool autofocus;
 
-  const HomeAssistantSection({super.key, required this.title, this.autofocus = false});
+  /// Called after the first load, once its rows can take focus.
+  final VoidCallback? onLoaded;
+
+  const HomeAssistantSection({super.key, required this.title, this.autofocus = false, this.onLoaded});
 
   @override
   State<HomeAssistantSection> createState() => _HomeAssistantSectionState();
@@ -102,6 +106,7 @@ class _HomeAssistantSectionState extends State<HomeAssistantSection> {
   Future<void> _refresh() async {
     final all = await context.read<HomeAssistantService>().fetchStates();
     if (!mounted) return;
+    if (!_loaded && widget.onLoaded != null) WidgetsBinding.instance.addPostFrameCallback((_) => widget.onLoaded!());
     setState(() {
       _loaded = true;
       _failed = all == null;
@@ -128,11 +133,16 @@ class _HomeAssistantSectionState extends State<HomeAssistantSection> {
     if (ok) await _refresh();
   }
 
-  void _showCamera(HaEntity entity) => showDialog(
-        context: context,
-        builder: (_) => ChangeNotifierProvider.value(
+  void _showCamera(HaEntity entity) => openFullscreen(
+        context,
+        ChangeNotifierProvider.value(
           value: context.read<HomeAssistantService>(),
-          child: _CameraDialog(entity: entity),
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: HaCameraView(entityId: entity.entityId, live: true, sound: true),
+            ),
+          ),
         ),
       );
 
@@ -335,25 +345,4 @@ class _CameraTileState extends State<_CameraTile> {
       ),
     );
   }
-}
-
-/// Full-size live camera with sound. Back closes it.
-class _CameraDialog extends StatelessWidget {
-  final HaEntity entity;
-
-  const _CameraDialog({required this.entity});
-
-  @override
-  Widget build(BuildContext context) => Dialog(
-        insetPadding: const EdgeInsets.all(48),
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        child: Focus(
-          autofocus: true,
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: HaCameraView(entityId: entity.entityId, live: true, sound: true),
-          ),
-        ),
-      );
 }
