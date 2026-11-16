@@ -235,13 +235,14 @@ class _CompactRow extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     return Padding(
       padding: EdgeInsets.fromLTRB(4 + indent, 1, 4, 1),
-      child: Focus(
-        canRequestFocus: onPressed != null,
-        child: Builder(builder: (context) {
-          final focused = Focus.of(context).hasFocus;
-          return Actions(
-            actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => onPressed?.call())},
-            child: GestureDetector(
+      // Actions must sit above the Focus, so OK on the focused row finds them.
+      child: Actions(
+        actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => onPressed?.call())},
+        child: Focus(
+          canRequestFocus: onPressed != null,
+          child: Builder(builder: (context) {
+            final focused = Focus.of(context).hasFocus;
+            return GestureDetector(
               onTap: onPressed,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 120),
@@ -272,9 +273,9 @@ class _CompactRow extends StatelessWidget {
                   ],
                 ]),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
