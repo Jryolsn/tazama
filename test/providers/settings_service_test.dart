@@ -34,6 +34,24 @@ void main() async {
     await sharedPreferences.clear();
   });
 
+  test("quick panel shortcuts: order, hide and unknown ids", () async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setStringList("quick_panel_order", ["camera", "gone", "dim"]);
+    final settingsService = SettingsService(sharedPreferences);
+
+    expect(settingsService.quickPanelOrder, ["camera", "dim", "vpn", "lock", "mediaPanel"]);
+
+    await settingsService.moveQuickPanelItem("dim", -1);
+    expect(settingsService.quickPanelOrder.take(2), ["dim", "camera"]);
+    await settingsService.moveQuickPanelItem("dim", -1);
+    expect(settingsService.quickPanelOrder.first, "dim");
+
+    await settingsService.setQuickPanelItemShown("vpn", false);
+    expect(settingsService.quickPanelHidden, {"vpn"});
+    await settingsService.setQuickPanelItemShown("vpn", true);
+    expect(settingsService.quickPanelHidden, isEmpty);
+  });
+
   test("watchNextBigPictureMode default and update", () async {
     final sharedPreferences = await SharedPreferences.getInstance();
     final settingsService = SettingsService(sharedPreferences);

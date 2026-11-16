@@ -7,6 +7,7 @@ import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/back_button_action_page.dart';
 import 'package:flauncher/widgets/settings/back_button_actions.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
+import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -63,7 +64,8 @@ class RemoteButtonsPage extends StatelessWidget {
               FocusableSettingsTile(
                 leading: const Icon(Icons.keyboard_return_rounded),
                 title: Text('Hold Back or YouTube', style: style),
-                trailing: value('Quick panel', chevron: false),
+                trailing: value('Quick panel'),
+                onPressed: () => Navigator.of(context).pushNamed(QuickPanelSettingsPage.routeName),
               ),
               FocusableSettingsTile(
                 leading: const Icon(Icons.arrow_back_rounded),

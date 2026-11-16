@@ -24,6 +24,8 @@ import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flauncher/widgets/settings/home_layout_page.dart';
 import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/remote_buttons_page.dart';
+import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
+import 'package:flauncher/widgets/settings/tazama_camera_page.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
@@ -90,11 +92,16 @@ class SettingsPanelPage extends StatelessWidget {
                 _link(context, Icons.palette_rounded, 'Look', route: MiscPanelPage.routeName),
                 _link(context, Icons.schedule_rounded, 'Clock and status bar', route: StatusBarPanelPage.routeName),
                 const SettingsGroupLabel('Panels'),
+                _link(context, Icons.bolt_rounded, 'Quick panel', route: QuickPanelSettingsPage.routeName,
+                    value: 'Hold Back'),
                 _link(context, Icons.view_sidebar_rounded, 'Media panel', route: MediaPanelSettingsPage.routeName,
                     value: cardCount == 0 ? 'Empty' : '$cardCount ${cardCount == 1 ? 'card' : 'cards'}'),
+                const SettingsGroupLabel('Integrations'),
                 _link(context, Icons.home_rounded, 'Home Assistant',
                     value: ha.isConfigured ? 'Connected' : 'Not set up',
                     onPressed: () => openHomeAssistantSettings(context, closeSettingsPanel: true)),
+                _link(context, Icons.phone_android_rounded, 'Tazama Camera', route: TazamaCameraPage.routeName,
+                    value: 'Phone app'),
                 const SettingsGroupLabel('TV'),
                 _link(context, Icons.settings_remote_rounded, 'Remote buttons', route: RemoteButtonsPage.routeName),
                 _link(context, Icons.lock_rounded, 'Lock and protection', route: LockProtectionPage.routeName,
