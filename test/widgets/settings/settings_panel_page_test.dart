@@ -17,7 +17,13 @@
  */
 
 import 'package:flauncher/l10n/app_localizations.dart';
+import 'package:flauncher/home_assistant/home_assistant_service.dart';
+import 'package:flauncher/media_panel/media_panel_service.dart';
+import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/apps_service.dart';
+import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
@@ -43,7 +49,7 @@ void main() {
     binding.platformDispatcher.textScaleFactorTestValue = 0.8;
   });
 
-  testWidgets("'Applications' opens ApplicationsPanelPage", (tester) async {
+  testWidgets("'Apps' opens ApplicationsPanelPage", (tester) async {
     final settingsService = MockSettingsService();
     final appsService = MockAppsService();
     when(appsService.categories).thenReturn([]);
@@ -52,19 +58,20 @@ void main() {
 
     await _pumpWidgetWithProviders(tester, settingsService, appsService);
 
-    await tester.tap(find.text("Applications"));
+    await tester.tap(find.text("Apps"));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key("ApplicationsPanelPage")), findsOneWidget);
   });
 
-  testWidgets("'Categories' navigates to LauncherSectionsPanelPage", (tester) async {
+  testWidgets("Home screen 'Categories' navigates to LauncherSectionsPanelPage", (tester) async {
     final settingsService = MockSettingsService();
     final appsService = MockAppsService();
     when(appsService.categories).thenReturn([]);
     when(appsService.applications).thenReturn([]);
     when(settingsService.appHighlightAnimationEnabled).thenReturn(true);
 
-    await _pumpWidgetWithProviders(tester, settingsService, appsService);
+    when(settingsService.homeLayout).thenReturn(HOME_LAYOUT_ROWS);
+    await _pumpWidgetWithProviders(tester, settingsService, appsService, home: const HomeLayoutPage());
 
     await tester.tap(find.text("Categories"));
     await tester.pumpAndSettle();
@@ -123,11 +130,18 @@ Future<void> _pumpWidgetWithProviders(
   AppsService appsService, {
   Widget? home,
 }) async {
+  SharedPreferences.setMockInitialValues({});
+  FlutterSecureStorage.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+  when(settingsService.homeLayout).thenReturn(HOME_LAYOUT_ROWS);
   await tester.pumpWidget(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<SettingsService>.value(value: settingsService),
         ChangeNotifierProvider<AppsService>.value(value: appsService),
+        ChangeNotifierProvider(create: (_) => AppLockService()),
+        ChangeNotifierProvider(create: (_) => HomeAssistantService(prefs)),
+        ChangeNotifierProvider(create: (_) => MediaPanelService(prefs)),
       ],
       builder: (_, __) => MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

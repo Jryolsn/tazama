@@ -21,12 +21,11 @@ import 'package:flutter/material.dart';
 import 'package:flauncher/build_flags.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/widgets/settings/settings_panel_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
 import 'focusable_settings_tile.dart';
-import 'back_button_action_page.dart';
 import 'replace_launcher_page.dart';
-import 'wifi_usage_period_page.dart';
 
 
 class GeneralSettingsPage extends StatelessWidget {
@@ -52,18 +51,6 @@ class GeneralSettingsPage extends StatelessWidget {
                   title: Text('Replace launcher', style: Theme.of(context).textTheme.bodyMedium),
                   onPressed: () => Navigator.of(context).pushNamed(ReplaceLauncherPage.routeName),
                 ),
-                FocusableSettingsTile(
-                  showChevron: true,
-                  leading: const Icon(Icons.arrow_back_rounded),
-                  title: Text(localizations.backButtonAction, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => Navigator.of(context).pushNamed(BackButtonActionPage.routeName),
-                ),
-                FocusableSettingsTile(
-                  showChevron: true,
-                  leading: const Icon(Icons.wifi_rounded),
-                  title: Text(localizations.wifiUsagePeriod, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => Navigator.of(context).pushNamed(WifiUsagePeriodPage.routeName),
-                ),
                 const SettingsSectionDivider(),
                 FocusableSettingsTile(
                   showChevron: false,
@@ -82,6 +69,11 @@ class GeneralSettingsPage extends StatelessWidget {
                   showChevron: false,
                   leading: const Icon(Icons.info_rounded),
                   title: Text(localizations.aboutFlauncher, style: Theme.of(context).textTheme.bodyMedium),
+                  trailing: FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) => Text(snapshot.data?.version ?? '',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white54)),
+                  ),
                   onPressed: () => showAboutTazama(context),
                 ),
               ],
