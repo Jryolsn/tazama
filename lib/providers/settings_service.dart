@@ -76,6 +76,9 @@ const String WIFI_USAGE_MONTHLY = "monthly";
 
 // Accent color presets (hex values)
 const String HOME_LAYOUT_ROWS = "rows";
+
+/// Shortcuts the quick panel can show, in default order.
+const List<String> quickPanelItemIds = ['dim', 'vpn', 'lock', 'camera', 'mediaPanel'];
 const String HOME_LAYOUT_ORBIT = "orbit";
 const String HOME_LAYOUT_AURORA = "aurora";
 
@@ -237,6 +240,36 @@ class SettingsService extends ChangeNotifier {
 
   Future<void> setHomeLayout(String layout) async {
     await _sharedPreferences.setString("home_layout", layout);
+    notifyListeners();
+  }
+
+  /// Quick panel shortcuts in the user's order; ids unknown to this version are dropped
+  /// and new ones are appended, so updates never lose or hide a shortcut silently.
+  List<String> get quickPanelOrder {
+    final saved = _sharedPreferences.getStringList("quick_panel_order") ?? const [];
+    return [
+      ...saved.where(quickPanelItemIds.contains),
+      ...quickPanelItemIds.where((id) => !saved.contains(id)),
+    ];
+  }
+
+  Set<String> get quickPanelHidden =>
+      (_sharedPreferences.getStringList("quick_panel_hidden") ?? const []).toSet();
+
+  Future<void> moveQuickPanelItem(String id, int delta) async {
+    final order = quickPanelOrder;
+    final from = order.indexOf(id);
+    final to = from + delta;
+    if (from < 0 || to < 0 || to >= order.length) return;
+    order.insert(to, order.removeAt(from));
+    await _sharedPreferences.setStringList("quick_panel_order", order);
+    notifyListeners();
+  }
+
+  Future<void> setQuickPanelItemShown(String id, bool shown) async {
+    final hidden = quickPanelHidden;
+    shown ? hidden.remove(id) : hidden.add(id);
+    await _sharedPreferences.setStringList("quick_panel_hidden", hidden.toList());
     notifyListeners();
   }
 

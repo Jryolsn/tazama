@@ -38,6 +38,8 @@ import 'package:flauncher/widgets/settings/brightness_settings_page.dart';
 import 'package:flauncher/widgets/settings/focus_border_thickness_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
 import 'package:flauncher/widgets/settings/remote_buttons_page.dart';
+import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
+import 'package:flauncher/widgets/settings/tazama_camera_page.dart';
 import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_max_items_page.dart';
@@ -135,6 +137,10 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => WifiUsagePeriodPage());
                     case ReplaceLauncherPage.routeName:
                       return _FastPageRoute(builder: (_) => const ReplaceLauncherPage());
+                    case QuickPanelSettingsPage.routeName:
+                      return _FastPageRoute(builder: (_) => const QuickPanelSettingsPage());
+                    case TazamaCameraPage.routeName:
+                      return _FastPageRoute(builder: (_) => const TazamaCameraPage());
                     case RemoteButtonsPage.routeName:
                       return _FastPageRoute(builder: (_) => const RemoteButtonsPage());
                     case BackButtonActionPage.routeName:

@@ -154,8 +154,7 @@ class _QuickPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = context.watch<BrightnessService>();
-    final lock = context.watch<AppLockService>();
+    final settings = context.watch<SettingsService>();
     final textStyle = Theme.of(context).textTheme.bodyMedium;
 
     return Scaffold(
@@ -182,7 +181,7 @@ class _QuickPanel extends StatelessWidget {
               actions: {BackIntent: CallbackAction<BackIntent>(onInvoke: (_) => _close())},
               child: Column(
                 children: [
-                  const SettingsPageHeader(title: 'Quick settings'),
+                  const SettingsPageHeader(title: 'Quick panel'),
                   // Fixed above the list, so the open app is always in view.
                   const _CurrentAppHeader(),
                   Expanded(
@@ -191,47 +190,15 @@ class _QuickPanel extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          RoundedSwitchListTile(
-                            autofocus: true,
-                            title: Text('Dim screen', style: textStyle),
-                            secondary: Icon(brightness.isDimNow ? Icons.nightlight : Icons.nightlight_outlined),
-                            value: brightness.isDimNow,
-                            onChanged: (value) => brightness.setDimNow(value),
-                          ),
-                          BrightnessSlider(
-                            label: 'Screen brightness',
-                            icon: Icons.nightlight,
-                            isCurrentSlot: brightness.isDimNow,
-                            brightness: brightness.dimNowBrightness,
-                            onChanged: (value) async {
-                              // Moving the slider means "dim now", as in the old panel.
-                              await brightness.setDimNowBrightness(value);
-                              if (!brightness.isDimNow) await brightness.setDimNow(true);
-                            },
-                          ),
-                          const SettingsSectionDivider(),
-                          const _VpnSection(),
-                          if (lock.hasPin) ...[
-                            FocusableSettingsTile(
-                              leading: const Icon(Icons.lock_outline),
-                              title: Text('Lock apps now', style: textStyle),
-                              onPressed: () => _panelChannel.invokeMethod('lockNow'),
-                            ),
-                            FocusableSettingsTile(
-                              leading: const Icon(Icons.timer_outlined),
-                              title: Text('Stay unlocked: ${lock.relockOption.label}', style: textStyle),
-                              onPressed: () => pickRelock(context, lock),
-                            ),
-                            const SettingsSectionDivider(),
-                          ],
-                          FocusableSettingsTile(
-                            leading: const Icon(Icons.videocam_outlined),
-                            title: Text('Phone camera', style: textStyle),
-                            onPressed: () => _panelChannel.invokeMethod('openPhoneCamera'),
-                          ),
+                          for (final (i, id) in settings.quickPanelOrder
+                              .where((id) => !settings.quickPanelHidden.contains(id))
+                              .indexed)
+                            ..._item(context, id, first: i == 0),
                           FocusableSettingsTile(
                             leading: const Icon(Icons.settings_outlined),
-                            title: Text('All launcher settings', style: textStyle),
+                            // Fallback focus when no shortcut above can take it.
+                            autofocus: true,
+                            title: Text('All settings', style: textStyle),
                             showChevron: true,
                             onPressed: () => _panelChannel.invokeMethod('openLauncherSettings'),
                           ),
@@ -246,6 +213,78 @@ class _QuickPanel extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// One shortcut chosen in Settings > Quick panel; empty when it does not apply right now.
+  List<Widget> _item(BuildContext context, String id, {required bool first}) {
+    final brightness = context.watch<BrightnessService>();
+    final lock = context.watch<AppLockService>();
+    final textStyle = Theme.of(context).textTheme.bodyMedium;
+    switch (id) {
+      case 'dim':
+        return [
+          RoundedSwitchListTile(
+            autofocus: first,
+            title: Text('Dim screen', style: textStyle),
+            secondary: Icon(brightness.isDimNow ? Icons.nightlight : Icons.nightlight_outlined),
+            value: brightness.isDimNow,
+            onChanged: (value) => brightness.setDimNow(value),
+          ),
+          BrightnessSlider(
+            label: 'Screen brightness',
+            icon: Icons.nightlight,
+            isCurrentSlot: brightness.isDimNow,
+            brightness: brightness.dimNowBrightness,
+            onChanged: (value) async {
+              // Moving the slider means "dim now", as in the old panel.
+              await brightness.setDimNowBrightness(value);
+              if (!brightness.isDimNow) await brightness.setDimNow(true);
+            },
+          ),
+          const SettingsSectionDivider(),
+        ];
+      case 'vpn':
+        return [_VpnSection(autofocus: first)];
+      case 'lock':
+        if (!lock.hasPin) return const [];
+        return [
+          FocusableSettingsTile(
+            leading: const Icon(Icons.lock_outline),
+            autofocus: first,
+            title: Text('Lock apps now', style: textStyle),
+            onPressed: () => _panelChannel.invokeMethod('lockNow'),
+          ),
+          FocusableSettingsTile(
+            leading: const Icon(Icons.timer_outlined),
+            title: Text('Stay unlocked: ${lock.relockOption.label}', style: textStyle),
+            onPressed: () => pickRelock(context, lock),
+          ),
+          const SettingsSectionDivider(),
+        ];
+      case 'camera':
+        return [
+          FocusableSettingsTile(
+            leading: const Icon(Icons.videocam_outlined),
+            autofocus: first,
+            title: Text('Tazama Camera', style: textStyle),
+            onPressed: () => _panelChannel.invokeMethod('openPhoneCamera'),
+          ),
+        ];
+      case 'mediaPanel':
+        return [
+          FocusableSettingsTile(
+            leading: const Icon(Icons.view_sidebar_outlined),
+            autofocus: first,
+            title: Text('Media panel', style: textStyle),
+            onPressed: () async {
+              await Future.wait([context.read<HomeAssistantService>().reload(), context.read<MediaPanelService>().reload()]);
+              _mode.value = 'ha';
+              _shown.value++;
+            },
+          ),
+        ];
+    }
+    return const [];
   }
 }
 
@@ -339,7 +378,9 @@ class _CurrentAppHeader extends StatelessWidget {
 
 /// Whether the open app's traffic goes through the VPN, and a switch to require VPN for it. Part of the list.
 class _VpnSection extends StatelessWidget {
-  const _VpnSection();
+  final bool autofocus;
+
+  const _VpnSection({this.autofocus = false});
 
   @override
   Widget build(BuildContext context) {
@@ -391,6 +432,7 @@ class _VpnSection extends StatelessWidget {
               ),
             if (packageName != null)
               RoundedSwitchListTile(
+                autofocus: autofocus,
                 title: Text('Require VPN for this app', style: textTheme.bodyMedium),
                 secondary: Icon(guarded ? Icons.vpn_lock : Icons.vpn_key_outlined),
                 value: guarded,

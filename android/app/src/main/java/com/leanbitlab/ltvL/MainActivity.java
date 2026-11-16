@@ -166,6 +166,10 @@ public class MainActivity extends FlutterActivity {
                     AppLockStore.setLocked(this, call.argument("packageName"), Boolean.TRUE.equals(call.argument("locked")));
                     result.success(true);
                 }
+                case "openPhoneCamera" -> {
+                    startActivity(new Intent(this, PhoneCameraActivity.class));
+                    result.success(null);
+                }
                 case "consumeOpenSettings" -> {
                     String target = openSettingsOnResume ? (openSettingsTarget == null ? "settings" : openSettingsTarget) : null;
                     result.success(target);
