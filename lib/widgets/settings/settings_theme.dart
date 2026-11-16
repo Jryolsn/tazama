@@ -21,14 +21,14 @@ abstract final class SettingsStyle {
   );
   static const EdgeInsets cardPadding = EdgeInsets.symmetric(
     horizontal: 12,
-    vertical: 8,
+    vertical: 6,
   );
 
   /// Page header geometry.
   static const EdgeInsets headerPadding = EdgeInsets.fromLTRB(8, 6, 8, 8);
 
   /// Leading icon chip geometry.
-  static const double iconChipSize = 28;
+  static const double iconChipSize = 26;
   static const double iconChipRadius = 8;
   static const double iconSize = 17;
 
@@ -363,7 +363,7 @@ class SettingsGroupLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(22, 14, 22, 4),
+        padding: const EdgeInsets.fromLTRB(22, 10, 22, 3),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Text(

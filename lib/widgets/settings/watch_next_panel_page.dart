@@ -95,7 +95,6 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
         SettingsPageHeader(title: localizations.watchNextSectionTitle),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
               RoundedSwitchListTile(
                 autofocus: true,

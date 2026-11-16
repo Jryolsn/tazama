@@ -4,7 +4,11 @@
  */
 
 import 'package:flauncher/providers/settings_service.dart';
+import 'package:flauncher/l10n/app_localizations.dart';
+import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
+import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +31,7 @@ class HomeLayoutPage extends StatelessWidget {
 
     return Column(
       children: [
-        const SettingsPageHeader(title: 'Home layout'),
+        const SettingsPageHeader(title: 'Home screen'),
         Expanded(
           child: SingleChildScrollView(
             child: Column(
@@ -39,8 +43,8 @@ class HomeLayoutPage extends StatelessWidget {
                     builder: (context, highlighted) => Row(
                       children: [
                         Container(
-                          width: 128,
-                          height: 72,
+                          width: 96,
+                          height: 54,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
@@ -68,6 +72,20 @@ class HomeLayoutPage extends StatelessWidget {
                       ],
                     ),
                   ),
+                const SettingsGroupLabel('Content'),
+                FocusableSettingsTile(
+                  showChevron: true,
+                  leading: const Icon(Icons.view_agenda_rounded),
+                  title: Text('Categories', style: Theme.of(context).textTheme.bodyMedium),
+                  onPressed: () => Navigator.of(context).pushNamed(LauncherSectionsPanelPage.routeName),
+                ),
+                FocusableSettingsTile(
+                  showChevron: true,
+                  leading: const Icon(Icons.play_circle_rounded),
+                  title: Text(AppLocalizations.of(context)!.watchNextSectionTitle,
+                      style: Theme.of(context).textTheme.bodyMedium),
+                  onPressed: () => Navigator.of(context).pushNamed(WatchNextPanelPage.routeName),
+                ),
               ],
             ),
           ),

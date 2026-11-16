@@ -23,13 +23,16 @@ import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
 import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flauncher/widgets/settings/home_layout_page.dart';
 import 'package:flauncher/media_panel/media_panel_settings_page.dart';
-import 'package:flauncher/widgets/settings/launcher_sections_panel_page.dart';
+import 'package:flauncher/widgets/settings/remote_buttons_page.dart';
+import 'package:flauncher/providers/settings_service.dart';
+import 'package:flauncher/providers/app_lock_service.dart';
+import 'package:flauncher/home_assistant/home_assistant_service.dart';
+import 'package:flauncher/media_panel/media_panel_service.dart';
+import 'package:provider/provider.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
 import 'package:flauncher/widgets/settings/screen_sleep_page.dart';
 import 'package:flauncher/widgets/settings/status_bar_panel_page.dart';
-import 'package:flauncher/widgets/settings/wallpaper_panel_page.dart';
-import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/update_dialogs.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
@@ -42,19 +45,35 @@ import 'focusable_settings_tile.dart';
 class SettingsPanelPage extends StatelessWidget {
   static const String routeName = "settings_panel";
 
-  Widget _link(BuildContext context, IconData icon, String title, String route, {String? subtitle, bool autofocus = false}) =>
-      FocusableSettingsTile(
-        autofocus: autofocus,
-        showChevron: true,
-        leading: Icon(icon),
-        title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-        subtitle: subtitle == null ? null : Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-        onPressed: () => Navigator.of(context).pushNamed(route),
-      );
+  /// One-line row. [value] shows the current choice on the right so the
+  /// menu tells what is set without opening each page.
+  static Widget _link(BuildContext context, IconData icon, String title,
+      {String? route, VoidCallback? onPressed, String? value, bool autofocus = false}) {
+    final theme = Theme.of(context).textTheme;
+    return FocusableSettingsTile(
+      autofocus: autofocus,
+      showChevron: true,
+      leading: Icon(icon),
+      title: Text(title, style: theme.bodyMedium),
+      trailing: value == null
+          ? null
+          : Row(mainAxisSize: MainAxisSize.min, children: [
+              Text(value, style: theme.bodySmall?.copyWith(color: Colors.white54)),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
+            ]),
+      onPressed: onPressed ?? () => Navigator.of(context).pushNamed(route!),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     AppLocalizations localizations = AppLocalizations.of(context)!;
+    final settings = context.watch<SettingsService>();
+    final mediaPanel = context.watch<MediaPanelService>();
+    final ha = context.watch<HomeAssistantService>();
+    final lock = context.watch<AppLockService>();
+    final cardCount = mediaPanel.cards.length;
 
     return Column(
       children: [
@@ -64,33 +83,24 @@ class SettingsPanelPage extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
-                const SettingsGroupLabel('Home screen'),
-                _link(context, Icons.dashboard_rounded, 'Home layout', HomeLayoutPage.routeName,
-                    subtitle: 'Rows, Orbit or Aurora', autofocus: true),
-                _link(context, Icons.view_agenda_rounded, 'Categories', LauncherSectionsPanelPage.routeName,
-                    subtitle: 'Order, size and layout'),
-                _link(context, Icons.play_circle_rounded, localizations.watchNextSectionTitle, WatchNextPanelPage.routeName),
-                _link(context, Icons.apps_rounded, localizations.applications, ApplicationsPanelPage.routeName,
-                    subtitle: 'Favorites and hidden apps'),
-                const SettingsGroupLabel('Appearance'),
-                _link(context, Icons.wallpaper_rounded, localizations.wallpaper, WallpaperPanelPage.routeName),
-                _link(context, Icons.palette_rounded, 'Color, cards and focus', MiscPanelPage.routeName),
-                _link(context, Icons.schedule_rounded, 'Clock and status bar', StatusBarPanelPage.routeName),
-                const SettingsGroupLabel('Media and smart home'),
-                _link(context, Icons.view_sidebar_rounded, 'Media panel', MediaPanelSettingsPage.routeName,
-                    subtitle: 'Hold Home: cameras and more'),
-                FocusableSettingsTile(
-                  showChevron: true,
-                  leading: const Icon(Icons.home_rounded),
-                  title: Text('Home Assistant', style: Theme.of(context).textTheme.bodyMedium),
-                  subtitle: Text('Connection, controls and cameras', style: Theme.of(context).textTheme.bodySmall),
-                  onPressed: () => openHomeAssistantSettings(context, closeSettingsPanel: true),
-                ),
-                const SettingsGroupLabel('TV and system'),
-                _link(context, Icons.lock_rounded, 'Lock and protection', LockProtectionPage.routeName,
-                    subtitle: 'App lock, VPN guard'),
-                _link(context, Icons.brightness_medium_rounded, 'Screen and sleep', ScreenSleepPage.routeName),
-                _link(context, Icons.tune_rounded, localizations.system, GeneralSettingsPage.routeName),
+                const SettingsGroupLabel('Home'),
+                _link(context, Icons.apps_rounded, 'Apps', route: ApplicationsPanelPage.routeName, autofocus: true),
+                _link(context, Icons.dashboard_rounded, 'Home screen', route: HomeLayoutPage.routeName,
+                    value: _layoutName(settings.homeLayout)),
+                _link(context, Icons.palette_rounded, 'Look', route: MiscPanelPage.routeName),
+                _link(context, Icons.schedule_rounded, 'Clock and status bar', route: StatusBarPanelPage.routeName),
+                const SettingsGroupLabel('Panels'),
+                _link(context, Icons.view_sidebar_rounded, 'Media panel', route: MediaPanelSettingsPage.routeName,
+                    value: cardCount == 0 ? 'Empty' : '$cardCount ${cardCount == 1 ? 'card' : 'cards'}'),
+                _link(context, Icons.home_rounded, 'Home Assistant',
+                    value: ha.isConfigured ? 'Connected' : 'Not set up',
+                    onPressed: () => openHomeAssistantSettings(context, closeSettingsPanel: true)),
+                const SettingsGroupLabel('TV'),
+                _link(context, Icons.settings_remote_rounded, 'Remote buttons', route: RemoteButtonsPage.routeName),
+                _link(context, Icons.lock_rounded, 'Lock and protection', route: LockProtectionPage.routeName,
+                    value: lock.hasPin ? 'On' : 'Off'),
+                _link(context, Icons.brightness_medium_rounded, 'Screen and sleep', route: ScreenSleepPage.routeName),
+                _link(context, Icons.tune_rounded, localizations.system, route: GeneralSettingsPage.routeName),
               ],
             ),
           ),
@@ -98,6 +108,12 @@ class SettingsPanelPage extends StatelessWidget {
       ],
     );
   }
+
+  static String _layoutName(String layout) => switch (layout) {
+        HOME_LAYOUT_ORBIT => 'Orbit',
+        HOME_LAYOUT_AURORA => 'Aurora',
+        _ => 'Rows',
+      };
 }
 
 void showAboutTazama(BuildContext context) => showDialog(
