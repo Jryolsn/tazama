@@ -5,8 +5,9 @@ import 'package:video_player/video_player.dart';
 class StreamView extends StatefulWidget {
   final String url;
   final bool sound;
+  final BoxFit fit;
 
-  const StreamView({super.key, required this.url, this.sound = false});
+  const StreamView({super.key, required this.url, this.sound = false, this.fit = BoxFit.cover});
 
   @override
   State<StreamView> createState() => _StreamViewState();
@@ -74,7 +75,7 @@ class _StreamViewState extends State<StreamView> {
       const ColoredBox(color: Colors.black26),
       if (playing)
         FittedBox(
-          fit: BoxFit.cover,
+          fit: widget.fit,
           clipBehavior: Clip.hardEdge,
           child: SizedBox(width: video.value.size.width, height: video.value.size.height, child: VideoPlayer(video)),
         )
@@ -95,3 +96,15 @@ class _StreamViewState extends State<StreamView> {
     ]);
   }
 }
+
+/// Shows [child] over the whole screen; Back closes it.
+Future<void> openFullscreen(BuildContext context, Widget child) => Navigator.of(context).push(PageRouteBuilder<void>(
+      opaque: true,
+      transitionDuration: const Duration(milliseconds: 150),
+      reverseTransitionDuration: const Duration(milliseconds: 100),
+      pageBuilder: (_, __, ___) => ColoredBox(
+        color: Colors.black,
+        child: Focus(autofocus: true, child: SizedBox.expand(child: child)),
+      ),
+      transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+    ));
