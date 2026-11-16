@@ -54,7 +54,6 @@ class _VpnGuardPageState extends State<VpnGuardPage> {
         const SettingsPageHeader(title: 'VPN guard'),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),

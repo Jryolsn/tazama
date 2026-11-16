@@ -19,6 +19,7 @@
 
 import 'package:flauncher/flauncher_channel.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
+import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/providers/apps_service.dart';
 
 import 'package:flauncher/widgets/ensure_visible.dart';
@@ -375,22 +376,13 @@ class _LockedTabState extends State<_LockedTab> {
         _FirstRow(
           child: FocusableSettingsTile(
             autofocus: true,
+            showChevron: true,
             leading: const Icon(Icons.pin_rounded),
-            title: Text(lock.hasPin ? 'Change ${lock.secretName}' : 'Set PIN',
-                style: Theme.of(context).textTheme.bodyMedium),
-            onPressed: lock.changePin,
+            title: Text('Lock settings', style: Theme.of(context).textTheme.bodyMedium),
+            subtitle: Text('PIN, lock type and how long apps stay unlocked',
+                style: Theme.of(context).textTheme.bodySmall),
+            onPressed: () => Navigator.of(context).pushNamed(LockProtectionPage.routeName),
           ),
-        ),
-        FocusableSettingsTile(
-          leading: const Icon(Icons.gamepad_rounded),
-          title: Text('Lock type: ${lock.lockType == 'pattern' ? 'Remote pattern' : 'PIN'}',
-              style: Theme.of(context).textTheme.bodyMedium),
-          onPressed: () => _pickLockType(context, lock),
-        ),
-        FocusableSettingsTile(
-          leading: const Icon(Icons.timer_rounded),
-          title: Text('Stay unlocked: ${lock.relockOption.label}', style: Theme.of(context).textTheme.bodyMedium),
-          onPressed: () => pickRelock(context, lock),
         ),
         const SettingsSectionDivider(),
         if (apps.isEmpty)
@@ -402,6 +394,35 @@ class _LockedTabState extends State<_LockedTab> {
       ],
     );
   }
+}
+
+/// PIN, lock type and relock time, shown on the Lock and protection page.
+List<Widget> appLockSettingsTiles(BuildContext context, AppLockService lock) {
+  final style = Theme.of(context).textTheme.bodyMedium;
+  return [
+    if (!lock.isActive)
+      FocusableSettingsTile(
+        leading: const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent),
+        title: Text('App lock is off: enable "Tazama" in Accessibility', style: style),
+        onPressed: () => FLauncherChannel().openAccessibilitySettings(),
+      ),
+    FocusableSettingsTile(
+      autofocus: true,
+      leading: const Icon(Icons.pin_rounded),
+      title: Text(lock.hasPin ? 'Change ${lock.secretName}' : 'Set PIN', style: style),
+      onPressed: lock.changePin,
+    ),
+    FocusableSettingsTile(
+      leading: const Icon(Icons.gamepad_rounded),
+      title: Text('Lock type: ${lock.lockType == 'pattern' ? 'Remote pattern' : 'PIN'}', style: style),
+      onPressed: () => _pickLockType(context, lock),
+    ),
+    FocusableSettingsTile(
+      leading: const Icon(Icons.timer_rounded),
+      title: Text('Stay unlocked: ${lock.relockOption.label}', style: style),
+      onPressed: () => pickRelock(context, lock),
+    ),
+  ];
 }
 
 /// PIN, or a pattern of arrow and OK presses that hides which keys were pressed.
