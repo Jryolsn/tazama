@@ -88,7 +88,7 @@ class CategoryRow extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 16, bottom: 8),
                 child: Text(
                   category.name,
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Nebula.textMuted, shadows: Nebula.textShadow),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Nebula.textMuted, shadows: Nebula.textShadow),
                 ),
               );
             }

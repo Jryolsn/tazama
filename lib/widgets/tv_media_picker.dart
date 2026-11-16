@@ -263,7 +263,7 @@ class _TvMediaPickerState extends State<TvMediaPicker>
       backgroundColor: const Color(0xFF1A1A2E),
       insetPadding: const EdgeInsets.all(40),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Focus(
         autofocus: true,

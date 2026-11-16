@@ -464,7 +464,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   child: Text(
                     category.name,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.4,
                       color: Nebula.textMuted,
@@ -651,7 +651,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     final shadowEnabled = context.select<SettingsService, bool>((s) => s.dockShadowEnabled);
     final isBigPicture = context.select<SettingsService, bool>((s) => s.showWatchNextSection && s.watchNextBigPictureMode);
 
-    const dockBorderRadius = 14.0;
+    const dockBorderRadius = 8.0;
     final borderRadius = BorderRadius.circular(dockBorderRadius);
 
     final content = CustomPaint(
@@ -1082,7 +1082,7 @@ class _OrbitClock extends StatelessWidget {
             settings.timeFormat,
             updateInterval: const Duration(minutes: 1),
             textStyle: const TextStyle(
-              fontSize: 112,
+              fontSize: 88,
               fontWeight: FontWeight.w300,
               letterSpacing: 2,
               height: 1,
@@ -1127,7 +1127,7 @@ class _AuroraSide extends StatelessWidget {
             settings.timeFormat,
             updateInterval: const Duration(minutes: 1),
             textStyle: const TextStyle(
-              fontSize: 80,
+              fontSize: 64,
               fontWeight: FontWeight.w300,
               height: 1,
               color: Nebula.text,

@@ -23,7 +23,7 @@ class Nebula {
   /// Soft text shadow that keeps text readable on bright wallpapers.
   static const List<Shadow> textShadow = [Shadow(color: Color(0x80000000), blurRadius: 8, offset: Offset(0, 1))];
 
-  static const double cardRadius = 10;
+  static const double cardRadius = 6;
 
   static const LinearGradient baseGradient = LinearGradient(
     begin: Alignment(-0.6, -1),

@@ -42,14 +42,14 @@ class HomeLayoutPage extends StatelessWidget {
                           width: 128,
                           height: 72,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(5),
                             border: Border.all(
                               color: id == current ? accent : Colors.white.withValues(alpha: 0.12),
                               width: id == current ? 2 : 1,
                             ),
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(7),
+                            borderRadius: BorderRadius.circular(4),
                             child: CustomPaint(painter: HomeLayoutThumbnail(id, accent)),
                           ),
                         ),

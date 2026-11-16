@@ -124,24 +124,24 @@ public class ArcAccessibilityService extends AccessibilityService {
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(Color.argb(240, 24, 26, 31));
         bg.setStroke(Math.max(1, Math.round(dp)), Color.argb(31, 255, 255, 255));
-        bg.setCornerRadius(12 * dp);
+        bg.setCornerRadius(8 * dp);
         card.setBackground(bg);
-        card.setPadding(Math.round(10 * dp), Math.round(10 * dp), Math.round(16 * dp), Math.round(10 * dp));
+        card.setPadding(Math.round(8 * dp), Math.round(8 * dp), Math.round(14 * dp), Math.round(8 * dp));
         card.setElevation(8 * dp);
 
         android.graphics.Bitmap bitmap = icon == null ? null : android.graphics.BitmapFactory.decodeByteArray(icon, 0, icon.length);
         if (bitmap != null) {
             android.widget.ImageView image = new android.widget.ImageView(this);
             image.setImageBitmap(bitmap);
-            int chip = Math.round(36 * dp);
-            int inset = Math.round(8 * dp);
+            int chip = Math.round(30 * dp);
+            int inset = Math.round(6 * dp);
             image.setPadding(inset, inset, inset, inset);
             GradientDrawable chipBg = new GradientDrawable();
             chipBg.setColor(Color.argb(26, 255, 255, 255));
-            chipBg.setCornerRadius(9 * dp);
+            chipBg.setCornerRadius(6 * dp);
             image.setBackground(chipBg);
             android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(chip, chip);
-            lp.setMarginEnd(Math.round(12 * dp));
+            lp.setMarginEnd(Math.round(10 * dp));
             card.addView(image, lp);
         }
 
@@ -149,7 +149,7 @@ public class ArcAccessibilityService extends AccessibilityService {
         texts.setOrientation(android.widget.LinearLayout.VERTICAL);
         TextView titleView = new TextView(this);
         titleView.setText(title == null ? "" : title);
-        titleView.setTextSize(15);
+        titleView.setTextSize(14);
         titleView.setTextColor(Color.rgb(242, 243, 245));
         titleView.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
         titleView.setMaxLines(1);
@@ -159,7 +159,7 @@ public class ArcAccessibilityService extends AccessibilityService {
         if (message != null && !message.isEmpty()) {
             TextView messageView = new TextView(this);
             messageView.setText(message);
-            messageView.setTextSize(13);
+            messageView.setTextSize(12);
             messageView.setTextColor(Color.argb(166, 242, 243, 245));
             messageView.setMaxLines(2);
             messageView.setEllipsize(android.text.TextUtils.TruncateAt.END);

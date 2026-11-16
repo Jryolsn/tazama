@@ -14,30 +14,30 @@ abstract final class SettingsStyle {
   static const Duration focusDuration = Duration(milliseconds: 140);
 
   /// Row card geometry.
-  static const double cardRadius = 12;
+  static const double cardRadius = 6;
   static const EdgeInsets cardMargin = EdgeInsets.symmetric(
-    horizontal: 8,
-    vertical: 2,
+    horizontal: 6,
+    vertical: 1,
   );
   static const EdgeInsets cardPadding = EdgeInsets.symmetric(
-    horizontal: 12,
-    vertical: 8,
+    horizontal: 10,
+    vertical: 6,
   );
 
   /// Page header geometry.
   static const EdgeInsets headerPadding = EdgeInsets.fromLTRB(8, 6, 8, 8);
 
   /// Leading icon chip geometry.
-  static const double iconChipSize = 28;
-  static const double iconChipRadius = 8;
-  static const double iconSize = 17;
+  static const double iconChipSize = 24;
+  static const double iconChipRadius = 5;
+  static const double iconSize = 15;
 
   /// Scale applied to the focused row (1.0 means no lift).
   static const double focusScale = 1.0;
 
-  static const double panelWidth = 340;
-  static const double panelRadius = 18;
-  static const double panelInset = 16;
+  static const double panelWidth = 300;
+  static const double panelRadius = 10;
+  static const double panelInset = 12;
 
   static const Color panelTop = Color(0xFF1D1F25);
   static const Color panelBottom = Color(0xFF121317);
@@ -78,7 +78,7 @@ class SettingsPageHeader extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: textTheme.titleLarge?.copyWith(
-                fontSize: 19,
+                fontSize: 17,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.1,
                 height: 1.15,
@@ -394,14 +394,14 @@ class SettingsChoiceChip extends StatelessWidget {
       onPressed: onPressed,
       margin: const EdgeInsets.symmetric(horizontal: 3),
       padding: EdgeInsets.zero,
-      radius: 8,
+      radius: 5,
       builder: (context, highlighted) => AnimatedContainer(
         duration: SettingsStyle.focusDurationFor(context),
-        height: 30,
+        height: 26,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: selected ? accent : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
           label,
