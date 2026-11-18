@@ -195,6 +195,15 @@
         </service>
 
         <service
+            android:name=".LinkWakeService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Listens on the local network so a paired phone can open the phone camera view" />
+        </service>
+
+        <service
             android:name=".DimOverlayService"
             android:exported="false"
             android:foregroundServiceType="specialUse">

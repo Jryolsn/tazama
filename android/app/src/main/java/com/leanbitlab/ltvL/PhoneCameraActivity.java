@@ -71,7 +71,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Shows the camera of a phone running Tazama Camera (camera-app/ in this repository), full screen
+ * Shows the camera of a phone running Tazama Link (camera-app/ in this repository), full screen
  * with low latency. Finds the phone on the local network, pairs with a QR code, decodes its H.264
  * stream and sends remote-control commands (camera, zoom, light, ...). Protocol: camera-app/PROTOCOL.md.
  */
@@ -378,7 +378,7 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
             String phoneName = lastId == null ? "your phone" : prefs.getString("name." + lastId, "your phone");
             if (System.currentTimeMillis() - searchingSince > 5000) {
                 showStatus("Can't reach " + phoneName + ".\n\n"
-                        + "Open Tazama Camera on the phone (needed once after it restarts)\n"
+                        + "Open Tazama Link on the phone (needed once after it restarts)\n"
                         + "and check that it is on the same Wi-Fi as the TV.\n\n"
                         + "Still trying. Press OK to pair another phone, Back to exit.");
             } else {
@@ -692,11 +692,11 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
         // Step 1: get the phone app (direct APK of the release matching this TV build). Step 2: pair.
         pairing.addView(pairingStep("1. Get the phone app",
                 qrBitmap(appDownloadUrl(), 480),
-                "Scan with the phone's camera and install\nTazama Camera. Or use Obtainium:\n"
+                "Scan with the phone's camera and install\nTazama Link. Or use Obtainium:\n"
                         + "github.com/Jryolsn/tazama, filter \"camera\""));
         pairing.addView(pairingStep("2. Pair",
                 qrBitmap(qrText(), 480),
-                "In Tazama Camera tap \"Scan TV code\".\nOr tap \"Enter code instead\" and type\n"
+                "In Tazama Link tap \"Scan TV code\".\nOr tap \"Enter code instead\" and type\n"
                         + pairCode.substring(0, 3) + " " + pairCode.substring(3)));
         pairing.setVisibility(View.GONE);
         root.addView(pairing, new FrameLayout.LayoutParams(-1, -1));

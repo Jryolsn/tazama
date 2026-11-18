@@ -100,7 +100,7 @@ class SettingsPanelPage extends StatelessWidget {
                 _link(context, Icons.home_rounded, 'Home Assistant',
                     value: ha.isConfigured ? 'Connected' : 'Not set up',
                     onPressed: () => openHomeAssistantSettings(context, closeSettingsPanel: true)),
-                _link(context, Icons.phone_android_rounded, 'Tazama Camera', route: TazamaCameraPage.routeName,
+                _link(context, Icons.phone_android_rounded, 'Tazama Link', route: TazamaCameraPage.routeName,
                     value: 'Phone app'),
                 const SettingsGroupLabel('TV'),
                 _link(context, Icons.settings_remote_rounded, 'Remote buttons', route: RemoteButtonsPage.routeName),

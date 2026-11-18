@@ -45,6 +45,7 @@ public class CameraService extends Service {
     static final String ACTION_STOP = "com.jryolsn.tazama.camera.STOP";
     static final String ACTION_PAUSE = "com.jryolsn.tazama.camera.PAUSE";
     static final String ACTION_RESUME = "com.jryolsn.tazama.camera.RESUME";
+    static final String ACTION_SHOW_CAMERA = "com.jryolsn.tazama.camera.SHOW_CAMERA";
     static final String ACTION_CAST = "com.jryolsn.tazama.camera.CAST";
     static final String ACTION_STOP_CAST = "com.jryolsn.tazama.camera.STOP_CAST";
 
@@ -132,6 +133,8 @@ public class CameraService extends Service {
             } else if (ACTION_RESUME.equals(action)) {
                 paused = false;
                 cameraHandler.post(this::applySource);
+            } else if (ACTION_SHOW_CAMERA.equals(action)) {
+                cameraHandler.post(this::showCamera);
             } else if (ACTION_CAST.equals(action)) {
                 startCast(intent.getIntExtra("code", 0), intent.getParcelableExtra("data", Intent.class));
             } else if (ACTION_STOP_CAST.equals(action)) {
@@ -190,7 +193,7 @@ public class CameraService extends Service {
                 new Intent(this, CameraService.class).setAction(ACTION_STOP), PendingIntent.FLAG_IMMUTABLE);
         return new Notification.Builder(this, CHANNEL)
                 .setSmallIcon(android.R.drawable.presence_video_online)
-                .setContentTitle("Tazama Camera")
+                .setContentTitle("Tazama Link")
                 .setContentText(text)
                 .setContentIntent(openPi)
                 .setOngoing(true)
@@ -406,6 +409,18 @@ public class CameraService extends Service {
             Log.w(TAG, "cannot start casting", e);
             setStatus("Could not start casting: " + e.getMessage());
         }
+    }
+
+    /** The user wants the camera on the TV: drop any cast and stream the camera. Camera thread. */
+    private void showCamera() {
+        casting = false;
+        Connection c = current;
+        if (c != null && screen != null) screen.stop(c);
+        if (screen != null) screen.release();
+        screen = null;
+        paused = false;
+        applySource();
+        setStatus(tvConnected ? "Streaming the camera" : "Waiting for the TV");
     }
 
     /** Casting ended; the camera does not start by itself, the user restarts it. Camera thread. */

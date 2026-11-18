@@ -53,7 +53,7 @@ jobs:
           gradle-version: "8.13"
       # The phone half of Phone camera (camera-app/). Named arm64-v8a so Obtainium on the 32-bit TVs
       # skips it and the 64-bit phone picks it.
-      - name: Build Tazama Camera (phone app)
+      - name: Build Tazama Link (phone app)
         working-directory: camera-app
         run: >
           gradle --no-daemon assembleRelease
