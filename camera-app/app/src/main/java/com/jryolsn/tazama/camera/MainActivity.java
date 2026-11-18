@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.projection.MediaProjectionManager;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -31,10 +32,13 @@ import java.util.List;
 
 public class MainActivity extends Activity {
     private static final int REQ_PERMISSIONS = 1;
+    private static final int REQ_CAST = 2;
 
     private PairingStore store;
     private TextView status;
     private Button power;
+    private Button stream;
+    private Button cast;
     private Button battery;
     private LinearLayout paired;
 
@@ -61,6 +65,18 @@ public class MainActivity extends Activity {
 
         power = button("Turn off", v -> togglePower());
         col.addView(power);
+
+        col.addView(section("Stream to TV"));
+        stream = button("Stop streaming", v -> {
+            startService(new Intent(this, CameraService.class)
+                    .setAction(CameraService.paused ? CameraService.ACTION_RESUME : CameraService.ACTION_PAUSE));
+            status.postDelayed(this::refresh, 300);
+        });
+        col.addView(stream);
+        cast = button("Cast phone screen", v -> toggleCast());
+        col.addView(cast);
+        col.addView(text("Casting shows the phone screen in Phone camera on the TV. "
+                + "Android asks what to share, you can pick a single app."));
 
         col.addView(section("Pair with a TV"));
         TextView how = text("On the TV, open Phone camera in Tazama (quick panel or app list). It shows a QR code.");
@@ -127,6 +143,25 @@ public class MainActivity extends Activity {
         status.postDelayed(this::refresh, 300);
     }
 
+    private void toggleCast() {
+        if (CameraService.casting) {
+            startService(new Intent(this, CameraService.class).setAction(CameraService.ACTION_STOP_CAST));
+            status.postDelayed(this::refresh, 300);
+        } else {
+            startActivityForResult(getSystemService(MediaProjectionManager.class).createScreenCaptureIntent(), REQ_CAST);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CAST && resultCode == RESULT_OK && data != null) {
+            startService(new Intent(this, CameraService.class).setAction(CameraService.ACTION_CAST)
+                    .putExtra("code", resultCode).putExtra("data", data));
+            status.postDelayed(this::refresh, 500);
+        }
+    }
+
     private void togglePower() {
         if (CameraService.running) {
             startService(new Intent(this, CameraService.class).setAction(CameraService.ACTION_STOP));
@@ -147,6 +182,10 @@ public class MainActivity extends Activity {
             status.setText("Off. The TV can't reach the phone.");
         }
         power.setText(CameraService.running ? "Turn off" : "Turn on");
+        stream.setEnabled(CameraService.running);
+        stream.setText(CameraService.paused ? "Start streaming" : "Stop streaming");
+        cast.setEnabled(CameraService.running);
+        cast.setText(CameraService.casting ? "Stop casting" : "Cast phone screen");
 
         PowerManager pm = getSystemService(PowerManager.class);
         battery.setVisibility(pm.isIgnoringBatteryOptimizations(getPackageName()) ? View.GONE : View.VISIBLE);

@@ -26,5 +26,7 @@ Phone to TV:
 - 2 STATE: rotation int, facing, torch bool, hasTorch bool, zoom float, maxZoom float, exposure int, size, fps int.
 - 3 VIDEO: flags byte (1 config, 2 key frame), ptsUs long, H.264 Annex B data.
 - 4 ERROR: message.
+- 5 SOURCE: `camera`, `screen` or `paused` (sent before the stream changes; `screen` streams use the same FORMAT/VIDEO
+  messages, STATE has facing `screen`). Unknown types are skipped by length, so old TVs ignore it.
 
 Closing the socket stops the camera.
