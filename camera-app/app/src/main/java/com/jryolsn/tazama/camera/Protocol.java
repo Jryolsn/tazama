@@ -26,6 +26,7 @@ final class Protocol {
     static final int P_STATE = 2;
     static final int P_VIDEO = 3;
     static final int P_ERROR = 4;
+    static final int P_SOURCE = 5; // UTF: camera, screen, paused
 
     static final int FLAG_CONFIG = 1;
     static final int FLAG_KEY = 2;

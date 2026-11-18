@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.net.wifi.WifiManager;
@@ -41,10 +43,18 @@ public class CameraService extends Service {
     private static final String TAG = "TazamaCamera";
     private static final String CHANNEL = "ready";
     static final String ACTION_STOP = "com.jryolsn.tazama.camera.STOP";
+    static final String ACTION_PAUSE = "com.jryolsn.tazama.camera.PAUSE";
+    static final String ACTION_RESUME = "com.jryolsn.tazama.camera.RESUME";
+    static final String ACTION_CAST = "com.jryolsn.tazama.camera.CAST";
+    static final String ACTION_STOP_CAST = "com.jryolsn.tazama.camera.STOP_CAST";
 
     static volatile boolean running;
     static volatile String status = "";
     static volatile Runnable uiListener;
+    /** The user stopped the stream on the phone; the TV stays connected but gets nothing. */
+    static volatile boolean paused;
+    static volatile boolean casting;
+    static volatile boolean tvConnected;
 
     private PairingStore store;
     private ServerSocket server;
@@ -54,6 +64,8 @@ public class CameraService extends Service {
     private HandlerThread cameraThread;
     private Handler cameraHandler;
     private CameraStreamer streamer;
+    private ScreenStreamer screen;
+    private boolean wantStream; // the TV asked for video (cameraHandler only)
     private OrientationEventListener orientation;
     private volatile Connection current;
     private PowerManager.WakeLock wakeLock;
@@ -67,6 +79,8 @@ public class CameraService extends Service {
         nm.createNotificationChannel(new NotificationChannel(CHANNEL, "Ready for the TV", NotificationManager.IMPORTANCE_LOW));
         try {
             startForeground(1, notification("Ready for the TV"), ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA);
+            paused = false;
+            casting = false;
         } catch (RuntimeException e) {
             // Not allowed (no camera permission, or started from the background).
             Log.w(TAG, "cannot start in foreground", e);
@@ -110,12 +124,29 @@ public class CameraService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
+        if (intent != null && streamer != null) {
+            String action = intent.getAction();
+            if (ACTION_PAUSE.equals(action)) {
+                paused = true;
+                cameraHandler.post(this::applySource);
+            } else if (ACTION_RESUME.equals(action)) {
+                paused = false;
+                cameraHandler.post(this::applySource);
+            } else if (ACTION_CAST.equals(action)) {
+                startCast(intent.getIntExtra("code", 0), intent.getParcelableExtra("data", Intent.class));
+            } else if (ACTION_STOP_CAST.equals(action)) {
+                cameraHandler.post(this::endCast);
+            }
+        }
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         running = false;
+        paused = false;
+        casting = false;
+        tvConnected = false;
         Connection c = current;
         current = null;
         if (c != null) c.close();
@@ -135,7 +166,11 @@ public class CameraService extends Service {
         if (cameraHandler != null) {
             CameraStreamer s = streamer;
             Connection last = c;
-            cameraHandler.post(() -> s.stop(last));
+            cameraHandler.post(() -> {
+                s.stop(last);
+                if (screen != null) screen.release();
+                screen = null;
+            });
             cameraThread.quitSafely();
         }
         releaseLocks();
@@ -159,6 +194,9 @@ public class CameraService extends Service {
                 .setContentText(text)
                 .setContentIntent(openPi)
                 .setOngoing(true)
+                .addAction(new Notification.Action.Builder(null, paused ? "Start streaming" : "Stop streaming",
+                        PendingIntent.getService(this, 2, new Intent(this, CameraService.class)
+                                .setAction(paused ? ACTION_RESUME : ACTION_PAUSE), PendingIntent.FLAG_IMMUTABLE)).build())
                 .addAction(new Notification.Action.Builder(null, "Turn off", stopPi).build())
                 .build();
     }
@@ -272,6 +310,7 @@ public class CameraService extends Service {
             if (old != null) old.close();
             wakeLock.acquire(6 * 60 * 60 * 1000L);
             wifiLock.acquire();
+            tvConnected = true;
             setStatus("Connected to " + tvName);
 
             while (true) {
@@ -287,8 +326,10 @@ public class CameraService extends Service {
                     String value = p.readUTF();
                     cameraHandler.post(() -> streamer.set(key, value));
                 } else if (type == Protocol.T_START) {
-                    cameraHandler.post(() -> streamer.start(conn));
-                    setStatus("Streaming to " + tvName);
+                    cameraHandler.post(() -> {
+                        wantStream = true;
+                        applySource();
+                    });
                 }
             }
         } catch (IOException e) {
@@ -301,11 +342,82 @@ public class CameraService extends Service {
             if (c != null && current == c) {
                 current = null;
                 final Connection gone = c;
-                cameraHandler.post(() -> streamer.stop(gone));
+                tvConnected = false;
+                cameraHandler.post(() -> {
+                    stopSources(gone);
+                    wantStream = false;
+                });
                 releaseLocks();
                 if (running) setStatus("Ready for the TV");
             }
         }
+    }
+
+    private void stopSources(Connection c) {
+        streamer.stop(c);
+        if (screen != null) screen.stop(c);
+    }
+
+    /** Starts or stops the active source to match: TV asked, phone not paused, camera or screen. Camera thread. */
+    private void applySource() {
+        Connection c = current;
+        if (c == null) return;
+        stopSources(c);
+        if (!wantStream) return;
+        if (paused) {
+            c.source("paused");
+            setStatus("Stopped. Tap Start streaming to continue.");
+        } else if (casting && screen != null) {
+            c.source("screen");
+            screen.start(c);
+            setStatus("Casting the screen to " + c.tvName);
+        } else {
+            c.source("camera");
+            streamer.start(c);
+            setStatus("Streaming to " + c.tvName);
+        }
+    }
+
+    private void startCast(int resultCode, Intent data) {
+        if (data == null) return;
+        try {
+            // Must declare the projection type before the token is used.
+            startForeground(1, notification("Casting the screen"),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA | ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+            MediaProjection projection = getSystemService(MediaProjectionManager.class)
+                    .getMediaProjection(resultCode, data);
+            cameraHandler.post(() -> {
+                if (screen != null) screen.release();
+                projection.registerCallback(new MediaProjection.Callback() {
+                    @Override
+                    public void onStop() {
+                        cameraHandler.post(() -> {
+                            if (casting) endCast();
+                        });
+                    }
+                }, cameraHandler);
+                screen = new ScreenStreamer(this, projection, cameraHandler);
+                casting = true;
+                paused = false;
+                applySource();
+                setStatus(tvConnected ? "Casting the screen" : "Ready to cast. Open Phone camera on the TV.");
+            });
+        } catch (RuntimeException e) {
+            Log.w(TAG, "cannot start casting", e);
+            setStatus("Could not start casting: " + e.getMessage());
+        }
+    }
+
+    /** Casting ended; the camera does not start by itself, the user restarts it. Camera thread. */
+    private void endCast() {
+        casting = false;
+        Connection c = current;
+        if (c != null && screen != null) screen.stop(c);
+        if (screen != null) screen.release();
+        screen = null;
+        paused = true;
+        applySource();
+        setStatus(tvConnected ? "Stopped. Tap Start streaming to continue." : "Ready for the TV");
     }
 
     private void releaseLocks() {
@@ -399,6 +511,10 @@ public class CameraService extends Service {
             } catch (IOException e) {
                 close();
             }
+        }
+
+        void source(String name) {
+            send(Protocol.P_SOURCE, build(d -> d.writeUTF(name)));
         }
 
         @Override

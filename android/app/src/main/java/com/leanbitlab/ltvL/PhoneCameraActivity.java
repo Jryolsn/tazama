@@ -82,7 +82,7 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
     private static final byte[] MAGIC = {'T', 'Z', 'C', '1'};
     private static final int MODE_AUTH = 1, MODE_PAIR_CODE = 2;
     private static final int T_SET = 1, T_START = 2;
-    private static final int P_FORMAT = 1, P_STATE = 2, P_VIDEO = 3, P_ERROR = 4;
+    private static final int P_FORMAT = 1, P_STATE = 2, P_VIDEO = 3, P_ERROR = 4, P_SOURCE = 5;
     private static final int FLAG_CONFIG = 1;
 
     private static final String[] SIZES = {"1920x1080", "1280x720"};
@@ -130,6 +130,7 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
     // Last state reported by the phone
     private boolean torch, hasTorch;
     private String facing = "back", size = "", fpsNow = "";
+    private volatile boolean stoppedNotice;
     private float zoom = 1f;
     private int exposure;
 
@@ -472,6 +473,10 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
             in.readFully(payload);
             DataInputStream p = new DataInputStream(new ByteArrayInputStream(payload));
             if (type == P_FORMAT) {
+                if (stoppedNotice) {
+                    stoppedNotice = false;
+                    firstFrame = false;
+                }
                 configureDecoder(p.readInt(), p.readInt());
             } else if (type == P_STATE) {
                 int rot = p.readInt();
@@ -483,6 +488,12 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
                 String sz = p.readUTF();
                 int fps = p.readInt();
                 ui.post(() -> onState(rot, f, t, ht, z, ex, sz, fps));
+            } else if (type == P_SOURCE) {
+                String src = p.readUTF();
+                if ("paused".equals(src)) {
+                    stoppedNotice = true;
+                    showStatus("Streaming is stopped on the phone");
+                }
             } else if (type == P_ERROR) {
                 String msg = p.readUTF();
                 showStatus(msg);
@@ -797,6 +808,11 @@ public class PhoneCameraActivity extends Activity implements TextureView.Surface
     }
 
     private void onState(int rot, String f, boolean t, boolean ht, float z, int ex, String sz, int fps) {
+        if ("screen".equals(f)) {
+            rotation = 0;
+            applyTransform();
+            return;
+        }
         boolean changedCamera = !f.equals(facing);
         boolean changedZoom = Math.abs(z - zoom) > 0.01f;
         boolean changedLight = t != torch;
