@@ -266,7 +266,7 @@ class _QuickPanel extends StatelessWidget {
           FocusableSettingsTile(
             leading: const Icon(Icons.videocam_outlined),
             autofocus: first,
-            title: Text('Tazama Camera', style: textStyle),
+            title: Text('Tazama Link', style: textStyle),
             onPressed: () => _panelChannel.invokeMethod('openPhoneCamera'),
           ),
         ];

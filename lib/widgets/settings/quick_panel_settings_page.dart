@@ -9,7 +9,7 @@ const Map<String, (String, IconData, String)> quickPanelItemInfo = {
   'dim': ('Dim screen', Icons.nightlight_rounded, 'Switch and brightness slider'),
   'vpn': ('VPN for the open app', Icons.vpn_lock_rounded, 'Status and require VPN'),
   'lock': ('App lock', Icons.lock_rounded, 'Lock now, stay unlocked (needs a PIN)'),
-  'camera': ('Tazama Camera', Icons.videocam_rounded, 'Your phone as a camera'),
+  'camera': ('Tazama Link', Icons.videocam_rounded, 'Your phone as a camera'),
   'mediaPanel': ('Media panel', Icons.view_sidebar_rounded, 'Cameras and Home Assistant'),
 };
 

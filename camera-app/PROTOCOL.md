@@ -1,6 +1,6 @@
 # Phone camera protocol
 
-Phone (Tazama Camera) listens on TCP 47800 and advertises `_tazamacam._tcp` (TXT `id` = phone id).
+Phone (Tazama Link) listens on TCP 47800 and advertises `_tazamacam._tcp` (TXT `id` = phone id).
 The TV (Tazama `PhoneCameraActivity`) connects. Big-endian, strings are Java `writeUTF`.
 
 ## Handshake
@@ -30,3 +30,8 @@ Phone to TV:
   messages, STATE has facing `screen`). Unknown types are skipped by length, so old TVs ignore it.
 
 Closing the socket stops the camera.
+
+## Wake (phone to TV)
+The TV (LinkWakeService) listens on TCP 47801 and advertises `_tazamatv._tcp`, service name `TazamaTV-<tvId>`.
+TV sends `"TZW1"`, nonce[16]. Phone sends phoneId (UTF) and `HMAC-SHA256(tvKey, nonce || tvId)`.
+TV answers 0 and opens Phone camera (which then connects to the phone as above), or 1 if denied.

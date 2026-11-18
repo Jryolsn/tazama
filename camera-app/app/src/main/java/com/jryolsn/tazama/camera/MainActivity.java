@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
     private Button power;
     private Button stream;
     private Button cast;
+    private String pendingTv;
     private Button battery;
     private LinearLayout paired;
 
@@ -53,7 +54,7 @@ public class MainActivity extends Activity {
         col.setPadding(pad, pad, pad, pad);
 
         TextView title = new TextView(this);
-        title.setText("Tazama Camera");
+        title.setText("Tazama Link");
         title.setTextSize(26);
         title.setTypeface(Typeface.DEFAULT_BOLD);
         col.addView(title);
@@ -66,17 +67,24 @@ public class MainActivity extends Activity {
         power = button("Turn off", v -> togglePower());
         col.addView(power);
 
-        col.addView(section("Stream to TV"));
+        col.addView(section("Send to TV"));
+        col.addView(button("Show camera on TV", v -> pickTv(tv -> showOnTv(tv, false))));
+        col.addView(button("Cast phone screen to TV", v -> pickTv(tv -> {
+            pendingTv = tv;
+            startActivityForResult(getSystemService(MediaProjectionManager.class).createScreenCaptureIntent(),
+                    REQ_CAST);
+        })));
+        col.addView(text("The TV opens by itself. Stopping and casting are below."));
+        col.addView(section("Control"));
         stream = button("Stop streaming", v -> {
             startService(new Intent(this, CameraService.class)
                     .setAction(CameraService.paused ? CameraService.ACTION_RESUME : CameraService.ACTION_PAUSE));
             status.postDelayed(this::refresh, 300);
         });
         col.addView(stream);
-        cast = button("Cast phone screen", v -> toggleCast());
+        cast = button("Stop casting", v -> toggleCast());
         col.addView(cast);
-        col.addView(text("Casting shows the phone screen in Phone camera on the TV. "
-                + "Android asks what to share, you can pick a single app."));
+        col.addView(text("Casting asks what to share; on Android 14+ you can pick a single app."));
 
         col.addView(section("Pair with a TV"));
         TextView how = text("On the TV, open Phone camera in Tazama (quick panel or app list). It shows a QR code.");
@@ -147,9 +155,42 @@ public class MainActivity extends Activity {
         if (CameraService.casting) {
             startService(new Intent(this, CameraService.class).setAction(CameraService.ACTION_STOP_CAST));
             status.postDelayed(this::refresh, 300);
-        } else {
-            startActivityForResult(getSystemService(MediaProjectionManager.class).createScreenCaptureIntent(), REQ_CAST);
         }
+    }
+
+    private interface TvChoice {
+        void chosen(String tvId);
+    }
+
+    private void pickTv(TvChoice choice) {
+        if (!hasPermissions()) {
+            requestPermissions(permissions(), REQ_PERMISSIONS);
+            return;
+        }
+        if (!CameraService.running) startCameraService();
+        List<String[]> tvs = store.list();
+        if (tvs.isEmpty()) {
+            Toast.makeText(this, "Pair with a TV first.", Toast.LENGTH_LONG).show();
+        } else if (tvs.size() == 1) {
+            choice.chosen(tvs.get(0)[0]);
+        } else {
+            String[] names = new String[tvs.size()];
+            for (int i = 0; i < names.length; i++) names[i] = tvs.get(i)[1];
+            new AlertDialog.Builder(this).setTitle("Which TV?")
+                    .setItems(names, (d, i) -> choice.chosen(tvs.get(i)[0])).show();
+        }
+    }
+
+    /** Wakes the TV; the TV then connects here and asks for video. */
+    private void showOnTv(String tvId, boolean cast) {
+        if (!cast) {
+            startService(new Intent(this, CameraService.class).setAction(CameraService.ACTION_SHOW_CAMERA));
+        }
+        Toast.makeText(this, "Looking for the TV…", Toast.LENGTH_SHORT).show();
+        TvWaker.wake(this, store, tvId, (ok, msg) -> {
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            refresh();
+        });
     }
 
     @Override
@@ -159,7 +200,9 @@ public class MainActivity extends Activity {
             startService(new Intent(this, CameraService.class).setAction(CameraService.ACTION_CAST)
                     .putExtra("code", resultCode).putExtra("data", data));
             status.postDelayed(this::refresh, 500);
+            if (pendingTv != null) showOnTv(pendingTv, true);
         }
+        pendingTv = null;
     }
 
     private void togglePower() {
@@ -184,8 +227,7 @@ public class MainActivity extends Activity {
         power.setText(CameraService.running ? "Turn off" : "Turn on");
         stream.setEnabled(CameraService.running);
         stream.setText(CameraService.paused ? "Start streaming" : "Stop streaming");
-        cast.setEnabled(CameraService.running);
-        cast.setText(CameraService.casting ? "Stop casting" : "Cast phone screen");
+        cast.setEnabled(CameraService.running && CameraService.casting);
 
         PowerManager pm = getSystemService(PowerManager.class);
         battery.setVisibility(pm.isIgnoringBatteryOptimizations(getPackageName()) ? View.GONE : View.VISIBLE);

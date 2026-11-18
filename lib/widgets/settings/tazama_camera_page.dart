@@ -6,7 +6,7 @@ import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// The Tazama Camera phone app: the phone streams its camera to the TV over Wi-Fi.
+/// The Tazama Link phone app: the phone streams its camera to the TV over Wi-Fi.
 class TazamaCameraPage extends StatelessWidget {
   static const String routeName = 'tazama_camera';
 
@@ -20,14 +20,14 @@ class TazamaCameraPage extends StatelessWidget {
 
     return Column(
       children: [
-        const SettingsPageHeader(title: 'Tazama Camera'),
+        const SettingsPageHeader(title: 'Tazama Link'),
         Expanded(
           child: ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(22, 0, 22, 8),
                 child: Text(
-                    'Use your phone as a camera on the TV. Install the Tazama Camera app on the phone; '
+                    'Use your phone as a camera on the TV. Install the Tazama Link app on the phone; '
                     'the camera view shows a QR code to download it and pair.',
                     style: small),
               ),
