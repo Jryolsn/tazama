@@ -3,55 +3,22 @@
     "addCategory": "Add category",
     "addSection": "Add section",
     "alphabetical": "Alphabetical",
-    "appCardHighlightAnimation": "App card highlight animation",
     "showFocusBorders": "Show focus borders",
     "focusBorderThickness": "Focus border thickness",
-    "focusBorderThin": "Subtle (1.0 dp)",
-    "focusBorderDefault": "Default (1.5 dp)",
-    "focusBorderMedium": "Medium (2.0 dp)",
-    "focusBorderBold": "Bold (3.0 dp)",
     "appInfo": "Application info",
     "appKeyClick": "Click sound on key press",
-    "appearanceSettings": "Appearance",
-    "backgroundBlur": "Background blur",
-    "dockBlur": "Dock blur",
-    "dockDarkBackground": "Dark dock background",
-    "dockShadow": "Dock shadow",
     "applications": "Applications",
     "autoHideAppBar": "Automatically hide status bar",
     "hideStatusBarInGrid": "Hide status bar in grid",
-    "backButtonAction": "Back button action",
     "category": "Category",
     "categories": "Categories",
-    "columnCount": "Column count",
     "date": "Date",
-    "dateAndTimeFormat": "Date and time format",
     "delete": "Delete",
-    "dialogOptionBackButtonActionDoNothing": "Do nothing",
-    "dialogOptionBackButtonActionShowScreensaver": "Show screensaver",
-    "dialogOptionBackButtonActionShowClock": "Show clock",
     "dialogTextNoFileExplorer": "Please install a file explorer in order to pick a picture.",
-    "dialogTitleBackButtonAction": "Choose the back button action",
     "disambiguateCategoryTitle": "{title} (Category)",
     "@disambiguateCategoryTitle": {
         "placeholders": {
             "title": {
-                "type": "String"
-            }
-        }
-    },
-    "formattedDate": "Formatted date: {dateString}",
-    "@formattedDate": {
-        "placeholders": {
-            "dateString": {
-                "type": "String"
-            }
-        }
-    },
-    "formattedTime": "Formatted time: {timeString}",
-    "@formattedTime": {
-        "placeholders": {
-            "timeString": {
                 "type": "String"
             }
         }
@@ -67,20 +34,17 @@
     "loading": "Loading",
     "manual": "Manual",
     "modifySection": "Modify section",
-    "mustNotBeEmpty": "Must not be empty",
     "name": "Name",
     "newSection": "New section",
-    "noDateFormatSpecified": "No date format specified",
-    "noTimeFormatSpecified": "No time format specified",
     "allApplications": "All Apps",
-    "nonTvApplications": "Non-TV Apps",
     "open": "Open",
-    "orSelectFormatSpecifiers": "Or select format specifiers",
     "picture": "Picture",
     "removeFrom": "Remove from {name}",
     "@removeFrom": {
         "placeholders": {
-            "name": { "type": "String" }
+            "name": {
+                "type": "String"
+            }
         }
     },
     "renameCategory": "Rename category",
@@ -89,8 +53,6 @@
     "rowHeight": "Row height",
     "save": "Save",
     "spacer": "Spacer",
-    "spacerMaxHeightRequirement": "Must be greater than 0 and less than or equal to 500",
-    "statusBar": "Status bar",
     "settings": "Settings",
     "show": "Show",
     "showCategoryTitles": "Show category titles",
@@ -144,11 +106,7 @@
     },
     "textEmptyCategory": "This category is empty.",
     "time": "Time",
-    "titleStatusBarSettingsPage": "Choose what to display in the status bar",
-    "tvApplications": "TV Apps",
     "type": "Type",
-    "typeInTheDateFormat": "Type in the date format",
-    "typeInTheHourFormat": "Type in the hour format",
     "uninstall": "Uninstall",
     "wallpaper": "Wallpaper",
     "withEllipsisAddTo": "Add to...",
@@ -189,28 +147,16 @@
     "watchNextPermissionBody": "Allow access to TV listings to show your continue watching items.",
     "watchNextGrantPermission": "Grant permission",
     "watchNextCheckPermission": "Check again",
-    "interface": "Interface",
     "system": "System",
     "accentColor": "Accent Color",
-    "miscellaneous": "Miscellaneous",
-    "brightnessScheduler": "Brightness Scheduler",
     "screensaverSettings": "Screensaver Settings",
     "screensaverClockStyle": "Screensaver Clock Style",
-    "wifiUsagePeriod": "WiFi Usage Period",
     "showAppNamesBelowIcons": "Show App Names Below Icons",
-    "wifiUsage": "WiFi Usage",
     "networkIndicator": "Network Indicator",
     "customName": "Custom Name",
     "lastUsed": "Last Used",
-    "daily": "Daily",
-    "weekly": "Weekly",
-    "monthly": "Monthly",
     "grantPermission": "Grant Permission",
     "checkStatus": "Check Status",
-    "watchNextBigPictureMode": "Immersive mode",
-    "watchNextBigPictureModeDescription": "Show full-width hero backdrop with an action watch button",
-    "watchNextWatch": "Watch",
-    "watchNextResume": "Resume",
     "watchNextRefresh": "Refresh content",
     "watchNextRefreshDescription": "Reload recommendations from media providers",
     "watchNextRefreshed": "Watch Next content refreshed",
@@ -218,10 +164,7 @@
     "watchNextFilterAppsDescription": "Select which apps can display content in Watch Next",
     "watchNextNoApps": "No media apps currently providing Watch Next content",
     "watchNextShowAllApps": "Show all installed apps",
-    "watchNextHideWithoutImages": "Hide programs without image",
-    "watchNextHideWithoutImagesDescription": "Only show programs that provide poster or backdrop artwork",
     "watchNextMaxItems": "Maximum programs",
-    "watchNextMaxItemsDescription": "Limit the number of programs displayed in Watch Next",
     "watchNextMaxItemsUnlimited": "Unlimited",
     "redditWallpaper": "Reddit wallpaper",
     "redditWallpaperEnable": "Show Reddit wallpapers",
@@ -265,8 +208,6 @@
     "redditChangeNow": "Change wallpaper now",
     "redditAddSubreddit": "Add custom subreddit",
     "redditSubredditName": "Subreddit name (without r/)",
-    "redditSubredditAdded": "Subreddit added",
-    "redditSubredditInvalid": "Please enter a valid subreddit name",
     "redditWallpaperUpdated": "Wallpaper updated successfully",
     "redditWallpaperFailed": "Failed to fetch wallpaper. If this persists, configure a Reddit Client ID in settings.",
     "addToFavorites": "Add to Fav",
@@ -285,22 +226,6 @@
     "mediaSelectionHint": "D-pad: navigate  •  Select: set wallpaper  •  Back: cancel",
     "mediaPermissionRequired": "Media access permission is required",
     "mediaPermissionHelp": "Grant permission to browse photos and videos",
-    "preview": "Preview",
-    "colorPurple": "Purple",
-    "colorTeal": "Teal",
-    "colorBlue": "Blue",
-    "colorOrange": "Orange",
-    "colorPink": "Pink",
-    "colorGreen": "Green",
-    "colorWhite": "White",
-    "colorYellow": "Yellow",
-    "colorRed": "Red",
-    "colorCyan": "Cyan",
-    "colorIndigo": "Indigo",
-    "colorLime": "Lime",
-    "colorAmber": "Amber",
-    "colorRose": "Rose",
-    "colorIceBlue": "Ice Blue",
     "clockStyleMinimal": "Minimal",
     "clockStyleMinimalDescription": "Thin, elegant font (Default)",
     "clockStyleBold": "Bold",
@@ -327,31 +252,31 @@
     "brightnessSlotEvening": "6 PM - 10 PM",
     "brightnessSlotNight": "10 PM - 6 AM",
     "@customBannerSetFailed": {
-      "placeholders": {
-        "error": {
-          "type": "String"
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
         }
-      }
     },
     "@customBannerClearFailed": {
-      "placeholders": {
-        "error": {
-          "type": "String"
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
         }
-      }
     },
     "@mediaItemCount": {
-      "placeholders": {
-        "count": {
-          "type": "int"
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
         }
-      }
     },
     "@currentBrightnessSlot": {
-      "placeholders": {
-        "slot": {
-          "type": "String"
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
         }
-      }
     }
 }

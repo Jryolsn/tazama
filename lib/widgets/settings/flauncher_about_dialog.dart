@@ -39,7 +39,7 @@ class LTvLauncherAboutDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         child: Image.asset("assets/icon.png", height: 72),
       ),
-      applicationLegalese: "Developed by Badis Meddouri\nBased on LTvLauncher © 2026 LeanBitLab",
+      applicationLegalese: "Developed by Jryolsn\nBased on Arc Launcher by Badis Meddouri, LTvLauncher by LeanBitLab and FLauncher by Étienne Fesser",
       children: [
         SizedBox(height: 24),
         Text(localizations.textAboutDialog("https://github.com/Jryolsn/tazama"))

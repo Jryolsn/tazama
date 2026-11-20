@@ -21,46 +21,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get alphabetical => 'Theo bảng chữ cái';
 
   @override
-  String get appCardHighlightAnimation => 'Hiệu ứng làm nổi bật ô ứng dụng';
-
-  @override
   String get showFocusBorders => 'Hiện viền ô đang chọn';
 
   @override
   String get focusBorderThickness => 'Độ dày viền ô đang chọn';
 
   @override
-  String get focusBorderThin => 'Mảnh (1,0 dp)';
-
-  @override
-  String get focusBorderDefault => 'Mặc định (1,5 dp)';
-
-  @override
-  String get focusBorderMedium => 'Vừa (2,0 dp)';
-
-  @override
-  String get focusBorderBold => 'Dày (3,0 dp)';
-
-  @override
   String get appInfo => 'Thông tin ứng dụng';
 
   @override
   String get appKeyClick => 'Âm thanh khi bấm phím';
-
-  @override
-  String get appearanceSettings => 'Hiển thị';
-
-  @override
-  String get backgroundBlur => 'Làm mờ hình nền';
-
-  @override
-  String get dockBlur => 'Làm mờ thanh yêu thích';
-
-  @override
-  String get dockDarkBackground => 'Nền tối cho thanh yêu thích';
-
-  @override
-  String get dockShadow => 'Đổ bóng thanh yêu thích';
 
   @override
   String get applications => 'Ứng dụng';
@@ -72,56 +42,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hideStatusBarInGrid => 'Ẩn thanh trạng thái khi xem lưới ứng dụng';
 
   @override
-  String get backButtonAction => 'Chức năng nút Quay lại';
-
-  @override
   String get category => 'Danh mục';
 
   @override
   String get categories => 'Danh mục';
 
   @override
-  String get columnCount => 'Số cột';
-
-  @override
   String get date => 'Ngày';
 
   @override
-  String get dateAndTimeFormat => 'Định dạng ngày và giờ';
-
-  @override
   String get delete => 'Xóa';
-
-  @override
-  String get dialogOptionBackButtonActionDoNothing => 'Không làm gì';
-
-  @override
-  String get dialogOptionBackButtonActionShowScreensaver =>
-      'Mở trình bảo vệ màn hình';
-
-  @override
-  String get dialogOptionBackButtonActionShowClock => 'Hiện đồng hồ';
 
   @override
   String get dialogTextNoFileExplorer =>
       'Vui lòng cài ứng dụng quản lý tệp để chọn ảnh.';
 
   @override
-  String get dialogTitleBackButtonAction => 'Chọn chức năng cho nút Quay lại';
-
-  @override
   String disambiguateCategoryTitle(String title) {
     return '$title (Danh mục)';
-  }
-
-  @override
-  String formattedDate(String dateString) {
-    return 'Ngày theo định dạng: $dateString';
-  }
-
-  @override
-  String formattedTime(String timeString) {
-    return 'Giờ theo định dạng: $timeString';
   }
 
   @override
@@ -158,31 +96,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get modifySection => 'Chỉnh sửa mục';
 
   @override
-  String get mustNotBeEmpty => 'Không được để trống';
-
-  @override
   String get name => 'Tên';
 
   @override
   String get newSection => 'Mục mới';
 
   @override
-  String get noDateFormatSpecified => 'Chưa chọn định dạng ngày';
-
-  @override
-  String get noTimeFormatSpecified => 'Chưa chọn định dạng giờ';
-
-  @override
   String get allApplications => 'Tất cả ứng dụng';
 
   @override
-  String get nonTvApplications => 'Ứng dụng không dành cho TV';
-
-  @override
   String get open => 'Mở';
-
-  @override
-  String get orSelectFormatSpecifiers => 'Hoặc chọn các thành phần định dạng';
 
   @override
   String get picture => 'Ảnh';
@@ -209,13 +132,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get spacer => 'Khoảng trống';
-
-  @override
-  String get spacerMaxHeightRequirement =>
-      'Phải lớn hơn 0 và không vượt quá 500';
-
-  @override
-  String get statusBar => 'Thanh trạng thái';
 
   @override
   String get settings => 'Cài đặt';
@@ -294,20 +210,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get time => 'Giờ';
 
   @override
-  String get titleStatusBarSettingsPage =>
-      'Chọn nội dung hiển thị trên thanh trạng thái';
-
-  @override
-  String get tvApplications => 'Ứng dụng dành cho TV';
-
-  @override
   String get type => 'Loại';
-
-  @override
-  String get typeInTheDateFormat => 'Nhập định dạng ngày';
-
-  @override
-  String get typeInTheHourFormat => 'Nhập định dạng giờ';
 
   @override
   String get uninstall => 'Gỡ cài đặt';
@@ -394,19 +297,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get watchNextCheckPermission => 'Kiểm tra lại';
 
   @override
-  String get interface => 'Giao diện';
-
-  @override
   String get system => 'Hệ thống';
 
   @override
   String get accentColor => 'Màu nhấn';
-
-  @override
-  String get miscellaneous => 'Tùy chọn khác';
-
-  @override
-  String get brightnessScheduler => 'Lịch điều chỉnh độ sáng';
 
   @override
   String get screensaverSettings => 'Cài đặt trình bảo vệ màn hình';
@@ -415,13 +309,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get screensaverClockStyle => 'Kiểu đồng hồ bảo vệ màn hình';
 
   @override
-  String get wifiUsagePeriod => 'Chu kỳ thống kê Wi-Fi';
-
-  @override
   String get showAppNamesBelowIcons => 'Hiện tên ứng dụng dưới biểu tượng';
-
-  @override
-  String get wifiUsage => 'Dung lượng Wi-Fi đã dùng';
 
   @override
   String get networkIndicator => 'Trạng thái mạng';
@@ -433,32 +321,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get lastUsed => 'Dùng gần đây';
 
   @override
-  String get daily => 'Hằng ngày';
-
-  @override
-  String get weekly => 'Hằng tuần';
-
-  @override
-  String get monthly => 'Hằng tháng';
-
-  @override
   String get grantPermission => 'Cấp quyền';
 
   @override
   String get checkStatus => 'Kiểm tra trạng thái';
-
-  @override
-  String get watchNextBigPictureMode => 'Chế độ chìm đắm';
-
-  @override
-  String get watchNextBigPictureModeDescription =>
-      'Hiển thị hình nền nổi bật toàn màn hình với nút xem tác vụ';
-
-  @override
-  String get watchNextWatch => 'Xem';
-
-  @override
-  String get watchNextResume => 'Tiếp tục xem';
 
   @override
   String get watchNextRefresh => 'Làm mới nội dung';
@@ -485,18 +351,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get watchNextShowAllApps => 'Hiển thị tất cả ứng dụng đã cài đặt';
 
   @override
-  String get watchNextHideWithoutImages => 'Ẩn chương trình không có hình ảnh';
-
-  @override
-  String get watchNextHideWithoutImagesDescription =>
-      'Chỉ hiển thị các chương trình có hình ảnh áp phích hoặc hình nền';
-
-  @override
   String get watchNextMaxItems => 'Số lượng chương trình tối đa';
-
-  @override
-  String get watchNextMaxItemsDescription =>
-      'Giới hạn số lượng chương trình hiển thị trong Tiếp tục xem';
 
   @override
   String get watchNextMaxItemsUnlimited => 'Không giới hạn';
@@ -572,13 +427,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get redditSubredditName => 'Tên cộng đồng (không có r/)';
 
   @override
-  String get redditSubredditAdded => 'Đã thêm cộng đồng Reddit';
-
-  @override
-  String get redditSubredditInvalid =>
-      'Vui lòng nhập tên cộng đồng Reddit hợp lệ';
-
-  @override
   String get redditWallpaperUpdated => 'Đã đổi hình nền';
 
   @override
@@ -640,54 +488,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mediaPermissionHelp => 'Cấp quyền để duyệt ảnh và video';
-
-  @override
-  String get preview => 'Xem trước';
-
-  @override
-  String get colorPurple => 'Tím';
-
-  @override
-  String get colorTeal => 'Xanh cổ vịt';
-
-  @override
-  String get colorBlue => 'Xanh dương';
-
-  @override
-  String get colorOrange => 'Cam';
-
-  @override
-  String get colorPink => 'Hồng';
-
-  @override
-  String get colorGreen => 'Xanh lá';
-
-  @override
-  String get colorWhite => 'Trắng';
-
-  @override
-  String get colorYellow => 'Vàng';
-
-  @override
-  String get colorRed => 'Đỏ';
-
-  @override
-  String get colorCyan => 'Xanh lơ';
-
-  @override
-  String get colorIndigo => 'Chàm';
-
-  @override
-  String get colorLime => 'Xanh nõn chuối';
-
-  @override
-  String get colorAmber => 'Hổ phách';
-
-  @override
-  String get colorRose => 'Hồng phấn';
-
-  @override
-  String get colorIceBlue => 'Xanh băng';
 
   @override
   String get clockStyleMinimal => 'Tối giản';

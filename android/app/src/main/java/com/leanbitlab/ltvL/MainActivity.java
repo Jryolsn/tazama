@@ -27,7 +27,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -48,9 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import android.app.usage.NetworkStats;
-import android.app.usage.NetworkStatsManager;
-import android.app.AppOpsManager;
 import android.os.RemoteException;
 
 import io.flutter.embedding.android.FlutterActivity;
@@ -129,44 +125,6 @@ public class MainActivity extends FlutterActivity {
                 case "checkForGetContentAvailability" -> result.success(checkForGetContentAvailability());
                 case "startAmbientMode" -> result.success(startAmbientMode());
                 case "getActiveNetworkInformation" -> result.success(getActiveNetworkInformation());
-                case "getDailyWifiUsage" -> {
-                    long usage = getDailyWifiUsage();
-                    if (usage == -1) {
-                        result.error("PERMISSION_DENIED", "Usage stats permission not granted", null);
-                    } else {
-                        result.success(usage);
-                    }
-                }
-                case "getWeeklyWifiUsage" -> {
-                    long usage = getWeeklyWifiUsage();
-                    if (usage == -1) {
-                        result.error("PERMISSION_DENIED", "Usage stats permission not granted", null);
-                    } else {
-                        result.success(usage);
-                    }
-                }
-                case "getMonthlyWifiUsage" -> {
-                    long usage = getMonthlyWifiUsage();
-                    if (usage == -1) {
-                        result.error("PERMISSION_DENIED", "Usage stats permission not granted", null);
-                    } else {
-                        result.success(usage);
-                    }
-                }
-                case "checkUsageStatsPermission" -> result.success(checkUsageStatsPermission());
-                case "requestUsageStatsPermission" -> {
-                    requestUsageStatsPermission();
-                    result.success(null);
-                }
-                case "checkWriteSettingsPermission" -> result.success(checkWriteSettingsPermission());
-                case "requestWriteSettingsPermission" -> {
-                    requestWriteSettingsPermission();
-                    result.success(null);
-                }
-                case "setSystemBrightness" -> {
-                    int brightness = call.argument("brightness");
-                    result.success(setSystemBrightness(brightness));
-                }
                 case "appLockGetLocked" -> result.success(new ArrayList<>(AppLockStore.lockedPackages(this)));
                 case "appLockSetLocked" -> {
                     AppLockStore.setLocked(this, call.argument("packageName"), Boolean.TRUE.equals(call.argument("locked")));
@@ -673,151 +631,6 @@ public class MainActivity extends FlutterActivity {
         return bitmap;
     }
 
-    private long getDailyWifiUsage() {
-        if (!checkUsageStatsPermission()) {
-            return -1;
-        }
-
-        NetworkStatsManager networkStatsManager = (NetworkStatsManager) getSystemService(Context.NETWORK_STATS_SERVICE);
-        if (networkStatsManager == null)
-            return 0;
-
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        calendar.set(java.util.Calendar.MINUTE, 0);
-        calendar.set(java.util.Calendar.SECOND, 0);
-        calendar.set(java.util.Calendar.MILLISECOND, 0);
-        long startTime = calendar.getTimeInMillis();
-        long endTime = System.currentTimeMillis();
-
-        long totalBytes = 0;
-        try {
-            NetworkStats.Bucket bucket = networkStatsManager.querySummaryForDevice(
-                    NetworkCapabilities.TRANSPORT_WIFI,
-                    "",
-                    startTime,
-                    endTime);
-            totalBytes = bucket.getRxBytes() + bucket.getTxBytes();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        return totalBytes;
-    }
-
-    private long getWeeklyWifiUsage() {
-        if (!checkUsageStatsPermission()) {
-            return -1;
-        }
-
-        NetworkStatsManager networkStatsManager = (NetworkStatsManager) getSystemService(Context.NETWORK_STATS_SERVICE);
-        if (networkStatsManager == null)
-            return 0;
-
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(java.util.Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        calendar.set(java.util.Calendar.MINUTE, 0);
-        calendar.set(java.util.Calendar.SECOND, 0);
-        calendar.set(java.util.Calendar.MILLISECOND, 0);
-        long startTime = calendar.getTimeInMillis();
-        long endTime = System.currentTimeMillis();
-
-        long totalBytes = 0;
-        try {
-            NetworkStats.Bucket bucket = networkStatsManager.querySummaryForDevice(
-                    NetworkCapabilities.TRANSPORT_WIFI,
-                    "",
-                    startTime,
-                    endTime);
-            totalBytes = bucket.getRxBytes() + bucket.getTxBytes();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        return totalBytes;
-    }
-
-    private long getMonthlyWifiUsage() {
-        if (!checkUsageStatsPermission()) {
-            return -1;
-        }
-
-        NetworkStatsManager networkStatsManager = (NetworkStatsManager) getSystemService(Context.NETWORK_STATS_SERVICE);
-        if (networkStatsManager == null)
-            return 0;
-
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(java.util.Calendar.DAY_OF_MONTH, 1);
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        calendar.set(java.util.Calendar.MINUTE, 0);
-        calendar.set(java.util.Calendar.SECOND, 0);
-        calendar.set(java.util.Calendar.MILLISECOND, 0);
-        long startTime = calendar.getTimeInMillis();
-        long endTime = System.currentTimeMillis();
-
-        long totalBytes = 0;
-        try {
-            NetworkStats.Bucket bucket = networkStatsManager.querySummaryForDevice(
-                    NetworkCapabilities.TRANSPORT_WIFI,
-                    "",
-                    startTime,
-                    endTime);
-            totalBytes = bucket.getRxBytes() + bucket.getTxBytes();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        return totalBytes;
-    }
-
-    private boolean checkUsageStatsPermission() {
-        AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                android.os.Process.myUid(), getPackageName());
-        return mode == AppOpsManager.MODE_ALLOWED;
-    }
-
-    private void requestUsageStatsPermission() {
-        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-        tryStartActivity(intent);
-    }
-
-    private boolean checkWriteSettingsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return Settings.System.canWrite(this);
-        }
-        return true;
-    }
-
-    private void requestWriteSettingsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            tryStartActivity(intent);
-        }
-    }
-
-    private boolean setSystemBrightness(int brightness) {
-        if (checkWriteSettingsPermission()) {
-            try {
-                android.content.ContentResolver resolver = getContentResolver();
-                // 1. Standard Android brightness
-                Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-                Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
-                
-                // 2. Try common TV "Backlight" keys (Vendor specific)
-                Settings.System.putInt(resolver, "backlight", brightness);
-                Settings.System.putInt(resolver, "backlight_level", brightness);
-                
-                return true;
-            } catch (Exception e) {
-                // Ignore errors on specific keys as they may not exist
-                return true;
-            }
-        }
-        return false;
-    }
 
     private boolean openWifiSettings() {
         // 1. Try Android Q+ WiFi panel

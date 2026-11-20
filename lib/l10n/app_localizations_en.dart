@@ -21,46 +21,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alphabetical => 'Alphabetical';
 
   @override
-  String get appCardHighlightAnimation => 'App card highlight animation';
-
-  @override
   String get showFocusBorders => 'Show focus borders';
 
   @override
   String get focusBorderThickness => 'Focus border thickness';
 
   @override
-  String get focusBorderThin => 'Subtle (1.0 dp)';
-
-  @override
-  String get focusBorderDefault => 'Default (1.5 dp)';
-
-  @override
-  String get focusBorderMedium => 'Medium (2.0 dp)';
-
-  @override
-  String get focusBorderBold => 'Bold (3.0 dp)';
-
-  @override
   String get appInfo => 'Application info';
 
   @override
   String get appKeyClick => 'Click sound on key press';
-
-  @override
-  String get appearanceSettings => 'Appearance';
-
-  @override
-  String get backgroundBlur => 'Background blur';
-
-  @override
-  String get dockBlur => 'Dock blur';
-
-  @override
-  String get dockDarkBackground => 'Dark dock background';
-
-  @override
-  String get dockShadow => 'Dock shadow';
 
   @override
   String get applications => 'Applications';
@@ -72,55 +42,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hideStatusBarInGrid => 'Hide status bar in grid';
 
   @override
-  String get backButtonAction => 'Back button action';
-
-  @override
   String get category => 'Category';
 
   @override
   String get categories => 'Categories';
 
   @override
-  String get columnCount => 'Column count';
-
-  @override
   String get date => 'Date';
 
   @override
-  String get dateAndTimeFormat => 'Date and time format';
-
-  @override
   String get delete => 'Delete';
-
-  @override
-  String get dialogOptionBackButtonActionDoNothing => 'Do nothing';
-
-  @override
-  String get dialogOptionBackButtonActionShowScreensaver => 'Show screensaver';
-
-  @override
-  String get dialogOptionBackButtonActionShowClock => 'Show clock';
 
   @override
   String get dialogTextNoFileExplorer =>
       'Please install a file explorer in order to pick a picture.';
 
   @override
-  String get dialogTitleBackButtonAction => 'Choose the back button action';
-
-  @override
   String disambiguateCategoryTitle(String title) {
     return '$title (Category)';
-  }
-
-  @override
-  String formattedDate(String dateString) {
-    return 'Formatted date: $dateString';
-  }
-
-  @override
-  String formattedTime(String timeString) {
-    return 'Formatted time: $timeString';
   }
 
   @override
@@ -157,31 +96,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modifySection => 'Modify section';
 
   @override
-  String get mustNotBeEmpty => 'Must not be empty';
-
-  @override
   String get name => 'Name';
 
   @override
   String get newSection => 'New section';
 
   @override
-  String get noDateFormatSpecified => 'No date format specified';
-
-  @override
-  String get noTimeFormatSpecified => 'No time format specified';
-
-  @override
   String get allApplications => 'All Apps';
 
   @override
-  String get nonTvApplications => 'Non-TV Apps';
-
-  @override
   String get open => 'Open';
-
-  @override
-  String get orSelectFormatSpecifiers => 'Or select format specifiers';
 
   @override
   String get picture => 'Picture';
@@ -208,13 +132,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spacer => 'Spacer';
-
-  @override
-  String get spacerMaxHeightRequirement =>
-      'Must be greater than 0 and less than or equal to 500';
-
-  @override
-  String get statusBar => 'Status bar';
 
   @override
   String get settings => 'Settings';
@@ -292,20 +209,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get time => 'Time';
 
   @override
-  String get titleStatusBarSettingsPage =>
-      'Choose what to display in the status bar';
-
-  @override
-  String get tvApplications => 'TV Apps';
-
-  @override
   String get type => 'Type';
-
-  @override
-  String get typeInTheDateFormat => 'Type in the date format';
-
-  @override
-  String get typeInTheHourFormat => 'Type in the hour format';
 
   @override
   String get uninstall => 'Uninstall';
@@ -392,19 +296,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get watchNextCheckPermission => 'Check again';
 
   @override
-  String get interface => 'Interface';
-
-  @override
   String get system => 'System';
 
   @override
   String get accentColor => 'Accent Color';
-
-  @override
-  String get miscellaneous => 'Miscellaneous';
-
-  @override
-  String get brightnessScheduler => 'Brightness Scheduler';
 
   @override
   String get screensaverSettings => 'Screensaver Settings';
@@ -413,13 +308,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get screensaverClockStyle => 'Screensaver Clock Style';
 
   @override
-  String get wifiUsagePeriod => 'WiFi Usage Period';
-
-  @override
   String get showAppNamesBelowIcons => 'Show App Names Below Icons';
-
-  @override
-  String get wifiUsage => 'WiFi Usage';
 
   @override
   String get networkIndicator => 'Network Indicator';
@@ -431,32 +320,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastUsed => 'Last Used';
 
   @override
-  String get daily => 'Daily';
-
-  @override
-  String get weekly => 'Weekly';
-
-  @override
-  String get monthly => 'Monthly';
-
-  @override
   String get grantPermission => 'Grant Permission';
 
   @override
   String get checkStatus => 'Check Status';
-
-  @override
-  String get watchNextBigPictureMode => 'Immersive mode';
-
-  @override
-  String get watchNextBigPictureModeDescription =>
-      'Show full-width hero backdrop with an action watch button';
-
-  @override
-  String get watchNextWatch => 'Watch';
-
-  @override
-  String get watchNextResume => 'Resume';
 
   @override
   String get watchNextRefresh => 'Refresh content';
@@ -483,18 +350,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get watchNextShowAllApps => 'Show all installed apps';
 
   @override
-  String get watchNextHideWithoutImages => 'Hide programs without image';
-
-  @override
-  String get watchNextHideWithoutImagesDescription =>
-      'Only show programs that provide poster or backdrop artwork';
-
-  @override
   String get watchNextMaxItems => 'Maximum programs';
-
-  @override
-  String get watchNextMaxItemsDescription =>
-      'Limit the number of programs displayed in Watch Next';
 
   @override
   String get watchNextMaxItemsUnlimited => 'Unlimited';
@@ -570,12 +426,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get redditSubredditName => 'Subreddit name (without r/)';
 
   @override
-  String get redditSubredditAdded => 'Subreddit added';
-
-  @override
-  String get redditSubredditInvalid => 'Please enter a valid subreddit name';
-
-  @override
   String get redditWallpaperUpdated => 'Wallpaper updated successfully';
 
   @override
@@ -637,54 +487,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mediaPermissionHelp =>
       'Grant permission to browse photos and videos';
-
-  @override
-  String get preview => 'Preview';
-
-  @override
-  String get colorPurple => 'Purple';
-
-  @override
-  String get colorTeal => 'Teal';
-
-  @override
-  String get colorBlue => 'Blue';
-
-  @override
-  String get colorOrange => 'Orange';
-
-  @override
-  String get colorPink => 'Pink';
-
-  @override
-  String get colorGreen => 'Green';
-
-  @override
-  String get colorWhite => 'White';
-
-  @override
-  String get colorYellow => 'Yellow';
-
-  @override
-  String get colorRed => 'Red';
-
-  @override
-  String get colorCyan => 'Cyan';
-
-  @override
-  String get colorIndigo => 'Indigo';
-
-  @override
-  String get colorLime => 'Lime';
-
-  @override
-  String get colorAmber => 'Amber';
-
-  @override
-  String get colorRose => 'Rose';
-
-  @override
-  String get colorIceBlue => 'Ice Blue';
 
   @override
   String get clockStyleMinimal => 'Minimal';

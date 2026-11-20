@@ -456,6 +456,16 @@ class MockFLauncherChannel extends _i1.Mock implements _i12.FLauncherChannel {
       ) as _i9.Future<void>);
 
   @override
+  _i9.Future<void> openPhoneCamera() => (super.noSuchMethod(
+        Invocation.method(
+          #openPhoneCamera,
+          [],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
   _i9.Future<void> openAppInfo(String? packageName) => (super.noSuchMethod(
         Invocation.method(
           #openAppInfo,
@@ -507,56 +517,6 @@ class MockFLauncherChannel extends _i1.Mock implements _i12.FLauncherChannel {
         returnValueForMissingStub:
             _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i9.Future<Map<String, dynamic>>);
-
-  @override
-  _i9.Future<int> getDailyWifiUsage() => (super.noSuchMethod(
-        Invocation.method(
-          #getDailyWifiUsage,
-          [],
-        ),
-        returnValue: _i9.Future<int>.value(0),
-        returnValueForMissingStub: _i9.Future<int>.value(0),
-      ) as _i9.Future<int>);
-
-  @override
-  _i9.Future<int> getWeeklyWifiUsage() => (super.noSuchMethod(
-        Invocation.method(
-          #getWeeklyWifiUsage,
-          [],
-        ),
-        returnValue: _i9.Future<int>.value(0),
-        returnValueForMissingStub: _i9.Future<int>.value(0),
-      ) as _i9.Future<int>);
-
-  @override
-  _i9.Future<int> getMonthlyWifiUsage() => (super.noSuchMethod(
-        Invocation.method(
-          #getMonthlyWifiUsage,
-          [],
-        ),
-        returnValue: _i9.Future<int>.value(0),
-        returnValueForMissingStub: _i9.Future<int>.value(0),
-      ) as _i9.Future<int>);
-
-  @override
-  _i9.Future<bool> checkUsageStatsPermission() => (super.noSuchMethod(
-        Invocation.method(
-          #checkUsageStatsPermission,
-          [],
-        ),
-        returnValue: _i9.Future<bool>.value(false),
-        returnValueForMissingStub: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
-
-  @override
-  _i9.Future<void> requestUsageStatsPermission() => (super.noSuchMethod(
-        Invocation.method(
-          #requestUsageStatsPermission,
-          [],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
 
   @override
   _i9.Future<void> openWifiSettings() => (super.noSuchMethod(
@@ -1733,19 +1693,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as bool);
 
   @override
-  String get backButtonAction => (super.noSuchMethod(
-        Invocation.getter(#backButtonAction),
-        returnValue: _i19.dummyValue<String>(
-          this,
-          Invocation.getter(#backButtonAction),
-        ),
-        returnValueForMissingStub: _i19.dummyValue<String>(
-          this,
-          Invocation.getter(#backButtonAction),
-        ),
-      ) as String);
-
-  @override
   String get dateFormat => (super.noSuchMethod(
         Invocation.getter(#dateFormat),
         returnValue: _i19.dummyValue<String>(
@@ -1770,26 +1717,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
           Invocation.getter(#timeFormat),
         ),
       ) as String);
-
-  @override
-  String get wifiUsagePeriod => (super.noSuchMethod(
-        Invocation.getter(#wifiUsagePeriod),
-        returnValue: _i19.dummyValue<String>(
-          this,
-          Invocation.getter(#wifiUsagePeriod),
-        ),
-        returnValueForMissingStub: _i19.dummyValue<String>(
-          this,
-          Invocation.getter(#wifiUsagePeriod),
-        ),
-      ) as String);
-
-  @override
-  bool get showWifiWidgetInStatusBar => (super.noSuchMethod(
-        Invocation.getter(#showWifiWidgetInStatusBar),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
 
   @override
   bool get showNetworkIndicatorInStatusBar => (super.noSuchMethod(
@@ -1825,36 +1752,8 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as String);
 
   @override
-  bool get dockBackdropFilterDisabled => (super.noSuchMethod(
-        Invocation.getter(#dockBackdropFilterDisabled),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  bool get backgroundBlurDisabled => (super.noSuchMethod(
-        Invocation.getter(#backgroundBlurDisabled),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
   bool get showWatchNextSection => (super.noSuchMethod(
         Invocation.getter(#showWatchNextSection),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  bool get watchNextBigPictureMode => (super.noSuchMethod(
-        Invocation.getter(#watchNextBigPictureMode),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  bool get watchNextHideProgramsWithoutImages => (super.noSuchMethod(
-        Invocation.getter(#watchNextHideProgramsWithoutImages),
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
@@ -1865,20 +1764,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
         returnValue: 0,
         returnValueForMissingStub: 0,
       ) as int);
-
-  @override
-  bool get dockDarkBackground => (super.noSuchMethod(
-        Invocation.getter(#dockDarkBackground),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  bool get dockShadowEnabled => (super.noSuchMethod(
-        Invocation.getter(#dockShadowEnabled),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
 
   @override
   bool get showFocusBorders => (super.noSuchMethod(
@@ -1939,6 +1824,20 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
           Invocation.getter(#homeLayout),
         ),
       ) as String);
+
+  @override
+  List<String> get quickPanelOrder => (super.noSuchMethod(
+        Invocation.getter(#quickPanelOrder),
+        returnValue: <String>[],
+        returnValueForMissingStub: <String>[],
+      ) as List<String>);
+
+  @override
+  Set<String> get quickPanelHidden => (super.noSuchMethod(
+        Invocation.getter(#quickPanelHidden),
+        returnValue: <String>{},
+        returnValueForMissingStub: <String>{},
+      ) as Set<String>);
 
   @override
   int get categoryUiRevision => (super.noSuchMethod(
@@ -2070,17 +1969,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as bool);
 
   @override
-  _i9.Future<void> setFocusBorderThickness(double? value) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setFocusBorderThickness,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
   _i9.Future<void> set(
     String? key,
     bool? value,
@@ -2092,17 +1980,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
             key,
             value,
           ],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setAppHighlightAnimationEnabled(bool? value) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setAppHighlightAnimationEnabled,
-          [value],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
@@ -2149,33 +2026,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as _i9.Future<void>);
 
   @override
-  _i9.Future<void> setBackButtonAction(String? value) => (super.noSuchMethod(
-        Invocation.method(
-          #setBackButtonAction,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setDateTimeFormat(
-    String? dateFormatString,
-    String? timeFormatString,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setDateTimeFormat,
-          [
-            dateFormatString,
-            timeFormatString,
-          ],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
   _i9.Future<void> setShowCategoryTitles(bool? show) => (super.noSuchMethod(
         Invocation.method(
           #setShowCategoryTitles,
@@ -2210,6 +2060,40 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
         Invocation.method(
           #setHomeLayout,
           [layout],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> moveQuickPanelItem(
+    String? id,
+    int? delta,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #moveQuickPanelItem,
+          [
+            id,
+            delta,
+          ],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setQuickPanelItemShown(
+    String? id,
+    bool? shown,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setQuickPanelItemShown,
+          [
+            id,
+            shown,
+          ],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
@@ -2290,42 +2174,11 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as _i9.Future<void>);
 
   @override
-  _i9.Future<void> setWifiUsagePeriod(String? period) => (super.noSuchMethod(
-        Invocation.method(
-          #setWifiUsagePeriod,
-          [period],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setShowWifiWidgetInStatusBar(bool? show) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setShowWifiWidgetInStatusBar,
-          [show],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
   _i9.Future<void> setShowNetworkIndicatorInStatusBar(bool? show) =>
       (super.noSuchMethod(
         Invocation.method(
           #setShowNetworkIndicatorInStatusBar,
           [show],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setAccentColor(String? colorHex) => (super.noSuchMethod(
-        Invocation.method(
-          #setAccentColor,
-          [colorHex],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
@@ -2343,53 +2196,9 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
       ) as _i9.Future<void>);
 
   @override
-  _i9.Future<void> setDockBackdropFilterDisabled(bool? value) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setDockBackdropFilterDisabled,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setBackgroundBlurDisabled(bool? value) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setBackgroundBlurDisabled,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
   _i9.Future<void> setShowWatchNextSection(bool? value) => (super.noSuchMethod(
         Invocation.method(
           #setShowWatchNextSection,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setWatchNextBigPictureMode(bool? value) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setWatchNextBigPictureMode,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setWatchNextHideProgramsWithoutImages(bool? value) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setWatchNextHideProgramsWithoutImages,
           [value],
         ),
         returnValue: _i9.Future<void>.value(),
@@ -2437,36 +2246,6 @@ class MockSettingsService extends _i1.Mock implements _i18.SettingsService {
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
-
-  @override
-  _i9.Future<void> setDockDarkBackground(bool? value) => (super.noSuchMethod(
-        Invocation.method(
-          #setDockDarkBackground,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setDockShadowEnabled(bool? value) => (super.noSuchMethod(
-        Invocation.method(
-          #setDockShadowEnabled,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-
-  @override
-  _i9.Future<void> setShowFocusBorders(bool? value) => (super.noSuchMethod(
-        Invocation.method(
-          #setShowFocusBorders,
-          [value],
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
 
   @override
   _i9.Future<void> setTimeBasedWallpaperEnabled(bool? enabled) =>
@@ -2699,13 +2478,6 @@ class MockWatchNextService extends _i1.Mock implements _i20.WatchNextService {
       ) as bool);
 
   @override
-  int get activeHeroIndex => (super.noSuchMethod(
-        Invocation.getter(#activeHeroIndex),
-        returnValue: 0,
-        returnValueForMissingStub: 0,
-      ) as int);
-
-  @override
   Set<String> get availablePackageNames => (super.noSuchMethod(
         Invocation.getter(#availablePackageNames),
         returnValue: <String>{},
@@ -2718,43 +2490,6 @@ class MockWatchNextService extends _i1.Mock implements _i20.WatchNextService {
         returnValue: false,
         returnValueForMissingStub: false,
       ) as bool);
-
-  @override
-  bool itemHasImage(_i21.WatchNextItem? item) => (super.noSuchMethod(
-        Invocation.method(
-          #itemHasImage,
-          [item],
-        ),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  void setActiveHeroIndex(int? index) => super.noSuchMethod(
-        Invocation.method(
-          #setActiveHeroIndex,
-          [index],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void nextHeroItem() => super.noSuchMethod(
-        Invocation.method(
-          #nextHeroItem,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void prevHeroItem() => super.noSuchMethod(
-        Invocation.method(
-          #prevHeroItem,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
 
   @override
   void dispose() => super.noSuchMethod(

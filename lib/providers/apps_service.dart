@@ -233,8 +233,7 @@ class AppsService extends ChangeNotifier
   Future<void> _initDefaultCategories() {
     final allApps = _applications.values.where((application) => !application.hidden);
     final defaultFavoriteLauncherPackageNames = [
-      'com.omeda.arc',
-      'com.omeda.arc.debug',
+      'com.jryolsn.tazama',
     ];
 
     return _database.transaction(() async {

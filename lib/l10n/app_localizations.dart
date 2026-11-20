@@ -6,8 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
-import 'app_localizations_es.dart';
-import 'app_localizations_tr.dart';
 import 'app_localizations_vi.dart';
 import 'app_localizations_zh.dart';
 
@@ -98,8 +96,6 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('es'),
-    Locale('tr'),
     Locale('vi'),
     Locale('zh'),
   ];
@@ -107,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutFlauncher.
   ///
   /// In en, this message translates to:
-  /// **'About Arc Launcher'**
+  /// **'About Tazama'**
   String get aboutFlauncher;
 
   /// No description provided for @addCategory.
@@ -128,12 +124,6 @@ abstract class AppLocalizations {
   /// **'Alphabetical'**
   String get alphabetical;
 
-  /// No description provided for @appCardHighlightAnimation.
-  ///
-  /// In en, this message translates to:
-  /// **'App card highlight animation'**
-  String get appCardHighlightAnimation;
-
   /// No description provided for @showFocusBorders.
   ///
   /// In en, this message translates to:
@@ -146,30 +136,6 @@ abstract class AppLocalizations {
   /// **'Focus border thickness'**
   String get focusBorderThickness;
 
-  /// No description provided for @focusBorderThin.
-  ///
-  /// In en, this message translates to:
-  /// **'Subtle (1.0 dp)'**
-  String get focusBorderThin;
-
-  /// No description provided for @focusBorderDefault.
-  ///
-  /// In en, this message translates to:
-  /// **'Default (1.5 dp)'**
-  String get focusBorderDefault;
-
-  /// No description provided for @focusBorderMedium.
-  ///
-  /// In en, this message translates to:
-  /// **'Medium (2.0 dp)'**
-  String get focusBorderMedium;
-
-  /// No description provided for @focusBorderBold.
-  ///
-  /// In en, this message translates to:
-  /// **'Bold (3.0 dp)'**
-  String get focusBorderBold;
-
   /// No description provided for @appInfo.
   ///
   /// In en, this message translates to:
@@ -181,36 +147,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Click sound on key press'**
   String get appKeyClick;
-
-  /// No description provided for @appearanceSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Appearance'**
-  String get appearanceSettings;
-
-  /// No description provided for @backgroundBlur.
-  ///
-  /// In en, this message translates to:
-  /// **'Background blur'**
-  String get backgroundBlur;
-
-  /// No description provided for @dockBlur.
-  ///
-  /// In en, this message translates to:
-  /// **'Dock blur'**
-  String get dockBlur;
-
-  /// No description provided for @dockDarkBackground.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark dock background'**
-  String get dockDarkBackground;
-
-  /// No description provided for @dockShadow.
-  ///
-  /// In en, this message translates to:
-  /// **'Dock shadow'**
-  String get dockShadow;
 
   /// No description provided for @applications.
   ///
@@ -230,12 +166,6 @@ abstract class AppLocalizations {
   /// **'Hide status bar in grid'**
   String get hideStatusBarInGrid;
 
-  /// No description provided for @backButtonAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Back button action'**
-  String get backButtonAction;
-
   /// No description provided for @category.
   ///
   /// In en, this message translates to:
@@ -248,23 +178,11 @@ abstract class AppLocalizations {
   /// **'Categories'**
   String get categories;
 
-  /// No description provided for @columnCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Column count'**
-  String get columnCount;
-
   /// No description provided for @date.
   ///
   /// In en, this message translates to:
   /// **'Date'**
   String get date;
-
-  /// No description provided for @dateAndTimeFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Date and time format'**
-  String get dateAndTimeFormat;
 
   /// No description provided for @delete.
   ///
@@ -272,53 +190,17 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get delete;
 
-  /// No description provided for @dialogOptionBackButtonActionDoNothing.
-  ///
-  /// In en, this message translates to:
-  /// **'Do nothing'**
-  String get dialogOptionBackButtonActionDoNothing;
-
-  /// No description provided for @dialogOptionBackButtonActionShowScreensaver.
-  ///
-  /// In en, this message translates to:
-  /// **'Show screensaver'**
-  String get dialogOptionBackButtonActionShowScreensaver;
-
-  /// No description provided for @dialogOptionBackButtonActionShowClock.
-  ///
-  /// In en, this message translates to:
-  /// **'Show clock'**
-  String get dialogOptionBackButtonActionShowClock;
-
   /// No description provided for @dialogTextNoFileExplorer.
   ///
   /// In en, this message translates to:
   /// **'Please install a file explorer in order to pick a picture.'**
   String get dialogTextNoFileExplorer;
 
-  /// No description provided for @dialogTitleBackButtonAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose the back button action'**
-  String get dialogTitleBackButtonAction;
-
   /// No description provided for @disambiguateCategoryTitle.
   ///
   /// In en, this message translates to:
   /// **'{title} (Category)'**
   String disambiguateCategoryTitle(String title);
-
-  /// No description provided for @formattedDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Formatted date: {dateString}'**
-  String formattedDate(String dateString);
-
-  /// No description provided for @formattedTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Formatted time: {timeString}'**
-  String formattedTime(String timeString);
 
   /// No description provided for @gradient.
   ///
@@ -386,12 +268,6 @@ abstract class AppLocalizations {
   /// **'Modify section'**
   String get modifySection;
 
-  /// No description provided for @mustNotBeEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Must not be empty'**
-  String get mustNotBeEmpty;
-
   /// No description provided for @name.
   ///
   /// In en, this message translates to:
@@ -404,41 +280,17 @@ abstract class AppLocalizations {
   /// **'New section'**
   String get newSection;
 
-  /// No description provided for @noDateFormatSpecified.
-  ///
-  /// In en, this message translates to:
-  /// **'No date format specified'**
-  String get noDateFormatSpecified;
-
-  /// No description provided for @noTimeFormatSpecified.
-  ///
-  /// In en, this message translates to:
-  /// **'No time format specified'**
-  String get noTimeFormatSpecified;
-
   /// No description provided for @allApplications.
   ///
   /// In en, this message translates to:
   /// **'All Apps'**
   String get allApplications;
 
-  /// No description provided for @nonTvApplications.
-  ///
-  /// In en, this message translates to:
-  /// **'Non-TV Apps'**
-  String get nonTvApplications;
-
   /// No description provided for @open.
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get open;
-
-  /// No description provided for @orSelectFormatSpecifiers.
-  ///
-  /// In en, this message translates to:
-  /// **'Or select format specifiers'**
-  String get orSelectFormatSpecifiers;
 
   /// No description provided for @picture.
   ///
@@ -487,18 +339,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spacer'**
   String get spacer;
-
-  /// No description provided for @spacerMaxHeightRequirement.
-  ///
-  /// In en, this message translates to:
-  /// **'Must be greater than 0 and less than or equal to 500'**
-  String get spacerMaxHeightRequirement;
-
-  /// No description provided for @statusBar.
-  ///
-  /// In en, this message translates to:
-  /// **'Status bar'**
-  String get statusBar;
 
   /// No description provided for @settings.
   ///
@@ -599,7 +439,7 @@ abstract class AppLocalizations {
   /// No description provided for @updateInstallPermissionBody.
   ///
   /// In en, this message translates to:
-  /// **'Allow Arc Launcher to install unknown apps, then retry the update.'**
+  /// **'Allow Tazama to install unknown apps, then retry the update.'**
   String get updateInstallPermissionBody;
 
   /// No description provided for @updateOpenPermissionSettingsButton.
@@ -617,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @textAboutDialog.
   ///
   /// In en, this message translates to:
-  /// **'Arc Launcher is a customized open-source launcher for Android TV, based on FLauncher.\n\nDeveloped by Meddouri Badis.\nSource code available at {repoUrl}.'**
+  /// **'Tazama is an open-source launcher for Android TV, based on Arc Launcher by Meddouri Badis, which builds on LTvLauncher and FLauncher.\n\nSource code available at {repoUrl}.'**
   String textAboutDialog(String repoUrl);
 
   /// No description provided for @textEmptyCategory.
@@ -632,35 +472,11 @@ abstract class AppLocalizations {
   /// **'Time'**
   String get time;
 
-  /// No description provided for @titleStatusBarSettingsPage.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose what to display in the status bar'**
-  String get titleStatusBarSettingsPage;
-
-  /// No description provided for @tvApplications.
-  ///
-  /// In en, this message translates to:
-  /// **'TV Apps'**
-  String get tvApplications;
-
   /// No description provided for @type.
   ///
   /// In en, this message translates to:
   /// **'Type'**
   String get type;
-
-  /// No description provided for @typeInTheDateFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Type in the date format'**
-  String get typeInTheDateFormat;
-
-  /// No description provided for @typeInTheHourFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Type in the hour format'**
-  String get typeInTheHourFormat;
 
   /// No description provided for @uninstall.
   ///
@@ -818,12 +634,6 @@ abstract class AppLocalizations {
   /// **'Check again'**
   String get watchNextCheckPermission;
 
-  /// No description provided for @interface.
-  ///
-  /// In en, this message translates to:
-  /// **'Interface'**
-  String get interface;
-
   /// No description provided for @system.
   ///
   /// In en, this message translates to:
@@ -835,18 +645,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accent Color'**
   String get accentColor;
-
-  /// No description provided for @miscellaneous.
-  ///
-  /// In en, this message translates to:
-  /// **'Miscellaneous'**
-  String get miscellaneous;
-
-  /// No description provided for @brightnessScheduler.
-  ///
-  /// In en, this message translates to:
-  /// **'Brightness Scheduler'**
-  String get brightnessScheduler;
 
   /// No description provided for @screensaverSettings.
   ///
@@ -860,23 +658,11 @@ abstract class AppLocalizations {
   /// **'Screensaver Clock Style'**
   String get screensaverClockStyle;
 
-  /// No description provided for @wifiUsagePeriod.
-  ///
-  /// In en, this message translates to:
-  /// **'WiFi Usage Period'**
-  String get wifiUsagePeriod;
-
   /// No description provided for @showAppNamesBelowIcons.
   ///
   /// In en, this message translates to:
   /// **'Show App Names Below Icons'**
   String get showAppNamesBelowIcons;
-
-  /// No description provided for @wifiUsage.
-  ///
-  /// In en, this message translates to:
-  /// **'WiFi Usage'**
-  String get wifiUsage;
 
   /// No description provided for @networkIndicator.
   ///
@@ -896,24 +682,6 @@ abstract class AppLocalizations {
   /// **'Last Used'**
   String get lastUsed;
 
-  /// No description provided for @daily.
-  ///
-  /// In en, this message translates to:
-  /// **'Daily'**
-  String get daily;
-
-  /// No description provided for @weekly.
-  ///
-  /// In en, this message translates to:
-  /// **'Weekly'**
-  String get weekly;
-
-  /// No description provided for @monthly.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly'**
-  String get monthly;
-
   /// No description provided for @grantPermission.
   ///
   /// In en, this message translates to:
@@ -925,30 +693,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check Status'**
   String get checkStatus;
-
-  /// No description provided for @watchNextBigPictureMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Immersive mode'**
-  String get watchNextBigPictureMode;
-
-  /// No description provided for @watchNextBigPictureModeDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Show full-width hero backdrop with an action watch button'**
-  String get watchNextBigPictureModeDescription;
-
-  /// No description provided for @watchNextWatch.
-  ///
-  /// In en, this message translates to:
-  /// **'Watch'**
-  String get watchNextWatch;
-
-  /// No description provided for @watchNextResume.
-  ///
-  /// In en, this message translates to:
-  /// **'Resume'**
-  String get watchNextResume;
 
   /// No description provided for @watchNextRefresh.
   ///
@@ -992,29 +736,11 @@ abstract class AppLocalizations {
   /// **'Show all installed apps'**
   String get watchNextShowAllApps;
 
-  /// No description provided for @watchNextHideWithoutImages.
-  ///
-  /// In en, this message translates to:
-  /// **'Hide programs without image'**
-  String get watchNextHideWithoutImages;
-
-  /// No description provided for @watchNextHideWithoutImagesDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Only show programs that provide poster or backdrop artwork'**
-  String get watchNextHideWithoutImagesDescription;
-
   /// No description provided for @watchNextMaxItems.
   ///
   /// In en, this message translates to:
   /// **'Maximum programs'**
   String get watchNextMaxItems;
-
-  /// No description provided for @watchNextMaxItemsDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Limit the number of programs displayed in Watch Next'**
-  String get watchNextMaxItemsDescription;
 
   /// No description provided for @watchNextMaxItemsUnlimited.
   ///
@@ -1148,18 +874,6 @@ abstract class AppLocalizations {
   /// **'Subreddit name (without r/)'**
   String get redditSubredditName;
 
-  /// No description provided for @redditSubredditAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'Subreddit added'**
-  String get redditSubredditAdded;
-
-  /// No description provided for @redditSubredditInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a valid subreddit name'**
-  String get redditSubredditInvalid;
-
   /// No description provided for @redditWallpaperUpdated.
   ///
   /// In en, this message translates to:
@@ -1267,102 +981,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grant permission to browse photos and videos'**
   String get mediaPermissionHelp;
-
-  /// No description provided for @preview.
-  ///
-  /// In en, this message translates to:
-  /// **'Preview'**
-  String get preview;
-
-  /// No description provided for @colorPurple.
-  ///
-  /// In en, this message translates to:
-  /// **'Purple'**
-  String get colorPurple;
-
-  /// No description provided for @colorTeal.
-  ///
-  /// In en, this message translates to:
-  /// **'Teal'**
-  String get colorTeal;
-
-  /// No description provided for @colorBlue.
-  ///
-  /// In en, this message translates to:
-  /// **'Blue'**
-  String get colorBlue;
-
-  /// No description provided for @colorOrange.
-  ///
-  /// In en, this message translates to:
-  /// **'Orange'**
-  String get colorOrange;
-
-  /// No description provided for @colorPink.
-  ///
-  /// In en, this message translates to:
-  /// **'Pink'**
-  String get colorPink;
-
-  /// No description provided for @colorGreen.
-  ///
-  /// In en, this message translates to:
-  /// **'Green'**
-  String get colorGreen;
-
-  /// No description provided for @colorWhite.
-  ///
-  /// In en, this message translates to:
-  /// **'White'**
-  String get colorWhite;
-
-  /// No description provided for @colorYellow.
-  ///
-  /// In en, this message translates to:
-  /// **'Yellow'**
-  String get colorYellow;
-
-  /// No description provided for @colorRed.
-  ///
-  /// In en, this message translates to:
-  /// **'Red'**
-  String get colorRed;
-
-  /// No description provided for @colorCyan.
-  ///
-  /// In en, this message translates to:
-  /// **'Cyan'**
-  String get colorCyan;
-
-  /// No description provided for @colorIndigo.
-  ///
-  /// In en, this message translates to:
-  /// **'Indigo'**
-  String get colorIndigo;
-
-  /// No description provided for @colorLime.
-  ///
-  /// In en, this message translates to:
-  /// **'Lime'**
-  String get colorLime;
-
-  /// No description provided for @colorAmber.
-  ///
-  /// In en, this message translates to:
-  /// **'Amber'**
-  String get colorAmber;
-
-  /// No description provided for @colorRose.
-  ///
-  /// In en, this message translates to:
-  /// **'Rose'**
-  String get colorRose;
-
-  /// No description provided for @colorIceBlue.
-  ///
-  /// In en, this message translates to:
-  /// **'Ice Blue'**
-  String get colorIceBlue;
 
   /// No description provided for @clockStyleMinimal.
   ///
@@ -1526,7 +1144,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'es', 'tr', 'vi', 'zh'].contains(locale.languageCode);
+      <String>['en', 'vi', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1537,10 +1155,6 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
-    case 'es':
-      return AppLocalizationsEs();
-    case 'tr':
-      return AppLocalizationsTr();
     case 'vi':
       return AppLocalizationsVi();
     case 'zh':

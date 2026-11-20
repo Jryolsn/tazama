@@ -23,10 +23,12 @@ import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/gradient_panel_page.dart';
 import 'package:flauncher/widgets/settings/reddit_wallpaper_panel_page.dart';
+import 'package:flauncher/widgets/settings/screensaver_clock_style_page.dart';
 import 'package:flauncher/widgets/settings/unsplash_slideshow_panel_page.dart';
 import 'package:flauncher/widgets/tv_media_picker.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
 
@@ -43,10 +45,11 @@ class WallpaperPanelPage extends StatelessWidget {
 
     return Column(
       children: [
-        SettingsPageHeader(title: localizations.wallpaper),
+        const SettingsPageHeader(title: 'Background and screensaver'),
         Expanded(
           child: ListView(
             children: [
+              const SettingsGroupLabel('Background'),
               Consumer<SettingsService>(
                 builder: (_, settings, __) {
                   return RoundedSwitchListTile(
@@ -123,6 +126,18 @@ class WallpaperPanelPage extends StatelessWidget {
                 leading: const Icon(Icons.photo_library_rounded),
                 title: Text(localizations.redditWallpaper),
                 onPressed: () => Navigator.of(context).pushNamed(RedditWallpaperPanelPage.routeName),
+              ),
+              const SettingsGroupLabel('Screensaver'),
+              FocusableSettingsTile(
+                leading: const Icon(Icons.screenshot_monitor_rounded),
+                title: Text(localizations.screensaverSettings),
+                onPressed: () => const MethodChannel('me.efesser.flauncher/method').invokeMethod('openScreensaverSettings'),
+              ),
+              FocusableSettingsTile(
+                showChevron: true,
+                leading: const Icon(Icons.watch_later_rounded),
+                title: Text(localizations.screensaverClockStyle),
+                onPressed: () => Navigator.of(context).pushNamed(ScreensaverClockStylePage.routeName),
               ),
             ],
           ),

@@ -57,12 +57,6 @@ class MockWatchNextServiceForPanel extends ChangeNotifier implements WatchNextSe
   List<WatchNextItem> get items => [];
 
   @override
-  int get activeHeroIndex => 0;
-
-  @override
-  WatchNextItem? get activeHeroItem => null;
-
-  @override
   Future<void> forceRefresh() async {
     _forceRefreshed = true;
     notifyListeners();
@@ -84,16 +78,7 @@ class MockWatchNextServiceForPanel extends ChangeNotifier implements WatchNextSe
   bool hasPosterLoadFailed(String? uri) => false;
 
   @override
-  bool itemHasImage(WatchNextItem item) => true;
-
-  @override
   Future<void> launchItem(WatchNextItem item) async {}
-
-  @override
-  void nextHeroItem() {}
-
-  @override
-  void prevHeroItem() {}
 
   @override
   Future<void> refreshItems() async {}
@@ -104,8 +89,6 @@ class MockWatchNextServiceForPanel extends ChangeNotifier implements WatchNextSe
   @override
   Future<void> requestPermission() async {}
 
-  @override
-  void setActiveHeroIndex(int index) {}
 }
 
 class FakeAppsServiceForPanel extends ChangeNotifier implements AppsService {
@@ -211,23 +194,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(settingsService.isWatchNextPackageExcluded('com.plexapp.android'), isFalse);
-  });
-
-  testWidgets('toggling hide programs without image updates settings', (tester) async {
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
-
-    expect(settingsService.watchNextHideProgramsWithoutImages, isFalse);
-
-    await tester.tap(find.text('Hide programs without image'));
-    await tester.pumpAndSettle();
-
-    expect(settingsService.watchNextHideProgramsWithoutImages, isTrue);
-
-    await tester.tap(find.text('Hide programs without image'));
-    await tester.pumpAndSettle();
-
-    expect(settingsService.watchNextHideProgramsWithoutImages, isFalse);
   });
 
   testWidgets('WatchNextMaxItemsPage displays options and changes selection', (tester) async {

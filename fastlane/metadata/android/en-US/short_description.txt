@@ -1,1 +1,0 @@
-An open-source, Flutter-based alternative launcher for Android TV.

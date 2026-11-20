@@ -21,46 +21,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get alphabetical => '按字母顺序';
 
   @override
-  String get appCardHighlightAnimation => '应用卡片高亮动画';
-
-  @override
   String get showFocusBorders => '显示焦点边框';
 
   @override
   String get focusBorderThickness => '焦点边框粗细';
 
   @override
-  String get focusBorderThin => '细微（1.0 dp）';
-
-  @override
-  String get focusBorderDefault => '默认（1.5 dp）';
-
-  @override
-  String get focusBorderMedium => '中等（2.0 dp）';
-
-  @override
-  String get focusBorderBold => '加粗（3.0 dp）';
-
-  @override
   String get appInfo => '应用信息';
 
   @override
   String get appKeyClick => '按键点击音效';
-
-  @override
-  String get appearanceSettings => '外观';
-
-  @override
-  String get backgroundBlur => '背景模糊';
-
-  @override
-  String get dockBlur => 'Dock 模糊';
-
-  @override
-  String get dockDarkBackground => 'Dock 深色背景';
-
-  @override
-  String get dockShadow => 'Dock 阴影';
 
   @override
   String get applications => '应用';
@@ -72,54 +42,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hideStatusBarInGrid => '在网格中隐藏状态栏';
 
   @override
-  String get backButtonAction => '返回键操作';
-
-  @override
   String get category => '分类';
 
   @override
   String get categories => '分类';
 
   @override
-  String get columnCount => '列数';
-
-  @override
   String get date => '日期';
-
-  @override
-  String get dateAndTimeFormat => '日期和时间格式';
 
   @override
   String get delete => '删除';
 
   @override
-  String get dialogOptionBackButtonActionDoNothing => '不执行任何操作';
-
-  @override
-  String get dialogOptionBackButtonActionShowScreensaver => '显示屏保';
-
-  @override
-  String get dialogOptionBackButtonActionShowClock => '显示时钟';
-
-  @override
   String get dialogTextNoFileExplorer => '请安装文件管理器以选择图片。';
-
-  @override
-  String get dialogTitleBackButtonAction => '选择返回键操作';
 
   @override
   String disambiguateCategoryTitle(String title) {
     return '$title（分类）';
-  }
-
-  @override
-  String formattedDate(String dateString) {
-    return '格式化日期：$dateString';
-  }
-
-  @override
-  String formattedTime(String timeString) {
-    return '格式化时间：$timeString';
   }
 
   @override
@@ -156,31 +95,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modifySection => '修改分区';
 
   @override
-  String get mustNotBeEmpty => '不能为空';
-
-  @override
   String get name => '名称';
 
   @override
   String get newSection => '新建分区';
 
   @override
-  String get noDateFormatSpecified => '未指定日期格式';
-
-  @override
-  String get noTimeFormatSpecified => '未指定时间格式';
-
-  @override
   String get allApplications => '全部应用';
 
   @override
-  String get nonTvApplications => '非电视应用';
-
-  @override
   String get open => '打开';
-
-  @override
-  String get orSelectFormatSpecifiers => '或选择格式说明符';
 
   @override
   String get picture => '图片';
@@ -207,12 +131,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get spacer => '间隔';
-
-  @override
-  String get spacerMaxHeightRequirement => '必须大于 0 且小于或等于 500';
-
-  @override
-  String get statusBar => '状态栏';
 
   @override
   String get settings => '设置';
@@ -289,19 +207,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get time => '时间';
 
   @override
-  String get titleStatusBarSettingsPage => '选择状态栏中显示的内容';
-
-  @override
-  String get tvApplications => '电视应用';
-
-  @override
   String get type => '类型';
-
-  @override
-  String get typeInTheDateFormat => '输入日期格式';
-
-  @override
-  String get typeInTheHourFormat => '输入小时格式';
 
   @override
   String get uninstall => '卸载';
@@ -387,19 +293,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get watchNextCheckPermission => '重新检查';
 
   @override
-  String get interface => '界面';
-
-  @override
   String get system => '系统';
 
   @override
   String get accentColor => '强调色';
-
-  @override
-  String get miscellaneous => '其他';
-
-  @override
-  String get brightnessScheduler => '亮度计划';
 
   @override
   String get screensaverSettings => '屏保设置';
@@ -408,13 +305,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get screensaverClockStyle => '屏保时钟样式';
 
   @override
-  String get wifiUsagePeriod => 'WiFi 使用周期';
-
-  @override
   String get showAppNamesBelowIcons => '在图标下方显示应用名称';
-
-  @override
-  String get wifiUsage => 'WiFi 使用情况';
 
   @override
   String get networkIndicator => '网络指示器';
@@ -426,31 +317,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lastUsed => '最近使用';
 
   @override
-  String get daily => '每天';
-
-  @override
-  String get weekly => '每周';
-
-  @override
-  String get monthly => '每月';
-
-  @override
   String get grantPermission => '授予权限';
 
   @override
   String get checkStatus => '检查状态';
-
-  @override
-  String get watchNextBigPictureMode => '沉浸模式';
-
-  @override
-  String get watchNextBigPictureModeDescription => '以全宽剧照为背景，并显示观看按钮';
-
-  @override
-  String get watchNextWatch => '观看';
-
-  @override
-  String get watchNextResume => '继续播放';
 
   @override
   String get watchNextRefresh => '刷新内容';
@@ -474,16 +344,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get watchNextShowAllApps => '显示所有已安装应用';
 
   @override
-  String get watchNextHideWithoutImages => '隐藏无图片的节目';
-
-  @override
-  String get watchNextHideWithoutImagesDescription => '仅显示提供海报或背景图的节目';
-
-  @override
   String get watchNextMaxItems => '最大节目数';
-
-  @override
-  String get watchNextMaxItemsDescription => '限制“继续观看”中显示的节目数量';
 
   @override
   String get watchNextMaxItemsUnlimited => '不限';
@@ -559,12 +420,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get redditSubredditName => '子版块名称（不含 r/）';
 
   @override
-  String get redditSubredditAdded => '已添加子版块';
-
-  @override
-  String get redditSubredditInvalid => '请输入有效的子版块名称';
-
-  @override
   String get redditWallpaperUpdated => '壁纸更新成功';
 
   @override
@@ -623,54 +478,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mediaPermissionHelp => '授予权限以浏览照片和视频';
-
-  @override
-  String get preview => '预览';
-
-  @override
-  String get colorPurple => '紫色';
-
-  @override
-  String get colorTeal => '青色';
-
-  @override
-  String get colorBlue => '蓝色';
-
-  @override
-  String get colorOrange => '橙色';
-
-  @override
-  String get colorPink => '粉色';
-
-  @override
-  String get colorGreen => '绿色';
-
-  @override
-  String get colorWhite => '白色';
-
-  @override
-  String get colorYellow => '黄色';
-
-  @override
-  String get colorRed => '红色';
-
-  @override
-  String get colorCyan => '青蓝';
-
-  @override
-  String get colorIndigo => '靛蓝';
-
-  @override
-  String get colorLime => '青柠';
-
-  @override
-  String get colorAmber => '琥珀';
-
-  @override
-  String get colorRose => '玫瑰';
-
-  @override
-  String get colorIceBlue => '冰蓝';
 
   @override
   String get clockStyleMinimal => '极简';

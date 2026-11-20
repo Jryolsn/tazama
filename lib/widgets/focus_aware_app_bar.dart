@@ -6,7 +6,6 @@ import '../providers/launcher_state.dart';
 import '../providers/network_service.dart';
 import '../providers/settings_service.dart';
 import 'app_bar_focus_ring.dart';
-import 'daily_wifi_usage_widget.dart';
 import 'date_time_widget.dart';
 import 'network_widget.dart';
 import 'vpn_indicator.dart';
@@ -97,7 +96,7 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
           elevation: 0,
           scrolledUnderElevation: 0,
           backgroundColor: Colors.transparent,
-          // Left side: Settings, Network indicator, WiFi usage
+          // Left side: Settings, Network indicator
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -145,13 +144,6 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
                         child: const VpnIndicator(),
                       ),
                     )
-                  : const SizedBox.shrink(),
-              ),
-              // WiFi usage widget
-              Selector<SettingsService, bool>(
-                selector: (_, settings) => settings.showWifiWidgetInStatusBar,
-                builder: (context, showWifi, _) => showWifi
-                  ? const DailyWifiUsageWidget()
                   : const SizedBox.shrink(),
               ),
             ],

@@ -1,8 +1,14 @@
 # Status
 
-_Last updated: 2026-11-14_
+_Last updated: 2026-11-20_
 
 ## Now
+- Cleanup of unused Arc/FLauncher leftovers (2026-11-20): removed the duplicate `me.efesser.flauncher` Java
+  sources, upstream screenshots and store listings, Spanish/Turkish, Back-on-home actions, Watch Next
+  "Immersive mode" and "Hide programs without image", and the old look options (accent color, focus border,
+  highlight animation, blur and dock toggles, date/time format, Wi-Fi usage). These are now fixed defaults.
+  Background and screensaver settings share one page; "Screen and sleep" is now just "Brightness".
+  Kept for later decisions: Unsplash/Reddit wallpapers, self-updater (compiled out).
 - Media panel (hold Home) replaces the HA-only panel: user-added cards (RTSP camera without HA, Home Assistant),
   order/rename/remove, side and width (Settings > Media panel, `lib/media_panel/`). Existing HA users get an HA card
   automatically. Next: move Phone camera here, "Now playing" card, more card types.
