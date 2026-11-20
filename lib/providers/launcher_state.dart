@@ -16,32 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flauncher/providers/brightness_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/settings/back_button_actions.dart';
 import 'apps_service.dart';
 
 class LauncherState extends ChangeNotifier
 {
   bool _isDefaultLauncher;
-  bool _launcherVisible;
   bool _appGridFocused;
 
   bool get isDefaultLauncher => _isDefaultLauncher;
-  bool get launcherVisible => _launcherVisible;
   bool get appGridFocused => _appGridFocused;
 
-  LauncherState() : _isDefaultLauncher = false, _launcherVisible = true, _appGridFocused = false;
-
-  void toggleLauncherVisibility() {
-    _launcherVisible = !_launcherVisible;
-    notifyListeners();
-  }
+  LauncherState() : _isDefaultLauncher = false, _appGridFocused = false;
 
   void setAppGridFocused(bool value) {
     if (_appGridFocused == value) {
@@ -64,19 +55,6 @@ class LauncherState extends ChangeNotifier
     // Closing Arc would drop the user on the stock home screen it is meant to replace.
     if (kDebugMode || launcherState.isDefaultLauncher || settingsService.replaceLauncher) {
       launcherState.refresh(appsService);
-      String action = settingsService.backButtonAction;
-
-      switch (action) {
-        case BACK_BUTTON_ACTION_CLOCK:
-          launcherState.toggleLauncherVisibility();
-          break;
-        case BACK_BUTTON_ACTION_SCREENSAVER:
-          appsService.startAmbientMode();
-          break;
-        case BACK_BUTTON_ACTION_DIM:
-          context.read<BrightnessService>().toggleDimNow();
-          break;
-      }
     }
     else {
       SystemNavigator.pop();

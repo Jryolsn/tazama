@@ -34,7 +34,6 @@ class WatchNextService extends ChangeNotifier {
   List<WatchNextItem> _items = [];
   bool _isLoading = false;
   bool _hasPermission = false;
-  int _activeHeroIndex = 0;
   final Map<String, Uint8List> _posterCache = {};
   final Set<String> _loadingPosters = {};
   final Set<String> _failedPosters = {};
@@ -47,9 +46,6 @@ class WatchNextService extends ChangeNotifier {
   bool get hasPermission => _hasPermission;
   bool get hasItems => _items.isNotEmpty;
   bool get hasVisibleSection => !_isLoading && (!_hasPermission || _items.isNotEmpty);
-  int get activeHeroIndex => _activeHeroIndex;
-  WatchNextItem? get activeHeroItem =>
-      _items.isNotEmpty && _activeHeroIndex < _items.length ? _items[_activeHeroIndex] : null;
 
   Set<String> get availablePackageNames {
     return _allRawItems
@@ -66,43 +62,6 @@ class WatchNextService extends ChangeNotifier {
       return uri;
     }
     return 'placeholder://${item.id}';
-  }
-
-  bool itemHasImage(WatchNextItem item) {
-    final uri = item.backdropUri ?? item.posterUri;
-    if (uri == null || uri.trim().isEmpty) return false;
-    if (_failedPosters.contains(uri)) return false;
-    return true;
-  }
-
-  void setActiveHeroIndex(int index) {
-    if (_items.isEmpty) return;
-    final clamped = index.clamp(0, _items.length - 1);
-    if (_activeHeroIndex != clamped) {
-      _activeHeroIndex = clamped;
-      _ensureActiveHeroImageLoaded();
-      notifyListeners();
-    }
-  }
-
-  void nextHeroItem() {
-    if (_items.isEmpty) return;
-    final next = (_activeHeroIndex + 1) % _items.length;
-    setActiveHeroIndex(next);
-  }
-
-  void prevHeroItem() {
-    if (_items.isEmpty) return;
-    final prev = (_activeHeroIndex - 1 + _items.length) % _items.length;
-    setActiveHeroIndex(prev);
-  }
-
-  void _ensureActiveHeroImageLoaded() {
-    final item = activeHeroItem;
-    if (item != null) {
-      final uri = getPosterUriForItem(item);
-      ensurePosterLoaded(uri);
-    }
   }
 
   WatchNextService(this._fLauncherChannel, {SettingsService? settingsService})
@@ -198,14 +157,10 @@ class WatchNextService extends ChangeNotifier {
 
   void _applyFilterAndNotify() {
     final excluded = _settingsService?.watchNextExcludedPackages ?? const [];
-    final hideWithoutImages = _settingsService?.watchNextHideProgramsWithoutImages ?? false;
     final maxItems = _settingsService?.watchNextMaxItems ?? 0;
     Iterable<WatchNextItem> filtered = _allRawItems.where((item) {
       final pkg = item.packageName;
       if (pkg != null && excluded.contains(pkg)) {
-        return false;
-      }
-      if (hideWithoutImages && !itemHasImage(item)) {
         return false;
       }
       return true;
@@ -216,10 +171,6 @@ class WatchNextService extends ChangeNotifier {
     }
     _items = filtered.toList();
 
-    if (_activeHeroIndex >= _items.length) {
-      _activeHeroIndex = 0;
-    }
-    _ensureActiveHeroImageLoaded();
     notifyListeners();
   }
 
@@ -309,21 +260,13 @@ class WatchNextService extends ChangeNotifier {
         _schedulePosterCacheNotification();
       } else {
         _failedPosters.add(uri);
-        if (_settingsService?.watchNextHideProgramsWithoutImages ?? false) {
-          _applyFilterAndNotify();
-        } else {
-          _triggerPlaceholderForUri(uri);
-          _schedulePosterCacheNotification();
-        }
-      }
-    } catch (_) {
-      _failedPosters.add(uri);
-      if (_settingsService?.watchNextHideProgramsWithoutImages ?? false) {
-        _applyFilterAndNotify();
-      } else {
         _triggerPlaceholderForUri(uri);
         _schedulePosterCacheNotification();
       }
+    } catch (_) {
+      _failedPosters.add(uri);
+      _triggerPlaceholderForUri(uri);
+      _schedulePosterCacheNotification();
     } finally {
       _loadingPosters.remove(uri);
     }

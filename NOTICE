@@ -8,7 +8,8 @@ and FLauncher. All original copyright notices are kept in the source files.
 Changes from Arc Launcher, made from October 2026 on, include: new name,
 icon, banner and application id (com.jryolsn.tazama), app lock, dim screen,
 quick panel, VPN guard, "Replace current launcher", sideload build and
-release workflow, TV setup scripts and the "Nebula" visual style. The full list is in the git history.
+release workflow, TV setup scripts, the "Nebula" visual style and removal of unused
+upstream features and settings. The full list is in the git history.
 
 Phone camera uses ZXing (https://github.com/zxing/zxing, Apache License 2.0) for the
 pairing QR code; the phone app (camera-app/) scans it with Google's code scanner

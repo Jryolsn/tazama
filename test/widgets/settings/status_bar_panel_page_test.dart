@@ -18,7 +18,6 @@ void main() {
       when(settingsService.hideStatusBarInGrid).thenReturn(false);
       when(settingsService.showDateInStatusBar).thenReturn(false);
       when(settingsService.showTimeInStatusBar).thenReturn(true);
-      when(settingsService.showWifiWidgetInStatusBar).thenReturn(false);
       when(settingsService.showNetworkIndicatorInStatusBar).thenReturn(true);
       when(settingsService.setAutoHideAppBarEnabled(any)).thenAnswer((_) async {});
       when(settingsService.setHideStatusBarInGrid(any)).thenAnswer((_) async {});

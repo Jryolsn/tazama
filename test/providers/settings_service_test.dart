@@ -52,19 +52,6 @@ void main() async {
     expect(settingsService.quickPanelHidden, isEmpty);
   });
 
-  test("watchNextBigPictureMode default and update", () async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final settingsService = SettingsService(sharedPreferences);
-
-    expect(settingsService.watchNextBigPictureMode, isFalse);
-
-    await settingsService.setWatchNextBigPictureMode(true);
-    expect(settingsService.watchNextBigPictureMode, isTrue);
-
-    await settingsService.setWatchNextBigPictureMode(false);
-    expect(settingsService.watchNextBigPictureMode, isFalse);
-  });
-
   test("watchNextMaxItems default and update", () async {
     final sharedPreferences = await SharedPreferences.getInstance();
     final settingsService = SettingsService(sharedPreferences);
@@ -97,16 +84,6 @@ void main() async {
     expect(settingsService.isWatchNextPackageExcluded("com.plexapp.android"), isFalse);
   });
 
-
-  test("setUse24HourTimeFormat", () async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final settingsService = SettingsService(sharedPreferences);
-    final expected = "XYZ";
-
-    await settingsService.setDateTimeFormat("", expected);
-
-    expect(settingsService.timeFormat, expected);
-  });
 
   test("setGradientUuid", () async {
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -146,13 +123,6 @@ void main() async {
       expect(settingsService.dateFormat, SettingsService.defaultDateFormat);
     });
 
-    test("with value set", () async {
-      final expected = "XYZ";
-
-      settingsService.setDateTimeFormat(expected, "");
-
-      expect(settingsService.dateFormat, expected);
-    });
   });
 
   group("unsplash slideshow", () {
@@ -198,19 +168,4 @@ void main() async {
     });
   });
 
-  group("watchNextHideProgramsWithoutImages", () {
-    test("defaults to false", () {
-      expect(settingsService.watchNextHideProgramsWithoutImages, isFalse);
-    });
-
-    test("persists value", () async {
-      await settingsService.setWatchNextHideProgramsWithoutImages(true);
-      expect(settingsService.watchNextHideProgramsWithoutImages, isTrue);
-      expect(sharedPreferences.getBool("watch_next_hide_programs_without_images"), isTrue);
-
-      await settingsService.setWatchNextHideProgramsWithoutImages(false);
-      expect(settingsService.watchNextHideProgramsWithoutImages, isFalse);
-      expect(sharedPreferences.getBool("watch_next_hide_programs_without_images"), isFalse);
-    });
-  });
 }

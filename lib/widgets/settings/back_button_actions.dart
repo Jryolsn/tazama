@@ -1,4 +1,0 @@
-const String BACK_BUTTON_ACTION_NOTHING     = "";
-const String BACK_BUTTON_ACTION_CLOCK       = "CLOCK";
-const String BACK_BUTTON_ACTION_SCREENSAVER = "SCREENSAVER";
-const String BACK_BUTTON_ACTION_DIM         = "DIM";

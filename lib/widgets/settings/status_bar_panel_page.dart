@@ -18,9 +18,6 @@
 
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
-import 'package:flauncher/widgets/settings/date_time_format_page.dart';
-import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
-import 'package:flauncher/widgets/settings/wifi_usage_period_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
@@ -68,29 +65,10 @@ class StatusBarPanelPage extends StatelessWidget {
                   secondary: Icon(Icons.watch_later_rounded)
                 ),
                 RoundedSwitchListTile(
-                  value: settingsService.showWifiWidgetInStatusBar,
-                  onChanged: (value) => settingsService.setShowWifiWidgetInStatusBar(value),
-                  title: Text(localizations.wifiUsage),
-                  secondary: Icon(Icons.wifi_rounded)
-                ),
-                if (settingsService.showWifiWidgetInStatusBar)
-                  FocusableSettingsTile(
-                    showChevron: true,
-                    leading: const Icon(Icons.data_usage_rounded),
-                    title: Text(localizations.wifiUsagePeriod, style: Theme.of(context).textTheme.bodyMedium),
-                    onPressed: () => Navigator.of(context).pushNamed(WifiUsagePeriodPage.routeName),
-                  ),
-                RoundedSwitchListTile(
                   value: settingsService.showNetworkIndicatorInStatusBar,
                   onChanged: (value) => settingsService.setShowNetworkIndicatorInStatusBar(value),
                   title: Text(localizations.networkIndicator),
                   secondary: Icon(Icons.signal_wifi_4_bar_rounded)
-                ),
-                FocusableSettingsTile(
-                  showChevron: true,
-                  leading: const Icon(Icons.date_range_rounded),
-                  title: Text(localizations.dateAndTimeFormat, style: Theme.of(context).textTheme.bodyMedium),
-                  onPressed: () => Navigator.of(context).pushNamed(DateTimeFormatPage.routeName),
                 ),
               ],
             ),

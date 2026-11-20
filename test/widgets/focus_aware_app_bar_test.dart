@@ -23,7 +23,6 @@ void main() {
       when(settingsService.hideStatusBarInGrid).thenReturn(false);
       when(settingsService.showDateInStatusBar).thenReturn(false);
       when(settingsService.showTimeInStatusBar).thenReturn(true);
-      when(settingsService.showWifiWidgetInStatusBar).thenReturn(false);
       when(settingsService.showNetworkIndicatorInStatusBar).thenReturn(false);
       when(settingsService.timeFormat).thenReturn('HH:mm');
       when(settingsService.dateFormat).thenReturn('yyyy-MM-dd');

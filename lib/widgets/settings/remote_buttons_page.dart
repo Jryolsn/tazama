@@ -4,8 +4,6 @@ import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
-import 'package:flauncher/widgets/settings/back_button_action_page.dart';
-import 'package:flauncher/widgets/settings/back_button_actions.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
@@ -35,13 +33,6 @@ class RemoteButtonsPage extends StatelessWidget {
           ],
         ]);
 
-    final backAction = switch (settings.backButtonAction) {
-      BACK_BUTTON_ACTION_CLOCK => localizations.dialogOptionBackButtonActionShowClock,
-      BACK_BUTTON_ACTION_SCREENSAVER => localizations.dialogOptionBackButtonActionShowScreensaver,
-      BACK_BUTTON_ACTION_DIM => 'Toggle dim screen',
-      _ => localizations.dialogOptionBackButtonActionDoNothing,
-    };
-
     return Column(
       children: [
         const SettingsPageHeader(title: 'Remote buttons'),
@@ -66,12 +57,6 @@ class RemoteButtonsPage extends StatelessWidget {
                 title: Text('Hold Back or YouTube', style: style),
                 trailing: value('Quick panel'),
                 onPressed: () => Navigator.of(context).pushNamed(QuickPanelSettingsPage.routeName),
-              ),
-              FocusableSettingsTile(
-                leading: const Icon(Icons.arrow_back_rounded),
-                title: Text('Back on home', style: style),
-                trailing: value(backAction),
-                onPressed: () => Navigator.of(context).pushNamed(BackButtonActionPage.routeName),
               ),
               const SettingsSectionDivider(),
               RoundedSwitchListTile(

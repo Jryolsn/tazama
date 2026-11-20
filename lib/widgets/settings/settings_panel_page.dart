@@ -33,7 +33,8 @@ import 'package:flauncher/media_panel/media_panel_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
-import 'package:flauncher/widgets/settings/screen_sleep_page.dart';
+import 'package:flauncher/widgets/settings/brightness_settings_page.dart';
+import 'package:flauncher/widgets/settings/wallpaper_panel_page.dart';
 import 'package:flauncher/widgets/settings/status_bar_panel_page.dart';
 import 'package:flauncher/widgets/settings/update_dialogs.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
@@ -90,6 +91,7 @@ class SettingsPanelPage extends StatelessWidget {
                 _link(context, Icons.dashboard_rounded, 'Home screen', route: HomeLayoutPage.routeName,
                     value: _layoutName(settings.homeLayout)),
                 _link(context, Icons.palette_rounded, 'Look', route: MiscPanelPage.routeName),
+                _link(context, Icons.wallpaper_rounded, 'Background and screensaver', route: WallpaperPanelPage.routeName),
                 _link(context, Icons.schedule_rounded, 'Clock and status bar', route: StatusBarPanelPage.routeName),
                 const SettingsGroupLabel('Panels'),
                 _link(context, Icons.bolt_rounded, 'Quick panel', route: QuickPanelSettingsPage.routeName,
@@ -106,7 +108,7 @@ class SettingsPanelPage extends StatelessWidget {
                 _link(context, Icons.settings_remote_rounded, 'Remote buttons', route: RemoteButtonsPage.routeName),
                 _link(context, Icons.lock_rounded, 'Lock and protection', route: LockProtectionPage.routeName,
                     value: lock.hasPin ? 'On' : 'Off'),
-                _link(context, Icons.brightness_medium_rounded, 'Screen and sleep', route: ScreenSleepPage.routeName),
+                _link(context, Icons.brightness_medium_rounded, 'Brightness', route: BrightnessSettingsPage.routeName),
                 _link(context, Icons.tune_rounded, localizations.system, route: GeneralSettingsPage.routeName),
               ],
             ),

@@ -28,7 +28,6 @@ import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flauncher/providers/watch_next_service.dart';
 import 'package:flauncher/widgets/application_info_panel.dart';
-import 'package:flauncher/widgets/apps_grid.dart';
 import 'package:flauncher/widgets/category_row.dart';
 import 'package:flauncher/widgets/settings/settings_panel.dart';
 import 'package:flauncher/widgets/settings/settings_panel_page.dart';
@@ -472,20 +471,13 @@ SettingsService mkSettingsService() {
   when(settingsService.timeFormat).thenReturn(SettingsService.defaultTimeFormat);
   when(settingsService.appHighlightAnimationEnabled).thenReturn(true);
   when(settingsService.showAppNamesBelowIcons).thenReturn(true);
-  when(settingsService.backgroundBlurDisabled).thenReturn(false);
   when(settingsService.showWatchNextSection).thenReturn(false);
-  when(settingsService.watchNextBigPictureMode).thenReturn(false);
-  when(settingsService.watchNextHideProgramsWithoutImages).thenReturn(false);
   when(settingsService.watchNextMaxItems).thenReturn(0);
   when(settingsService.watchNextExcludedPackages).thenReturn([]);
   when(settingsService.showCategoryTitles).thenReturn(true);
-  when(settingsService.dockBackdropFilterDisabled).thenReturn(false);
-  when(settingsService.dockDarkBackground).thenReturn(false);
-  when(settingsService.dockShadowEnabled).thenReturn(false);
   when(settingsService.autoHideAppBarEnabled).thenReturn(false);
   when(settingsService.hideStatusBarInGrid).thenReturn(false);
   when(settingsService.showNetworkIndicatorInStatusBar).thenReturn(false);
-  when(settingsService.showWifiWidgetInStatusBar).thenReturn(false);
   when(settingsService.showDateInStatusBar).thenReturn(false);
   when(settingsService.showTimeInStatusBar).thenReturn(false);
   when(settingsService.focusBorderThickness).thenReturn(3.0);
@@ -500,7 +492,6 @@ WatchNextService mkWatchNextService() {
   when(watchNextService.hasItems).thenReturn(false);
   when(watchNextService.hasVisibleSection).thenReturn(false);
   when(watchNextService.items).thenReturn([]);
-  when(watchNextService.activeHeroItem).thenReturn(null);
   when(watchNextService.refreshPermissionAndItems()).thenAnswer((_) async {});
   return watchNextService;
 }

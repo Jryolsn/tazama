@@ -28,14 +28,9 @@ import 'package:flauncher/widgets/settings/launcher_section_panel_page.dart';
 import 'package:flauncher/widgets/settings/settings_panel_page.dart';
 import 'package:flauncher/widgets/settings/status_bar_panel_page.dart';
 import 'package:flauncher/widgets/settings/wallpaper_panel_page.dart';
-import 'package:flauncher/widgets/settings/wifi_usage_period_page.dart';
-import 'package:flauncher/widgets/settings/back_button_action_page.dart';
 import 'package:flauncher/widgets/settings/replace_launcher_page.dart';
-import 'package:flauncher/widgets/settings/date_time_format_page.dart';
 import 'package:flauncher/widgets/settings/app_details_page.dart';
-import 'package:flauncher/widgets/settings/accent_color_page.dart';
 import 'package:flauncher/widgets/settings/brightness_settings_page.dart';
-import 'package:flauncher/widgets/settings/focus_border_thickness_page.dart';
 import 'package:flauncher/widgets/settings/misc_panel_page.dart';
 import 'package:flauncher/widgets/settings/remote_buttons_page.dart';
 import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
@@ -44,7 +39,6 @@ import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_max_items_page.dart';
 import 'package:flauncher/widgets/settings/home_layout_page.dart';
-import 'package:flauncher/widgets/settings/screen_sleep_page.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/screensaver_clock_style_page.dart';
@@ -107,8 +101,6 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => const HomeLayoutPage());
                     case MediaPanelSettingsPage.routeName:
                       return _FastPageRoute(builder: (_) => const MediaPanelSettingsPage());
-                    case ScreenSleepPage.routeName:
-                      return _FastPageRoute(builder: (_) => const ScreenSleepPage());
                     case LockProtectionPage.routeName:
                       return _FastPageRoute(builder: (_) => const LockProtectionPage());
                     case WallpaperPanelPage.routeName:
@@ -133,8 +125,6 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(
                         builder: (_) => LauncherSectionPanelPage(sectionIndex: (settings.arguments ?? widget.initialArguments) as int?),
                       );
-                    case WifiUsagePeriodPage.routeName:
-                      return _FastPageRoute(builder: (_) => WifiUsagePeriodPage());
                     case ReplaceLauncherPage.routeName:
                       return _FastPageRoute(builder: (_) => const ReplaceLauncherPage());
                     case QuickPanelSettingsPage.routeName:
@@ -143,12 +133,6 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => const TazamaCameraPage());
                     case RemoteButtonsPage.routeName:
                       return _FastPageRoute(builder: (_) => const RemoteButtonsPage());
-                    case BackButtonActionPage.routeName:
-                      return _FastPageRoute(builder: (_) => BackButtonActionPage());
-                    case DateTimeFormatPage.routeName:
-                      return _FastPageRoute(builder: (_) => DateTimeFormatPage());
-                    case FocusBorderThicknessPage.routeName:
-                      return _FastPageRoute(builder: (_) => const FocusBorderThicknessPage());
                     case MiscPanelPage.routeName:
                       return _FastPageRoute(builder: (_) => MiscPanelPage());
                     case WatchNextPanelPage.routeName:
@@ -159,8 +143,6 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => const ScreensaverClockStylePage());
                     case VpnGuardPage.routeName:
                       return _FastPageRoute(builder: (_) => const VpnGuardPage());
-                    case AccentColorPage.routeName:
-                      return _FastPageRoute(builder: (_) => AccentColorPage());
                     case BrightnessSettingsPage.routeName:
                       return _FastPageRoute(builder: (_) => BrightnessSettingsPage());
                     case AppDetailsPage.routeName:

@@ -143,19 +143,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                     ),
                   ),
 
-                RoundedSwitchListTile(
-                  value: settingsService.watchNextBigPictureMode,
-                  onChanged: settingsService.setWatchNextBigPictureMode,
-                  title: Text(localizations.watchNextBigPictureMode, style: Theme.of(context).textTheme.bodyMedium),
-                  subtitle: Text(
-                    localizations.watchNextBigPictureModeDescription,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  secondary: const Icon(Icons.photo_size_select_actual_rounded),
-                ),
-
-                if (!settingsService.watchNextBigPictureMode)
-                  Padding(
+                Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,17 +165,6 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                       ],
                     ),
                   ),
-
-                RoundedSwitchListTile(
-                  value: settingsService.watchNextHideProgramsWithoutImages,
-                  onChanged: settingsService.setWatchNextHideProgramsWithoutImages,
-                  title: Text(localizations.watchNextHideWithoutImages, style: Theme.of(context).textTheme.bodyMedium),
-                  subtitle: Text(
-                    localizations.watchNextHideWithoutImagesDescription,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  secondary: const Icon(Icons.hide_image_rounded),
-                ),
 
                 FocusableSettingsTile(
                   leading: const Icon(Icons.format_list_numbered_rounded),
