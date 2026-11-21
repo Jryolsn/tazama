@@ -2,6 +2,9 @@
 
 _Last updated: 2026-11-21_
 
+Project state at a glance. Work in progress is planned in `dev-tickets/` (map: `dev-tickets/INDEX.md`);
+how to work in this repo: `AGENT.md`.
+
 ## Now
 - One home layout (2026-11-21): the Rows/Orbit/Aurora layouts, the Watch Next row and the dock are gone.
   Bottom: taskbar with one category row at a time (button on the left picks the category, saved as
