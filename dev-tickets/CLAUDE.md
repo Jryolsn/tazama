@@ -18,6 +18,7 @@ While working:
 - Findings outside the plan go under `Findings` in the plan. Ask before
   turning one into its own ticket.
 - Ask before creating, deleting, or archiving ticket folders.
+- New ideas or bugs found along the way go in `../BACKLOG.md`.
 
 Before ending a session, update the `## ▶` section (state, what was done,
 exact next step) and the ticket's line in `INDEX.md`.

@@ -16,6 +16,10 @@ Read this before `README.md`'s generic method; these are the local details.
   `../STATUS.md` describes the current state of the project; `dev-tickets/`
   holds plans for work being done. Keep the two separate: when a ticket lands,
   move the outcome into `STATUS.md`.
+- Ideas and things to fix live in `../BACKLOG.md`, the single backlog. A ticket
+  is created from a backlog item when it needs a plan; the backlog line then
+  points to the ticket folder. Findings that are not worth a ticket go back to
+  the backlog.
 - Work alternates between Claude app sessions and local work (IDE, Claude Code,
   by hand), so the plan must be enough to continue from either.
 
@@ -32,8 +36,8 @@ Read this before `README.md`'s generic method; these are the local details.
 
 - Ticket folder: kebab-case after the work, not the branch
   (`media-panel-phone-camera`, not `feat/panel-2`).
-- Original ticket text, when there is any (for example a point from the idea
-  backlog), goes in `original-tickets/`.
+- Original ticket text, when there is any (for example an item from
+  `../BACKLOG.md`), goes in `original-tickets/`.
 - Mockups and screenshots go in `mockups/` with descriptive names
   (`desktop-weather-widget.png`).
 
