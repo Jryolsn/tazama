@@ -1,13 +1,23 @@
 name: Build APK
 
-# Jryolsn fork: builds a sideload APK on every push and publishes it as a GitHub release,
-# so Obtainium on the TVs can update the app:
+# Jryolsn fork: builds sideload APKs and publishes them as a GitHub release,
+# so Obtainium on the TVs and the phone can update:
 #   dev  -> pre-release  vX.Y.N-dev  (the test TV follows pre-releases)
 #   main -> release      vX.Y.N      (the main TV follows releases only)
 # Every build is signed with the same sideload key, so updates install over each other.
+#
+# Feature branches only build the app they touch: camera-app/ is Tazama Link (phone),
+# everything else is the TV app. dev and main always build both, so every release carries
+# both APKs and Obtainium on either device always finds its file in the latest release.
 on:
   push:
     branches: ["**"]
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+      - "NOTICE"
+      - "tools/**"
+      - ".github/workflows/lint-pr-title.yml"
   workflow_dispatch:
 
 env:
@@ -17,8 +27,52 @@ env:
 permissions:
   contents: write
 
+# A newer push to the same feature branch cancels the older build. dev and main are never
+# cancelled, since each of their runs publishes a release.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_name != 'dev' && github.ref_name != 'main' }}
+
 jobs:
-  build:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      tv: ${{ steps.changes.outputs.tv }}
+      link: ${{ steps.changes.outputs.link }}
+      name: ${{ steps.version.outputs.name }}
+      code: ${{ steps.version.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Version
+        id: version
+        run: |
+          suffix=""
+          [ "$GITHUB_REF_NAME" = "main" ] || suffix="-dev"
+          echo "name=${VERSION_BASE}.${GITHUB_RUN_NUMBER}${suffix}" >> "$GITHUB_OUTPUT"
+          # Above the upstream versionCode (4128) that earlier builds carried, so updates are never downgrades.
+          echo "code=$((5000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+      - name: Which apps changed
+        id: changes
+        run: |
+          if [ "$GITHUB_REF_NAME" = "dev" ] || [ "$GITHUB_REF_NAME" = "main" ] \
+            || [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "tv=true" >> "$GITHUB_OUTPUT"; echo "link=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          # Everything the branch changed since it left dev.
+          files=$(git diff --name-only "$(git merge-base origin/dev HEAD)" HEAD)
+          echo "$files"
+          tv=false; link=false
+          echo "$files" | grep -q '^\.github/workflows/build-apk\.yml$' && { tv=true; link=true; }
+          echo "$files" | grep -q -e '^camera-app/' -e '^android/app/sideload\.keystore$' && link=true
+          echo "$files" | grep -v '^camera-app/' | grep -qv -e '\.md$' -e '^tools/' -e '^\.github/' -e '^$' && tv=true
+          echo "tv=$tv" >> "$GITHUB_OUTPUT"
+          echo "link=$link" >> "$GITHUB_OUTPUT"
+
+  tv:
+    needs: plan
+    if: needs.plan.outputs.tv == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,23 +85,36 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
-      - name: Version
-        id: version
-        run: |
-          suffix=""
-          [ "$GITHUB_REF_NAME" = "main" ] || suffix="-dev"
-          echo "name=${VERSION_BASE}.${GITHUB_RUN_NUMBER}${suffix}" >> "$GITHUB_OUTPUT"
-          # Above the upstream versionCode (4128) that earlier builds carried, so updates are never downgrades.
-          echo "code=$((5000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+      # Caches ~/.gradle (dependencies and build cache) for the Android part of the Flutter build.
+      - uses: gradle/actions/setup-gradle@v4
       - run: flutter pub get
       - name: Build release APK (no self-updater)
         env:
           SIDELOAD_SIGNING: "true"
-        # The run number only grows, so every build is a newer versionCode than the last.
         run: >
           flutter build apk --release --flavor github
-          --build-name=${{ steps.version.outputs.name }}
-          --build-number=${{ steps.version.outputs.code }}
+          --build-name=${{ needs.plan.outputs.name }}
+          --build-number=${{ needs.plan.outputs.code }}
+      - name: Rename APK
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/*armeabi-v7a*.apk "dist/tazama-${{ needs.plan.outputs.name }}-armeabi-v7a.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tazama-tv
+          path: dist/*.apk
+          if-no-files-found: error
+
+  link:
+    needs: plan
+    if: needs.plan.outputs.link == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.13"
@@ -57,23 +124,32 @@ jobs:
         working-directory: camera-app
         run: >
           gradle --no-daemon assembleRelease
-          -PversionName=${{ steps.version.outputs.name }}
-          -PversionCode=${{ steps.version.outputs.code }}
-      - name: Rename APKs
+          -PversionName=${{ needs.plan.outputs.name }}
+          -PversionCode=${{ needs.plan.outputs.code }}
+      - name: Rename APK
         run: |
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/*armeabi-v7a*.apk "dist/tazama-${{ steps.version.outputs.name }}-armeabi-v7a.apk"
-          cp camera-app/app/build/outputs/apk/release/app-release.apk "dist/tazama-camera-${{ steps.version.outputs.name }}-arm64-v8a.apk"
+          cp camera-app/app/build/outputs/apk/release/app-release.apk "dist/tazama-camera-${{ needs.plan.outputs.name }}-arm64-v8a.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: tazama
+          name: tazama-link
           path: dist/*.apk
           if-no-files-found: error
+
+  publish:
+    needs: [plan, tv, link]
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
       - name: Publish release
-        if: github.ref_name == 'main' || github.ref_name == 'dev'
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.name }}
+          VERSION: ${{ needs.plan.outputs.name }}
         run: |
           prerelease=""
           [ "$GITHUB_REF_NAME" = "main" ] || prerelease="--prerelease"
