@@ -36,6 +36,9 @@ class CategoryRow extends StatelessWidget {
   final VoidCallback? onAppFocused;
   final EdgeInsets padding;
 
+  /// Overrides the category's own row height.
+  final double? rowHeight;
+
   CategoryRow({
     Key? key,
     required this.category,
@@ -44,6 +47,7 @@ class CategoryRow extends StatelessWidget {
     this.showTitle = true,
     this.onAppFocused,
     this.padding = const EdgeInsets.symmetric(horizontal: kLauncherSectionHorizontalPadding + 4, vertical: 8),
+    this.rowHeight,
   }) : super(key: key);
 
   @override
@@ -54,7 +58,7 @@ class CategoryRow extends StatelessWidget {
       categoryContent = categoryContainerEmptyState(context);
     } else {
       categoryContent = SizedBox(
-        height: category.rowHeight.toDouble() + (showAppNames ? kAppNameLabelHeight : 0),
+        height: (rowHeight ?? category.rowHeight.toDouble()) + (showAppNames ? kAppNameLabelHeight : 0),
         // Clip only sideways so the focus scale and glow are not cut at the top and bottom.
         child: ClipRect(
           clipper: const HorizontalClipper(),

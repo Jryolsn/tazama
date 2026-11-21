@@ -473,35 +473,6 @@ class _CategorySettingsState extends State<_CategorySettings>
             )
           )
         ),
-        _listTile(
-          context,
-          const Text('Size'),
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Row(
-              children: [
-                for (int i = 0; i < kCategorySizeLabels.length; i++)
-                  Expanded(
-                    child: SettingsChoiceChip(
-                      label: kCategorySizeLabels[i],
-                      selected: _sizeIndex == i,
-                      onPressed: () {
-                        setState(() {
-                          _rowHeight = kCategoryRowHeights[i];
-                          _columnsCount = kCategoryColumns[i];
-                        });
-                        _notifyChange();
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-          child: _SizePreview(type: CategoryType.row, rowHeight: _rowHeight, columns: _columnsCount),
-        ),
         if (!_creating) ...[
           Consumer<SettingsService>(
             builder: (context, settings, _) => Column(
@@ -524,19 +495,6 @@ class _CategorySettingsState extends State<_CategorySettings>
         ],
       ]
     );
-  }
-
-  /// Current size step, picked from the row height (the taskbar always shows a row).
-  int get _sizeIndex {
-    return _nearestIndex(kCategoryRowHeights, _rowHeight);
-  }
-
-  static int _nearestIndex(List<int> values, int value) {
-    int best = 0;
-    for (int i = 1; i < values.length; i++) {
-      if ((values[i] - value).abs() < (values[best] - value).abs()) best = i;
-    }
-    return best;
   }
 
   void _notifyChange()
@@ -717,74 +675,3 @@ Widget _listTile(BuildContext context, Widget title, Widget subtitle, {Widget? t
       trailing: trailing,
     )
 );
-
-/// Size steps for a category: S, M, L, XL.
-const List<String> kCategorySizeLabels = ['S', 'M', 'L', 'XL'];
-const List<int> kCategoryRowHeights = [80, 110, 140, 170];
-const List<int> kCategoryColumns = [8, 6, 5, 4];
-
-/// Small live sketch of how the category's cards will sit on the home screen.
-class _SizePreview extends StatelessWidget {
-  final CategoryType type;
-  final int rowHeight;
-  final int columns;
-
-  const _SizePreview({required this.type, required this.rowHeight, required this.columns});
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
-    return LayoutBuilder(builder: (context, constraints) {
-      final width = constraints.maxWidth;
-      const gap = 6.0;
-      // The home screen is ~1280 dp wide on a TV; scale cards to the panel.
-      final scale = width / 1280 * 1.6;
-      final double cardW;
-      final int perRow;
-      final int rows;
-      if (type == CategoryType.grid) {
-        perRow = columns;
-        cardW = (width - gap * (columns - 1)) / columns;
-        rows = 2;
-      } else {
-        cardW = rowHeight * 16 / 9 * scale;
-        perRow = ((width + gap) / (cardW + gap)).ceil();
-        rows = 1;
-      }
-      final cardH = cardW * 9 / 16;
-      Widget card(int i) => AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: cardW,
-            height: cardH,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(cardH * 0.18),
-              color: i == 1 ? accent.withValues(alpha: 0.35) : Colors.white.withValues(alpha: 0.1),
-              border: i == 1 ? Border.all(color: accent.withValues(alpha: 0.8)) : null,
-            ),
-          );
-      return ClipRect(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (int r = 0; r < rows; r++)
-              Padding(
-                padding: EdgeInsets.only(bottom: r == rows - 1 ? 0 : gap),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const NeverScrollableScrollPhysics(),
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < perRow; i++) ...[
-                        if (i > 0) const SizedBox(width: gap),
-                        card(r * perRow + i),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-      );
-    });
-  }
-}

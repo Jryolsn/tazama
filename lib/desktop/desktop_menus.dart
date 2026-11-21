@@ -64,18 +64,26 @@ Future<T?> showDesktopChoices<T>(BuildContext context, String title, List<Deskto
       ),
     );
 
-enum DesktopMenuAction { move, size, add, addPage, remove, removePage }
+enum DesktopMenuAction { move, size, add, addPage, pageEarlier, pageLater, remove, removePage }
 
-Future<DesktopMenuAction?> showDesktopItemMenu(BuildContext context, {DesktopItem? item, required int pageCount}) =>
-    showDesktopChoices(context, item == null ? 'Desktop' : desktopTypeName(item.type), [
+Future<DesktopMenuAction?> showDesktopItemMenu(BuildContext context,
+        {DesktopItem? item, required int page, required int pageCount}) =>
+    showDesktopChoices(context, item == null ? 'Page ${page + 1}' : desktopTypeName(item.type), [
       if (item != null) ...[
-        const DesktopChoice(DesktopMenuAction.move, 'Move', icon: Icons.open_with_rounded),
+        const DesktopChoice(DesktopMenuAction.move, 'Move', subtitle: 'Arrows move it on the grid', icon: Icons.open_with_rounded),
         const DesktopChoice(DesktopMenuAction.size, 'Size', icon: Icons.aspect_ratio_rounded),
+        const DesktopChoice(DesktopMenuAction.remove, 'Remove widget', icon: Icons.delete_outline_rounded),
       ],
       const DesktopChoice(DesktopMenuAction.add, 'Add widget', icon: Icons.add_rounded),
-      const DesktopChoice(DesktopMenuAction.addPage, 'Add page', icon: Icons.note_add_rounded),
-      if (item != null) const DesktopChoice(DesktopMenuAction.remove, 'Remove widget', icon: Icons.delete_outline_rounded),
-      if (pageCount > 1) const DesktopChoice(DesktopMenuAction.removePage, 'Remove page', icon: Icons.layers_clear_rounded),
+      DesktopChoice(DesktopMenuAction.addPage, 'Add page', subtitle: 'After page ${page + 1}', icon: Icons.note_add_rounded),
+      if (page > 0)
+        DesktopChoice(DesktopMenuAction.pageEarlier, 'Move page left', subtitle: 'Page ${page + 1} becomes ${page}',
+            icon: Icons.keyboard_double_arrow_left_rounded),
+      if (page < pageCount - 1)
+        DesktopChoice(DesktopMenuAction.pageLater, 'Move page right', subtitle: 'Page ${page + 1} becomes ${page + 2}',
+            icon: Icons.keyboard_double_arrow_right_rounded),
+      if (pageCount > 1)
+        DesktopChoice(DesktopMenuAction.removePage, 'Remove page ${page + 1}', icon: Icons.layers_clear_rounded),
     ]);
 
 /// Asks what to add. Returns (type, ref) or null.

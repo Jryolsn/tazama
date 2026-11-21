@@ -30,16 +30,56 @@ void main() {
     expect(DesktopService(prefs).pages[1].single.ref, 'pkg');
   });
 
-  test('moving past the end of a page moves to the next page', () async {
+  test('widgets keep their own spot and leave holes', () {
+    final cells = layoutDesktopPage([
+      const DesktopItem(id: 'a', type: DesktopWidgetType.clock, x: 3, y: 1),
+      const DesktopItem(id: 'b', type: DesktopWidgetType.clock, width: 2, height: 1),
+    ]);
+    expect((cells['a']!.x, cells['a']!.y), (3, 1));
+    expect((cells['b']!.x, cells['b']!.y), (0, 0));
+  });
+
+  test('moving with the arrows changes the cell and pushes others aside', () async {
     SharedPreferences.setMockInitialValues({
-      'desktop_pages': '[[{"id":"a","type":"clock","w":1,"h":1},{"id":"b","type":"clock","w":1,"h":1}],[]]',
+      'desktop_pages': '[[{"id":"a","type":"clock","w":1,"h":1,"x":0,"y":0},'
+          '{"id":"b","type":"clock","w":1,"h":1,"x":1,"y":0}],[]]',
     });
     final service = DesktopService(await SharedPreferences.getInstance());
-    expect(await service.moveItem('a', 1), isTrue);
-    expect(service.pages[0].map((i) => i.id), ['b', 'a']);
-    expect(await service.moveItem('a', 1), isTrue);
+    expect(await service.moveItemBy('a', 0, 1), isTrue);
+    expect((service.pages[0][0].x, service.pages[0][0].y), (0, 1));
+    expect(await service.moveItemBy('a', 0, 1), isFalse);
+    expect(await service.moveItemBy('a', 1, 0), isTrue);
+    expect((service.pages[0][0].x, service.pages[0][0].y), (1, 1));
+    expect(await service.moveItemBy('a', 0, -1), isTrue);
+    expect((service.pages[0][0].x, service.pages[0][0].y), (1, 0));
+    final b = service.pages[0][1];
+    expect((b.x, b.y) == (1, 0), isFalse);
+  });
+
+  test('moving past the right edge goes to the next page', () async {
+    SharedPreferences.setMockInitialValues({
+      'desktop_pages': '[[{"id":"a","type":"clock","w":1,"h":1,"x":3,"y":0}],[]]',
+    });
+    final service = DesktopService(await SharedPreferences.getInstance());
+    expect(await service.moveItemBy('a', 1, 0), isTrue);
     expect(service.locate('a'), (1, 0));
-    expect(await service.moveItem('a', 1), isFalse);
+    expect(service.pages[1].single.x, 0);
+    expect(await service.moveItemBy('a', 1, 0), isTrue);
+    expect(await service.moveItemBy('a', 1, 0), isTrue);
+    expect(await service.moveItemBy('a', 1, 0), isTrue);
+    expect(await service.moveItemBy('a', 1, 0), isFalse);
+  });
+
+  test('pages can be reordered and the last page stays', () async {
+    SharedPreferences.setMockInitialValues({
+      'desktop_pages': '[[{"id":"a","type":"clock"}],[{"id":"b","type":"clock"}]]',
+    });
+    final service = DesktopService(await SharedPreferences.getInstance());
+    expect(await service.movePage(1, -1), 0);
+    expect(service.pages[0].single.id, 'b');
+    await service.removePage(0);
+    await service.removePage(0);
+    expect(service.pages.single.single.id, 'a');
   });
 
   test('only sizes that keep every widget on the page are offered', () async {

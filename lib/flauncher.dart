@@ -89,15 +89,6 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     }
   }
 
-  /// Up from the taskbar goes to the widget right above the focused app.
-  KeyEventResult _onTaskbarKey(FocusNode node, KeyEvent event) {
-    if (event is KeyUpEvent || event.logicalKey != LogicalKeyboardKey.arrowUp) return KeyEventResult.ignored;
-    final box = FocusManager.instance.primaryFocus?.context?.findRenderObject();
-    if (box is! RenderBox) return KeyEventResult.ignored;
-    final rect = box.localToGlobal(Offset.zero) & box.size;
-    return _desktopKey.currentState?.focusFromBelow(rect) == true ? KeyEventResult.handled : KeyEventResult.ignored;
-  }
-
   @override
   Widget build(BuildContext context) => Actions(
     actions: <Type, Action<Intent>>{
@@ -166,12 +157,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   ? Column(
                       children: [
                         Expanded(child: Desktop(key: _desktopKey)),
-                        Focus(
-                          canRequestFocus: false,
-                          skipTraversal: true,
-                          onKeyEvent: _onTaskbarKey,
-                          child: const Taskbar(),
-                        ),
+                        Taskbar(onUpFromTop: (rect) => _desktopKey.currentState?.focusFromBelow(rect) ?? false),
                       ],
                     )
                   : _emptyState(context),
