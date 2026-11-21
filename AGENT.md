@@ -20,6 +20,7 @@ Two apps live in this repository:
 | Path | What |
 | --- | --- |
 | `STATUS.md` | Current state of the project, what is next. Update it when a feature lands. |
+| `BACKLOG.md` | The only list of ideas and things to fix. New ideas and bugs go here; bigger items graduate into `dev-tickets/`. |
 | `dev-tickets/` | One folder per piece of work, with a `PLAN.md` you can resume cold. Method: `dev-tickets/README.md`, local facts: `dev-tickets/PROJECT.md`, map: `dev-tickets/INDEX.md`. |
 | `lib/main.dart`, `lib/flauncher_app.dart` | TV app entry and root widget. |
 | `lib/quick_panel.dart` | Second entry point (`quickPanelMain`), the always-loaded engine for the quick panel, media panel and notices. |
@@ -68,7 +69,8 @@ say so instead of claiming the change compiles.
 ## Workflow
 - Work happens both in the Claude app (cloud sessions) and locally (IDE, Claude Code, by hand).
   The repository is the shared memory: anything the next session needs goes in `STATUS.md` or
-  the ticket's `PLAN.md`, never only in a chat.
+  the ticket's `PLAN.md`, never only in a chat. Ideas and bugs go in `BACKLOG.md` (no separate
+  idea documents or chat lists; the old "Tazama idéer" document is retired).
 - Branch from `dev`, open a PR to `dev`. `main` is only updated from `dev` for a release.
 - Starting work: read `STATUS.md`, then `dev-tickets/INDEX.md` and the ticket's `PLAN.md`.
   Ending work: update the ticket's `## ▶` section, `INDEX.md`, and `STATUS.md` if a feature landed.
