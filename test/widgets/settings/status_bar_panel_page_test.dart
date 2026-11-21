@@ -15,12 +15,10 @@ void main() {
     setUp(() {
       settingsService = MockSettingsService();
       when(settingsService.autoHideAppBarEnabled).thenReturn(false);
-      when(settingsService.hideStatusBarInGrid).thenReturn(false);
       when(settingsService.showDateInStatusBar).thenReturn(false);
       when(settingsService.showTimeInStatusBar).thenReturn(true);
       when(settingsService.showNetworkIndicatorInStatusBar).thenReturn(true);
       when(settingsService.setAutoHideAppBarEnabled(any)).thenAnswer((_) async {});
-      when(settingsService.setHideStatusBarInGrid(any)).thenAnswer((_) async {});
     });
 
     Widget createTestWidget() {
@@ -34,22 +32,12 @@ void main() {
       );
     }
 
-    testWidgets('renders hideStatusBarInGrid switch tile', (tester) async {
+    testWidgets('renders the auto-hide switch tile', (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Hide status bar in grid'), findsOneWidget);
+      expect(find.text('Hide status bar in grid'), findsNothing);
       expect(find.text('Automatically hide status bar'), findsOneWidget);
-    });
-
-    testWidgets('toggling hideStatusBarInGrid calls setHideStatusBarInGrid', (tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Hide status bar in grid'));
-      await tester.pumpAndSettle();
-
-      verify(settingsService.setHideStatusBarInGrid(true)).called(1);
     });
   });
 }

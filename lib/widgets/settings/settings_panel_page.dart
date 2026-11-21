@@ -21,12 +21,11 @@ import 'package:flauncher/build_flags.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flauncher/widgets/settings/flauncher_about_dialog.dart';
 import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
-import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flauncher/widgets/settings/home_screen_page.dart';
 import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/remote_buttons_page.dart';
 import 'package:flauncher/widgets/settings/quick_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/tazama_camera_page.dart';
-import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/media_panel/media_panel_service.dart';
@@ -72,7 +71,6 @@ class SettingsPanelPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppLocalizations localizations = AppLocalizations.of(context)!;
-    final settings = context.watch<SettingsService>();
     final mediaPanel = context.watch<MediaPanelService>();
     final ha = context.watch<HomeAssistantService>();
     final lock = context.watch<AppLockService>();
@@ -88,8 +86,7 @@ class SettingsPanelPage extends StatelessWidget {
               children: [
                 const SettingsGroupLabel('Home'),
                 _link(context, Icons.apps_rounded, 'Apps', route: ApplicationsPanelPage.routeName, autofocus: true),
-                _link(context, Icons.dashboard_rounded, 'Home screen', route: HomeLayoutPage.routeName,
-                    value: _layoutName(settings.homeLayout)),
+                _link(context, Icons.dashboard_rounded, 'Home screen', route: HomeScreenPage.routeName),
                 _link(context, Icons.palette_rounded, 'Look', route: MiscPanelPage.routeName),
                 _link(context, Icons.wallpaper_rounded, 'Background and screensaver', route: WallpaperPanelPage.routeName),
                 _link(context, Icons.schedule_rounded, 'Clock and status bar', route: StatusBarPanelPage.routeName),
@@ -117,12 +114,6 @@ class SettingsPanelPage extends StatelessWidget {
       ],
     );
   }
-
-  static String _layoutName(String layout) => switch (layout) {
-        HOME_LAYOUT_ORBIT => 'Orbit',
-        HOME_LAYOUT_AURORA => 'Aurora',
-        _ => 'Rows',
-      };
 }
 
 void showAboutTazama(BuildContext context) => showDialog(

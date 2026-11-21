@@ -1,8 +1,16 @@
 # Status
 
-_Last updated: 2026-11-20_
+_Last updated: 2026-11-21_
 
 ## Now
+- One home layout (2026-11-21): the Rows/Orbit/Aurora layouts, the Watch Next row and the dock are gone.
+  Bottom: taskbar with one category row at a time (button on the left picks the category, saved as
+  `taskbar_category_id`). Above: desktop with pages of widgets (`lib/desktop/`, stored as JSON in
+  `desktop_pages`), 4x2 grid per page, sizes 1x1, 2x1, 2x2, 4x1, 4x2. Widgets: clock, camera (media panel camera
+  cards), Home Assistant entity (from the chosen panel entities), app shortcut, Continue watching (latest item).
+  Hold OK on a widget: move, size, add widget, add page, remove widget/page. Left/Right at a page edge turns the page.
+  Removed settings: home layout, Watch Next show/card size, hide status bar in grid, category row/grid choice.
+  Ideas for later: more widget types (Now playing, weather, HA groups), Watch Next as a multi-item widget.
 - Cleanup of unused Arc/FLauncher leftovers (2026-11-20): removed the duplicate `me.efesser.flauncher` Java
   sources, upstream screenshots and store listings, Spanish/Turkish, Back-on-home actions, Watch Next
   "Immersive mode" and "Hide programs without image", and the old look options (accent color, focus border,
@@ -29,8 +37,6 @@ _Last updated: 2026-11-20_
 - Settings redesign (same PR): floating panel, pill rows, rounded icons, groups Home screen /
   Appearance / TV and system, Quick panel page removed (feature kept). Categories get size S-XL,
   live preview, per-category title and app-name switches; "Edit <category>" in the app menu.
-- Home layout setting (Settings > Home layout) with thumbnails: Rows (default), Orbit (big centered
-  clock, floating cards), Aurora (clock column left, sections right).
 - Watch next: sharper images and more card sizes.
 - Home Assistant module (lib/home_assistant/): full-screen settings (Connection, Controls grouped by
   area with search/type filter, Arrange, Dashboard, Panel), opened from Settings or the HA panel.

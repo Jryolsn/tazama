@@ -34,8 +34,17 @@ class CategoryRow extends StatelessWidget {
   final bool isFirstSection;
   final bool showTitle;
   final VoidCallback? onAppFocused;
+  final EdgeInsets padding;
 
-  CategoryRow({Key? key, required this.category, required this.applications, this.isFirstSection = false, this.showTitle = true, this.onAppFocused}) : super(key: key);
+  CategoryRow({
+    Key? key,
+    required this.category,
+    required this.applications,
+    this.isFirstSection = false,
+    this.showTitle = true,
+    this.onAppFocused,
+    this.padding = const EdgeInsets.symmetric(horizontal: kLauncherSectionHorizontalPadding + 4, vertical: 8),
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,7 @@ class CategoryRow extends StatelessWidget {
           clipper: const HorizontalClipper(),
           child: ListView.custom(
             clipBehavior: Clip.none,
-            padding: const EdgeInsets.symmetric(horizontal: kLauncherSectionHorizontalPadding + 4, vertical: 8),
+            padding: padding,
             scrollDirection: Axis.horizontal,
             childrenDelegate: SliverChildBuilderDelegate(
               childCount: applications.length,

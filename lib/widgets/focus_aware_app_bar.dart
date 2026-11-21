@@ -49,14 +49,10 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
 
   @override
   Widget build(BuildContext context) {
-    return Selector2<SettingsService, LauncherState, ({bool autoHide, bool hideInGrid, bool appGridFocused})>(
-      selector: (_, settings, launcherState) => (
-        autoHide: settings.autoHideAppBarEnabled,
-        hideInGrid: settings.hideStatusBarInGrid,
-        appGridFocused: launcherState.appGridFocused,
-      ),
+    return Selector<SettingsService, ({bool autoHide})>(
+      selector: (_, settings) => (autoHide: settings.autoHideAppBarEnabled),
       builder: (context, data, widget) {
-        final isVisible = focused || (!data.autoHide && !(data.hideInGrid && data.appGridFocused));
+        final isVisible = focused || !data.autoHide;
 
         return Focus(
           canRequestFocus: false,
@@ -160,8 +156,8 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
                     String timeFormat })>(
                 // Orbit and Aurora show their own big clock.
                 selector: (context, service) => (
-                showDateInStatusBar: service.showDateInStatusBar && service.homeLayout == HOME_LAYOUT_ROWS,
-                showTimeInStatusBar: service.showTimeInStatusBar && service.homeLayout == HOME_LAYOUT_ROWS,
+                showDateInStatusBar: service.showDateInStatusBar,
+                showTimeInStatusBar: service.showTimeInStatusBar,
                 dateFormat: service.dateFormat,
                 timeFormat: service.timeFormat),
                 builder: (context, dateTimeSettings, _) {

@@ -96,23 +96,7 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
         Expanded(
           child: ListView(
             children: [
-              RoundedSwitchListTile(
-                autofocus: true,
-                value: settingsService.showWatchNextSection,
-                onChanged: (value) async {
-                  await settingsService.setShowWatchNextSection(value);
-                  if (value && context.mounted) {
-                    final service = context.read<WatchNextService>();
-                    if (!service.hasPermission) {
-                      await service.requestPermission();
-                    }
-                  }
-                },
-                title: Text(localizations.showWatchNextSection, style: Theme.of(context).textTheme.bodyMedium),
-                secondary: const Icon(Icons.play_circle_rounded),
-              ),
-
-              if (settingsService.showWatchNextSection) ...[
+              ...[
                 if (!watchNextService.hasPermission)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -143,30 +127,8 @@ class _WatchNextPanelPageState extends State<WatchNextPanelPage> {
                     ),
                   ),
 
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Card size', style: Theme.of(context).textTheme.bodyMedium),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            for (final (id, label) in const [("s", "S"), ("m", "M"), ("l", "L")])
-                              Expanded(
-                                child: SettingsChoiceChip(
-                                  label: label,
-                                  selected: settingsService.watchNextCardSize == id,
-                                  onPressed: () => settingsService.setWatchNextCardSize(id),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
                 FocusableSettingsTile(
+                  autofocus: true,
                   leading: const Icon(Icons.format_list_numbered_rounded),
                   title: Text(localizations.watchNextMaxItems, style: Theme.of(context).textTheme.bodyMedium),
                   subtitle: Text(

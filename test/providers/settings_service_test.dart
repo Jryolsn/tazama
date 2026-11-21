@@ -152,20 +152,4 @@ void main() async {
     });
   });
 
-  group("hideStatusBarInGrid", () {
-    test("defaults to false", () {
-      expect(settingsService.hideStatusBarInGrid, isFalse);
-    });
-
-    test("persists value", () async {
-      await settingsService.setHideStatusBarInGrid(true);
-      expect(settingsService.hideStatusBarInGrid, isTrue);
-      expect(sharedPreferences.getBool("hide_status_bar_in_grid"), isTrue);
-
-      await settingsService.setHideStatusBarInGrid(false);
-      expect(settingsService.hideStatusBarInGrid, isFalse);
-      expect(sharedPreferences.getBool("hide_status_bar_in_grid"), isFalse);
-    });
-  });
-
 }
