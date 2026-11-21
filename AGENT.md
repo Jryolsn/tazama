@@ -13,7 +13,7 @@ Targets Chromecast with Google TV (HD "boreal" and 4K "sabrina"), armeabi-v7a.
 - `camera-app/` Tazama Link, the phone app for Phone camera (plain Gradle project, Java). Protocol: `camera-app/PROTOCOL.md`.
   TV side: `android/.../PhoneCameraActivity.java`.
 - `tools/tv/` adb setup/restore scripts for TVs.
-- `.github/workflows/build-apk.yml` builds, signs with `android/app/sideload.keystore` and publishes releases.
+- `.github/workflows/build-apk.yml` builds, signs with `android/app/sideload.keystore` and publishes releases. Feature branches build only the app they touch (`camera-app/` = Tazama Link, the rest = TV app); dev and main always build both so every release has both APKs. Docs/tools-only pushes do not build.
 
 ## Rules
 - User-visible text in English. Commits, PRs and comments in English.
