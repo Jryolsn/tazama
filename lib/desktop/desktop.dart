@@ -177,8 +177,13 @@ class DesktopState extends State<Desktop> {
     };
     if (_movingId != null) {
       if (direction != null) {
-        final delta = direction == TraversalDirection.left || direction == TraversalDirection.up ? -1 : 1;
-        _move(delta);
+        final (dx, dy) = switch (direction) {
+          TraversalDirection.left => (-1, 0),
+          TraversalDirection.right => (1, 0),
+          TraversalDirection.up => (0, -1),
+          TraversalDirection.down => (0, 1),
+        };
+        _move(dx, dy);
       } else if (longPressableKeys.contains(key) || key == LogicalKeyboardKey.goBack || key == LogicalKeyboardKey.escape) {
         setState(() => _movingId = null);
       }
@@ -213,12 +218,12 @@ class DesktopState extends State<Desktop> {
     return KeyEventResult.ignored;
   }
 
-  Future<void> _move(int delta) async {
+  Future<void> _move(int dx, int dy) async {
     final id = _movingId;
     if (id == null) return;
     final service = context.read<DesktopService>();
     final before = service.locate(id)?.$1;
-    if (!await service.moveItem(id, delta)) return;
+    if (!await service.moveItemBy(id, dx, dy)) return;
     final after = service.locate(id)?.$1;
     if (after != null && after != before) {
       _goToPage(after, focusId: id);
@@ -231,7 +236,7 @@ class DesktopState extends State<Desktop> {
     if (_movingId != null) return;
     final service = context.read<DesktopService>();
     final item = _items.where((i) => i.id == id).firstOrNull;
-    final action = await showDesktopItemMenu(context, item: item, pageCount: service.pages.length);
+    final action = await showDesktopItemMenu(context, item: item, page: _page, pageCount: service.pages.length);
     if (!mounted || action == null) return;
     switch (action) {
       case DesktopMenuAction.move:
@@ -253,6 +258,10 @@ class DesktopState extends State<Desktop> {
         final neighbour = _neighbour(id, TraversalDirection.left) ?? _neighbour(id, TraversalDirection.right);
         await service.removeItem(id);
         _focusLater(neighbour);
+      case DesktopMenuAction.pageEarlier:
+      case DesktopMenuAction.pageLater:
+        final page = await service.movePage(_page, action == DesktopMenuAction.pageEarlier ? -1 : 1);
+        _goToPage(page, focusId: id);
       case DesktopMenuAction.removePage:
         final count = _items.length;
         if (count > 0 &&
@@ -316,8 +325,13 @@ class DesktopState extends State<Desktop> {
           ),
         ),
         SizedBox(
-          height: 14,
-          child: pages.length < 2
+          height: 18,
+          child: _movingId != null
+              ? const Center(
+                  child: Text('Arrows move the widget, past the edge to the next page. OK when done.',
+                      style: TextStyle(fontSize: 12, color: Nebula.text, shadows: Nebula.textShadow)),
+                )
+              : pages.length < 2
               ? null
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -353,6 +367,20 @@ class DesktopState extends State<Desktop> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        if (_movingId != null)
+          for (var y = 0; y < kDesktopRows; y++)
+            for (var x = 0; x < kDesktopColumns; x++)
+              if (!cells.values.any((c) => x >= c.x && x < c.right && y >= c.y && y < c.bottom))
+              Positioned.fromRect(
+                rect: rectOf(DesktopCell(x, y, 1, 1)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+                    color: Colors.white.withValues(alpha: 0.03),
+                  ),
+                ),
+              ),
         if (items.isEmpty)
           Positioned.fromRect(
             rect: rectOf(const DesktopCell(1, 0, 2, 1)).shift(Offset(0, (cellH + _kGap) / 2)),
@@ -379,18 +407,6 @@ class DesktopState extends State<Desktop> {
                 child: DesktopItemContent(item: item, haStates: _haStates, busy: _busy, live: _live),
               ),
             ),
-        if (_movingId != null)
-          const Positioned(
-            top: -6,
-            left: 0,
-            right: 0,
-            child: IgnorePointer(
-              child: Center(
-                child: Text('Move with the arrows, OK when done',
-                    style: TextStyle(fontSize: 13, color: Nebula.text, shadows: Nebula.textShadow)),
-              ),
-            ),
-          ),
       ],
     );
   }

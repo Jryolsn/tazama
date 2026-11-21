@@ -52,7 +52,7 @@ void main() {
     expect(find.text("Favorites"), findsWidgets);
     expect(find.text("Alphabetical"), findsOneWidget);
     expect(find.text("Grid"), findsNothing);
-    expect(find.text("M"), findsOneWidget);
+    expect(find.text("M"), findsNothing);
   });
 
   testWidgets("Spacer is displayed", (tester) async {

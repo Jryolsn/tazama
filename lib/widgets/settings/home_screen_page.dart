@@ -22,7 +22,7 @@ class HomeScreenPage extends StatelessWidget {
     final settings = context.watch<SettingsService>();
     final apps = context.watch<AppsService>();
     final desktop = context.watch<DesktopService>();
-    final category = taskbarCategory(apps.categories, settings.taskbarCategoryId);
+    final category = taskbarCategory(taskbarCategories(apps), settings.taskbarCategoryId);
     final theme = Theme.of(context).textTheme;
     final pageCount = desktop.pages.length;
     final widgetCount = desktop.pages.fold<int>(0, (n, page) => n + page.length);
@@ -44,7 +44,7 @@ class HomeScreenPage extends StatelessWidget {
                   trailing: value(category?.name ?? 'None'),
                   onPressed: () async {
                     final id = await showDesktopChoices(context, 'Category', [
-                      for (final c in apps.categories.where((c) => c.applications.isNotEmpty))
+                      for (final c in taskbarCategories(apps))
                         DesktopChoice(c.id, c.name, selected: c.id == category?.id),
                     ]);
                     if (id != null) await settings.setTaskbarCategoryId(id);
@@ -74,9 +74,10 @@ class HomeScreenPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                   child: Text(
-                    'Hold OK on a widget to move, resize or remove it, or to add widgets and pages. '
-                    'Left and Right at the edge of a page turn the page. '
-                    'The button on the left of the taskbar switches category.',
+                    'Taskbar: Up and Down switch category, Up from the first category goes to the desktop, '
+                    'Left from the first app shows the category settings. '
+                    'Desktop: hold OK on a widget to move, resize or remove it, or to add, move and remove pages. '
+                    'Left and Right at the edge of a page turn the page.',
                     style: theme.bodySmall,
                   ),
                 ),
