@@ -26,7 +26,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _appKeyClickEnabledKey = "app_key_click_enabled";
 const _autoHideAppBar = "auto_hide_app_bar";
-const _hideStatusBarInGrid = "hide_status_bar_in_grid";
 const _gradientUuidKey = "gradient_uuid";
 const _showCategoryTitles = "show_category_titles";
 const _showAppNamesBelowIcons = "show_app_names_below_icons";
@@ -34,7 +33,6 @@ const _showDateInStatusBar = "show_date_in_status_bar";
 const _showTimeInStatusBar = "show_time_in_status_bar";
 const String _showNetworkIndicatorInStatusBar = "show_network_indicator_in_status_bar";
 const String _screensaverClockStyle = "screensaver_clock_style";
-const String _showWatchNextSection = "show_watch_next_section";
 const String _watchNextMaxItems = "watch_next_max_items";
 const String _watchNextExcludedPackages = "watch_next_excluded_packages";
 
@@ -44,12 +42,9 @@ const List<int> WATCH_NEXT_MAX_ITEMS_OPTIONS = [0, 5, 10, 15, 20, 25, 30, 50];
 const double FOCUS_BORDER_DEFAULT = 1.5;
 const String ACCENT_COLOR_WHITE = "FFFFFF";
 
-const String HOME_LAYOUT_ROWS = "rows";
 
 /// Shortcuts the quick panel can show, in default order.
 const List<String> quickPanelItemIds = ['dim', 'vpn', 'lock', 'camera', 'mediaPanel'];
-const String HOME_LAYOUT_ORBIT = "orbit";
-const String HOME_LAYOUT_AURORA = "aurora";
 
 
 class SettingsService extends ChangeNotifier {
@@ -65,8 +60,6 @@ class SettingsService extends ChangeNotifier {
   bool get appKeyClickEnabled => _sharedPreferences.getBool(_appKeyClickEnabledKey) ?? true;
 
   bool get autoHideAppBarEnabled => _sharedPreferences.getBool(_autoHideAppBar) ?? false;
-
-  bool get hideStatusBarInGrid => _sharedPreferences.getBool(_hideStatusBarInGrid) ?? false;
 
   bool get showCategoryTitles => _sharedPreferences.getBool(_showCategoryTitles) ?? false;
 
@@ -87,8 +80,6 @@ class SettingsService extends ChangeNotifier {
   String get accentColorHex => ACCENT_COLOR_WHITE;
 
   String get screensaverClockStyle => _sharedPreferences.getString(_screensaverClockStyle) ?? "minimal";
-
-  bool get showWatchNextSection => _sharedPreferences.getBool(_showWatchNextSection) ?? false;
 
   int get watchNextMaxItems => _sharedPreferences.getInt(_watchNextMaxItems) ?? 0;
 
@@ -116,10 +107,6 @@ class SettingsService extends ChangeNotifier {
     return set(_autoHideAppBar, value);
   }
 
-  Future<void> setHideStatusBarInGrid(bool value) async {
-    return set(_hideStatusBarInGrid, value);
-  }
-
   Future<void> setGradientUuid(String value) async {
     await _sharedPreferences.setString(_gradientUuidKey, value);
     notifyListeners();
@@ -133,21 +120,11 @@ class SettingsService extends ChangeNotifier {
     return set(_showAppNamesBelowIcons, show);
   }
 
-  /// Watch Next card size: "s", "m" (default) or "l".
-  String get watchNextCardSize => _sharedPreferences.getString("watch_next_card_size") ?? "m";
+  /// The category shown in the taskbar at the bottom of the home screen.
+  int? get taskbarCategoryId => _sharedPreferences.getInt("taskbar_category_id");
 
-  double get watchNextCardScale => const {"s": 0.5, "m": 0.66, "l": 0.85}[watchNextCardSize] ?? 1.0;
-
-  Future<void> setWatchNextCardSize(String size) async {
-    await _sharedPreferences.setString("watch_next_card_size", size);
-    notifyListeners();
-  }
-
-  /// Home screen layout: "rows" (default dock + rows), "orbit" or "aurora".
-  String get homeLayout => _sharedPreferences.getString("home_layout") ?? HOME_LAYOUT_ROWS;
-
-  Future<void> setHomeLayout(String layout) async {
-    await _sharedPreferences.setString("home_layout", layout);
+  Future<void> setTaskbarCategoryId(int id) async {
+    await _sharedPreferences.setInt("taskbar_category_id", id);
     notifyListeners();
   }
 
@@ -216,10 +193,6 @@ class SettingsService extends ChangeNotifier {
   Future<void> setScreensaverClockStyle(String style) async {
     await _sharedPreferences.setString(_screensaverClockStyle, style);
     notifyListeners();
-  }
-
-  Future<void> setShowWatchNextSection(bool value) async {
-    return set(_showWatchNextSection, value);
   }
 
   Future<void> setWatchNextMaxItems(int value) async {

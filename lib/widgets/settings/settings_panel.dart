@@ -38,7 +38,7 @@ import 'package:flauncher/widgets/settings/tazama_camera_page.dart';
 import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_panel_page.dart';
 import 'package:flauncher/widgets/settings/watch_next_max_items_page.dart';
-import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flauncher/widgets/settings/home_screen_page.dart';
 import 'package:flauncher/widgets/settings/lock_protection_page.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/screensaver_clock_style_page.dart';
@@ -97,8 +97,8 @@ class _SettingsPanelState extends State<SettingsPanel> {
                       return _FastPageRoute(builder: (_) => SettingsPanelPage());
                     case GeneralSettingsPage.routeName:
                       return _FastPageRoute(builder: (_) => GeneralSettingsPage());
-                    case HomeLayoutPage.routeName:
-                      return _FastPageRoute(builder: (_) => const HomeLayoutPage());
+                    case HomeScreenPage.routeName:
+                      return _FastPageRoute(builder: (_) => const HomeScreenPage());
                     case MediaPanelSettingsPage.routeName:
                       return _FastPageRoute(builder: (_) => const MediaPanelSettingsPage());
                     case LockProtectionPage.routeName:

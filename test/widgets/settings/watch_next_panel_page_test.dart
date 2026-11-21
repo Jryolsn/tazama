@@ -128,7 +128,6 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     settingsService = SettingsService(prefs);
-    await settingsService.setShowWatchNextSection(true);
 
     watchNextService = MockWatchNextServiceForPanel();
     appsService = FakeAppsServiceForPanel();

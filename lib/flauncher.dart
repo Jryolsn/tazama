@@ -16,48 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'dart:async';
-import 'dart:math';
 import 'dart:ui' as ui;
 
-import 'package:collection/collection.dart';
 import 'package:flauncher/actions.dart';
 import 'package:flauncher/custom_traversal_policy.dart';
+import 'package:flauncher/desktop/desktop.dart';
+import 'package:flauncher/desktop/taskbar.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/brightness_service.dart';
 import 'package:flauncher/widgets/settings/settings_panel.dart';
 import 'package:flutter/services.dart';
-import 'package:flauncher/providers/launcher_state.dart';
-import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flauncher/nebula_theme.dart';
 import 'package:flauncher/providers/watch_next_service.dart';
-import 'package:flauncher/widgets/app_card.dart';
-import 'package:flauncher/widgets/cached_blur_backdrop.dart';
-import 'package:flauncher/widgets/category_clean_row.dart';
-import 'package:flauncher/widgets/category_row.dart';
-import 'package:flauncher/widgets/dock_contour_painter.dart';
-import 'package:flauncher/widgets/date_time_widget.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
 import 'package:flauncher/widgets/wallpaper_video_background.dart';
-import 'package:flauncher/widgets/watch_next_row.dart';
 import 'package:flauncher/media_panel/media_panel_settings_page.dart';
 import 'package:flauncher/home_assistant/settings/home_assistant_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
-
-import 'models/app.dart';
-import 'models/category.dart';
-
-const _kDockOuterPadding = EdgeInsets.only(
-  left: kLauncherSectionHorizontalPadding,
-  right: kLauncherSectionHorizontalPadding,
-  top: 10,
-  bottom: 16,
-);
 
 class FLauncher extends StatefulWidget {
   const FLauncher({super.key});
@@ -68,8 +47,7 @@ class FLauncher extends StatefulWidget {
 
 class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
   final GlobalKey<FocusAwareAppBarState> _appBarKey = GlobalKey();
-  final ScrollController _scrollController = ScrollController();
-  final GlobalKey _dockKey = GlobalKey();
+  final GlobalKey<DesktopState> _desktopKey = GlobalKey();
 
   @override
   void initState() {
@@ -98,7 +76,6 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -110,6 +87,15 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
       context.read<BrightnessService>().applyCurrentSlotBrightness();
       _openSettingsIfAsked();
     }
+  }
+
+  /// Up from the taskbar goes to the widget right above the focused app.
+  KeyEventResult _onTaskbarKey(FocusNode node, KeyEvent event) {
+    if (event is KeyUpEvent || event.logicalKey != LogicalKeyboardKey.arrowUp) return KeyEventResult.ignored;
+    final box = FocusManager.instance.primaryFocus?.context?.findRenderObject();
+    if (box is! RenderBox) return KeyEventResult.ignored;
+    final rect = box.localToGlobal(Offset.zero) & box.size;
+    return _desktopKey.currentState?.focusFromBelow(rect) == true ? KeyEventResult.handled : KeyEventResult.ignored;
   }
 
   @override
@@ -171,446 +157,30 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
               },
             ),
           ),
-          Selector2<LauncherState, WallpaperService, (bool, bool)>(
-            selector: (_, launcherState, wallpaperService) => (
-              launcherState.appGridFocused,
-              wallpaperService.wallpaperVideoFile != null,
-            ),
-            builder: (_, data, __) {
-              final (appGridFocused, hasVideoWallpaper) = data;
-              if (hasVideoWallpaper) {
-                return const SizedBox.shrink();
-              }
-              return Positioned.fill(
-                child: IgnorePointer(
-                  child: AnimatedOpacity(
-                    opacity: appGridFocused ? 1 : 0,
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    child: CachedBlurLayer(
-                      sigma: 10,
-                      hidden: !appGridFocused,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
           Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: FocusAwareAppBar(key: _appBarKey),
-              // (initialized (data.$1), layoutVersion (data.$2), showAppNamesBelowIcons (data.$3))
-              body: Selector2<AppsService, SettingsService, (bool, int, bool, int)>(
-                selector: (_, appsService, settingsService) =>
-                    (appsService.initialized, appsService.layoutVersion, settingsService.showAppNamesBelowIcons, settingsService.categoryUiRevision),
-                builder: (context, data, _) {
-                  if (data.$1) {
-                    return _tvOSLayout(context, context.read<AppsService>(), showAppNames: data.$3);
-                  } else {
-                    return _emptyState(context);
-                  }
-                },
-              ),
+            backgroundColor: Colors.transparent,
+            appBar: FocusAwareAppBar(key: _appBarKey),
+            body: Selector<AppsService, bool>(
+              selector: (_, appsService) => appsService.initialized,
+              builder: (context, initialized, _) => initialized
+                  ? Column(
+                      children: [
+                        Expanded(child: Desktop(key: _desktopKey)),
+                        Focus(
+                          canRequestFocus: false,
+                          skipTraversal: true,
+                          onKeyEvent: _onTaskbarKey,
+                          child: const Taskbar(),
+                        ),
+                      ],
+                    )
+                  : _emptyState(context),
             ),
+          ),
         ],
       ),
     ),
   );
-
-  void _setAppGridFocused(bool focused) {
-    context.read<LauncherState>().setAppGridFocused(focused);
-  }
-
-  void _onAppGridFocused({VoidCallback? onFirstSectionFocused}) {
-    _setAppGridFocused(true);
-    onFirstSectionFocused?.call();
-  }
-
-  void _onHomeSectionFocused() {
-    _setAppGridFocused(false);
-  }
-
-  Widget _tvOSLayout(BuildContext context, AppsService appsService, {required bool showAppNames}) {
-    final favoritesCategory = appsService.categories.firstWhereOrNull((c) => c.name == 'Favorites');
-    final favoriteApps = favoritesCategory?.applications ?? const [];
-
-    final otherSections =
-        appsService.launcherSections.where((section) {
-          if (section is Category && section.name == 'Favorites') return false;
-          return true;
-        }).toList();
-
-    final showWatchNextSection = context.select<SettingsService, bool>((s) => s.showWatchNextSection);
-    final watchNextVisible = context.select<WatchNextService, bool>((s) => s.hasVisibleSection);
-    final reserveWatchNextSpace = showWatchNextSection && watchNextVisible;
-
-    if (favoriteApps.isEmpty && otherSections.isEmpty) return _emptyState(context);
-
-    final homeLayout = context.select<SettingsService, String>((s) => s.homeLayout);
-    if (homeLayout == HOME_LAYOUT_AURORA) {
-      return _auroraLayout(context, appsService, showWatchNextSection: showWatchNextSection, showAppNames: showAppNames);
-    }
-    final isOrbit = homeLayout == HOME_LAYOUT_ORBIT;
-
-    final watchNextScale = context.select<SettingsService, double>((s) => s.watchNextCardScale);
-    final watchNextSpace = 410 - 200 * (1 - watchNextScale);
-
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        if (favoriteApps.isNotEmpty || showWatchNextSection) ...[
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height:
-                  MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top -
-                  kToolbarHeight -
-                  (reserveWatchNextSpace ? watchNextSpace : 150),
-              child: isOrbit ? const _OrbitClock() : null,
-            ),
-          ),
-          if (showWatchNextSection)
-            SliverToBoxAdapter(
-              child: RepaintBoundary(
-                child: WatchNextRow(
-                  isFirstSection: false,
-                  isAboveDock: true,
-                  onItemFocused: _onHomeSectionFocused,
-                ),
-              ),
-            ),
-          if (favoriteApps.isNotEmpty)
-            SliverToBoxAdapter(
-              child: KeyedSubtree(
-                key: _dockKey,
-                child: Padding(
-                  padding: _kDockOuterPadding,
-                  child: _dock(
-                    context,
-                    favoritesCategory!,
-                    favoriteApps,
-                    appsService,
-                    handleUpNavigationToSettings: !reserveWatchNextSpace,
-                    floating: isOrbit,
-                  ),
-                ),
-              ),
-            ),
-        ],
-        ..._buildSectionSlivers(
-          otherSections,
-          firstCategoryAlreadyFound: favoriteApps.isNotEmpty,
-          showAppNames: showAppNames,
-          onFirstSectionFocused: favoriteApps.isNotEmpty ? _scrollDockToTop : null,
-        ),
-        SliverToBoxAdapter(child: SizedBox(height: _bottomScrollPadding(context, hasDock: favoriteApps.isNotEmpty))),
-      ],
-    );
-  }
-
-  /// Aurora: clock column on the left, all sections scroll on the right.
-  Widget _auroraLayout(
-    BuildContext context,
-    AppsService appsService, {
-    required bool showWatchNextSection,
-    required bool showAppNames,
-  }) {
-    final mq = MediaQuery.of(context);
-    final sideWidth = mq.size.width * 0.28;
-    final contentWidth = mq.size.width - sideWidth;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(width: sideWidth, child: const _AuroraSide()),
-        Expanded(
-          // Narrower MediaQuery so grid and row sizing match the column.
-          child: MediaQuery(
-            data: mq.copyWith(size: Size(contentWidth, mq.size.height)),
-            child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                if (showWatchNextSection)
-                  SliverToBoxAdapter(
-                    child: RepaintBoundary(
-                      child: WatchNextRow(
-                        isFirstSection: true,
-                        isAboveDock: false,
-                        onItemFocused: _onHomeSectionFocused,
-                      ),
-                    ),
-                  ),
-                ..._buildSectionSlivers(
-                  appsService.launcherSections,
-                  showAppNames: showAppNames,
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 64)),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  double _bottomScrollPadding(BuildContext context, {required bool hasDock}) {
-    if (!hasDock) {
-      return 64;
-    }
-    return MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - kToolbarHeight;
-  }
-
-  List<Widget> _buildSectionSlivers(
-    List<LauncherSection> sections, {
-    bool firstCategoryAlreadyFound = false,
-    required bool showAppNames,
-    VoidCallback? onFirstSectionFocused,
-  }) {
-    final List<Widget> slivers = [];
-    bool firstCategoryFound = firstCategoryAlreadyFound;
-    bool firstBuiltSectionFound = false;
-
-    for (final section in sections) {
-      final Key sectionKey = Key(section.id.toString());
-
-      if (section is LauncherSpacer) {
-        slivers.add(SliverToBoxAdapter(key: sectionKey, child: SizedBox(height: section.height.toDouble())));
-        continue;
-      }
-
-      final category = section as Category;
-      final filteredApps = category.applications;
-      if (filteredApps.isEmpty) continue;
-
-      final bool isFirstSection = !firstCategoryFound;
-      if (isFirstSection) firstCategoryFound = true;
-      final onAppFocused = !firstBuiltSectionFound
-          ? () => _onAppGridFocused(onFirstSectionFocused: onFirstSectionFocused)
-          : () => _onAppGridFocused();
-      firstBuiltSectionFound = true;
-
-      slivers.add(
-        SliverToBoxAdapter(
-          child: Selector<SettingsService, bool>(
-            selector: (context, service) => service.showTitleFor(category.id),
-            builder: (context, showTitle, _) {
-              if (showTitle) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 48, bottom: 8, top: 8),
-                  child: Text(
-                    category.name,
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.4,
-                      color: Nebula.textMuted,
-                      shadows: Nebula.textShadow,
-                    ),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ),
-      );
-
-      switch (category.type) {
-        case CategoryType.row:
-          slivers.add(
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: CategoryRow(
-                  key: sectionKey,
-                  category: category,
-                  applications: filteredApps,
-                  isFirstSection: isFirstSection,
-                  showTitle: false,
-                  onAppFocused: onAppFocused,
-                ),
-              ),
-            ),
-          );
-          break;
-        case CategoryType.grid:
-          final gridContentWidth = MediaQuery.sizeOf(context).width - 2 * kLauncherSectionHorizontalPadding;
-          final gridAspectRatio = context.read<SettingsService>().showAppNamesFor(category.id)
-              ? appCardGridAspectRatio(gridContentWidth, category.columnsCount)
-              : kAppCardAspectRatio;
-          slivers.add(
-            SliverPadding(
-              padding: const EdgeInsets.only(
-                left: kLauncherSectionHorizontalPadding,
-                right: kLauncherSectionHorizontalPadding,
-                bottom: 8,
-              ),
-              sliver: SliverGrid(
-                key: sectionKey,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: category.columnsCount,
-                  childAspectRatio: gridAspectRatio,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 0,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  childCount: filteredApps.length,
-                  findChildIndexCallback: (Key key) {
-                    final valueKey = key as ValueKey<String>;
-                    final index = filteredApps.indexWhere((app) => app.packageName == valueKey.value);
-                    return index >= 0 ? index : null;
-                  },
-                  (context, index) => Padding(
-                    key: Key(filteredApps[index].packageName),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: kAppCardHorizontalPadding,
-                      vertical: kAppCardVerticalPadding,
-                    ),
-                    child: AppCard(
-                      category: category,
-                      application: filteredApps[index],
-                      autofocus: index == 0,
-                      handleUpNavigationToSettings: isFirstSection && index < category.columnsCount,
-                      enforceAspectRatio: false,
-                      onFocused: index < category.columnsCount ? onAppFocused : null,
-                      ensureVisibleOnFocus: onAppFocused == null || index >= category.columnsCount,
-                      onlyScrollWhenNearBottom: true,
-                      onMove: (direction) => _onGridMove(context, category, index, direction, filteredApps),
-                      onMoveEnd: () => context.read<AppsService>().saveApplicationOrderInCategory(category),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-          break;
-      }
-    }
-
-    return slivers;
-  }
-
-  Future<void> _scrollDockToTop() async {
-    final targetOffset = _dockTopScrollOffset();
-    if (targetOffset == null) {
-      return;
-    }
-
-    final position = _scrollController.position;
-    if ((targetOffset - position.pixels).abs() < 16) {
-      return;
-    }
-
-    await _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeInOutCubic,
-    );
-  }
-
-  double? _dockTopScrollOffset() {
-    final dockContext = _dockKey.currentContext;
-    final renderObject = dockContext?.findRenderObject();
-    if (!_scrollController.hasClients || renderObject == null) {
-      return null;
-    }
-
-    final viewport = RenderAbstractViewport.of(renderObject);
-    final position = _scrollController.position;
-    return viewport.getOffsetToReveal(renderObject, 0).offset.clamp(position.minScrollExtent, position.maxScrollExtent);
-  }
-
-  // TO DO : refractor duplicate _onMove code
-  void _onGridMove(
-    BuildContext context,
-    Category category,
-    int index,
-    AxisDirection direction,
-    List<App> filteredApps,
-  ) {
-    final currentRow = (index / category.columnsCount).floor();
-    final totalRows = ((filteredApps.length - 1) / category.columnsCount).floor();
-
-    int? newIndex;
-    switch (direction) {
-      case AxisDirection.up:
-        if (currentRow > 0) newIndex = index - category.columnsCount;
-        break;
-      case AxisDirection.right:
-        if (index < filteredApps.length - 1) newIndex = index + 1;
-        break;
-      case AxisDirection.down:
-        if (currentRow < totalRows) newIndex = min(index + category.columnsCount, filteredApps.length - 1);
-        break;
-      case AxisDirection.left:
-        if (index > 0) newIndex = index - 1;
-        break;
-    }
-
-    if (newIndex != null) {
-      final appsService = context.read<AppsService>();
-      final movingApp = filteredApps[index];
-      final realOldIndex = category.applications.indexOf(movingApp);
-      final realNewIndex = category.applications.indexOf(filteredApps[newIndex]);
-      if (realOldIndex >= 0 && realNewIndex >= 0) {
-        appsService.reorderApplication(category, realOldIndex, realNewIndex);
-        appsService.setPendingReorderFocus(movingApp.packageName, category.id);
-      }
-    }
-  }
-
-  Widget _dock(
-    BuildContext context,
-    Category category,
-    List<App> apps,
-    AppsService appsService, {
-    required bool handleUpNavigationToSettings,
-    bool floating = false,
-  }) {
-    // Orbit: cards float freely, without the glass dock behind them.
-    if (floating) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: CategoryCleanRow(
-            category: category,
-            applications: apps,
-            isFirstSection: handleUpNavigationToSettings,
-            scrollAlignment: 1.0,
-            onAppFocused: _onHomeSectionFocused,
-          ),
-        ),
-      );
-    }
-    const dockBorderRadius = 8.0;
-    final borderRadius = BorderRadius.circular(dockBorderRadius);
-
-    final content = CustomPaint(
-      foregroundPainter: const DockContourPainter(radius: dockBorderRadius, strokeWidth: 1.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: borderRadius,
-        ),
-        child: CategoryCleanRow(
-          category: category,
-          applications: apps,
-          isFirstSection: handleUpNavigationToSettings,
-          scrollAlignment: 1.0,
-          onAppFocused: _onHomeSectionFocused,
-        ),
-      ),
-    );
-
-    return Center(
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        clipBehavior: Clip.antiAlias,
-        child: CachedBlurBackdrop(sigma: 5, child: content),
-      ),
-    );
-  }
 
   Widget _wallpaper(BuildContext context, WallpaperService wallpaperService) {
     final screenSize = MediaQuery.sizeOf(context);
@@ -732,89 +302,6 @@ class _CachedGradientBackgroundState extends State<_CachedGradientBackground> {
         // First frame (and while re-rendering): paint the gradient live once to avoid a flash.
         return DecoratedBox(decoration: BoxDecoration(gradient: widget.gradient));
       },
-    );
-  }
-}
-
-/// Big centered clock above the dock in the Orbit layout.
-class _OrbitClock extends StatelessWidget {
-  const _OrbitClock();
-
-  @override
-  Widget build(BuildContext context) {
-    final settings = context.watch<SettingsService>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          DateTimeWidget(
-            settings.timeFormat,
-            updateInterval: const Duration(minutes: 1),
-            textStyle: const TextStyle(
-              fontSize: 88,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 2,
-              height: 1,
-              color: Nebula.text,
-              shadows: Nebula.textShadow,
-            ),
-          ),
-          const SizedBox(height: 12),
-          DateTimeWidget(
-            settings.dateFormat,
-            updateInterval: const Duration(minutes: 1),
-            textStyle: const TextStyle(
-              fontSize: 20,
-              letterSpacing: 4,
-              color: Nebula.textMuted,
-              shadows: Nebula.textShadow,
-            ),
-          ),
-        ],
-      ),
-      ),
-    );
-  }
-}
-
-/// Left column of the Aurora layout: clock and date on a soft glass strip.
-class _AuroraSide extends StatelessWidget {
-  const _AuroraSide();
-
-  @override
-  Widget build(BuildContext context) {
-    final settings = context.watch<SettingsService>();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(48, 24, 16, 48),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: DateTimeWidget(
-            settings.timeFormat,
-            updateInterval: const Duration(minutes: 1),
-            textStyle: const TextStyle(
-              fontSize: 64,
-              fontWeight: FontWeight.w300,
-              height: 1,
-              color: Nebula.text,
-              shadows: Nebula.textShadow,
-            ),
-          ),
-          ),
-          const SizedBox(height: 10),
-          DateTimeWidget(
-            settings.dateFormat,
-            updateInterval: const Duration(minutes: 1),
-            textStyle: const TextStyle(fontSize: 20, color: Nebula.textMuted, shadows: Nebula.textShadow),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -45,12 +45,6 @@ class StatusBarPanelPage extends StatelessWidget {
                   title: Text(localizations.autoHideAppBar, style: Theme.of(context).textTheme.bodyMedium),
                   secondary: const Icon(Icons.visibility_off_rounded),
                 ),
-                RoundedSwitchListTile(
-                  value: settingsService.hideStatusBarInGrid,
-                  onChanged: (value) => settingsService.setHideStatusBarInGrid(value),
-                  title: Text(localizations.hideStatusBarInGrid, style: Theme.of(context).textTheme.bodyMedium),
-                  secondary: const Icon(Icons.grid_view_rounded),
-                ),
                 const SettingsSectionDivider(),
                 RoundedSwitchListTile(
                   value: settingsService.showDateInStatusBar,

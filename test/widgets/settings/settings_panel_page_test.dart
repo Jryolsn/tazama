@@ -16,12 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flauncher/desktop/desktop_service.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
 import 'package:flauncher/media_panel/media_panel_service.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/providers/apps_service.dart';
-import 'package:flauncher/widgets/settings/home_layout_page.dart';
+import 'package:flauncher/widgets/settings/home_screen_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flauncher/providers/settings_service.dart';
@@ -70,8 +71,7 @@ void main() {
     when(appsService.applications).thenReturn([]);
     when(settingsService.appHighlightAnimationEnabled).thenReturn(true);
 
-    when(settingsService.homeLayout).thenReturn(HOME_LAYOUT_ROWS);
-    await _pumpWidgetWithProviders(tester, settingsService, appsService, home: const HomeLayoutPage());
+    await _pumpWidgetWithProviders(tester, settingsService, appsService, home: const HomeScreenPage());
 
     await tester.tap(find.text("Categories"));
     await tester.pumpAndSettle();
@@ -133,7 +133,6 @@ Future<void> _pumpWidgetWithProviders(
   SharedPreferences.setMockInitialValues({});
   FlutterSecureStorage.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
-  when(settingsService.homeLayout).thenReturn(HOME_LAYOUT_ROWS);
   await tester.pumpWidget(
     MultiProvider(
       providers: [
@@ -142,6 +141,7 @@ Future<void> _pumpWidgetWithProviders(
         ChangeNotifierProvider(create: (_) => AppLockService()),
         ChangeNotifierProvider(create: (_) => HomeAssistantService(prefs)),
         ChangeNotifierProvider(create: (_) => MediaPanelService(prefs)),
+        ChangeNotifierProvider(create: (_) => DesktopService(prefs)),
       ],
       builder: (_, __) => MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

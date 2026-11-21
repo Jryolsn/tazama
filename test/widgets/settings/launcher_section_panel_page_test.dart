@@ -51,7 +51,7 @@ void main() {
 
     expect(find.text("Favorites"), findsWidgets);
     expect(find.text("Alphabetical"), findsOneWidget);
-    expect(find.text("Grid"), findsOneWidget);
+    expect(find.text("Grid"), findsNothing);
     expect(find.text("M"), findsOneWidget);
   });
 

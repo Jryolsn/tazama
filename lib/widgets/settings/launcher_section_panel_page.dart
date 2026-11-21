@@ -475,39 +475,6 @@ class _CategorySettingsState extends State<_CategorySettings>
         ),
         _listTile(
           context,
-          Text(localizations.layout),
-          Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: DropdownButtonFormField<CategoryType>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
-              initialValue: _categoryType,
-              onChanged: (value) {
-                setState(() {
-                  _categoryType = value!;
-                });
-                _notifyChange();
-              },
-              isDense: true,
-              isExpanded: true,
-              items: [
-                DropdownMenuItem(
-                  value: CategoryType.row,
-                  child: Text(localizations.row, style: Theme.of(context).textTheme.bodySmall)
-                ),
-                DropdownMenuItem(
-                  value: CategoryType.grid,
-                  child: Text(localizations.grid, style: Theme.of(context).textTheme.bodySmall)
-                )
-              ]
-            )
-          )
-        ),
-        _listTile(
-          context,
           const Text('Size'),
           Padding(
             padding: const EdgeInsets.only(top: 6),
@@ -533,7 +500,7 @@ class _CategorySettingsState extends State<_CategorySettings>
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-          child: _SizePreview(type: _categoryType, rowHeight: _rowHeight, columns: _columnsCount),
+          child: _SizePreview(type: CategoryType.row, rowHeight: _rowHeight, columns: _columnsCount),
         ),
         if (!_creating) ...[
           Consumer<SettingsService>(
@@ -559,11 +526,8 @@ class _CategorySettingsState extends State<_CategorySettings>
     );
   }
 
-  /// Current size step, picked from row height or column count.
+  /// Current size step, picked from the row height (the taskbar always shows a row).
   int get _sizeIndex {
-    if (_categoryType == CategoryType.grid) {
-      return _nearestIndex(kCategoryColumns, _columnsCount);
-    }
     return _nearestIndex(kCategoryRowHeights, _rowHeight);
   }
 

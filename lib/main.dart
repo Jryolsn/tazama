@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flauncher/desktop/desktop_service.dart';
 import 'package:flauncher/providers/app_lock_service.dart';
 import 'package:flauncher/media_panel/media_panel_service.dart';
 import 'package:flauncher/home_assistant/home_assistant_service.dart';
@@ -66,6 +67,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AppLockService()),
         ChangeNotifierProvider(create: (_) => HomeAssistantService(sharedPreferences), lazy: false),
         ChangeNotifierProvider(create: (_) => MediaPanelService(sharedPreferences), lazy: false),
+        ChangeNotifierProvider(create: (_) => DesktopService(sharedPreferences)),
         ChangeNotifierProvider(create: (_) => HaNoticeSettings(sharedPreferences)),
         ChangeNotifierProvider(create: (_) => VpnGuardService(), lazy: false),
         ChangeNotifierProvider(

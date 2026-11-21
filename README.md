@@ -4,7 +4,9 @@
 
 **Tazama** (Swahili for "look, watch") is an open-source home screen for Android TV and Google TV, tuned for the Chromecast with Google TV.
 
-It is based on [Arc Launcher](https://github.com/meddouribadis/arclauncher) and keeps its grid layout, wallpapers and remote-friendly navigation, and adds:
+It is based on [Arc Launcher](https://github.com/meddouribadis/arclauncher) and keeps its wallpapers and remote-friendly navigation, and adds:
+
+- **Taskbar and desktop**: one row of apps at the bottom (switch category with the button on its left) and a desktop above it with pages of widgets you place yourself: clock, cameras, Home Assistant entities, app shortcuts and Continue watching. Hold OK on a widget to move, resize or remove it.
 
 - **App lock** with PIN or remote pattern, also when an app is opened by casting.
 - **Dim screen** on top of every app, on a schedule or on demand.
