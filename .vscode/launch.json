@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Tazama (debug, hot reload)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "program": "lib/main.dart",
+      "args": ["--flavor", "github"]
+    }
+  ]
+}

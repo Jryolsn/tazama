@@ -49,9 +49,7 @@ how to work in this repo: `AGENT.md`.
   Notices: Settings > Home Assistant > Notices. The quick panel engine (always loaded) keeps a websocket to HA and
   shows an emoji+text overlay (accessibility service) when chosen binary sensors turn on, or on a `tazama_notify`
   event fired from an HA automation (message, title, emoji, seconds).
-  Media players show cover, title, progress, volume (Left/Right).
-  Plan for next phases: /mnt project file tazama/home-assistant-plan.md (PR B camera+media, PR C notices).
-- Home Assistant: URL + long-lived token in encrypted storage.
+  Media players show cover, title, progress, volume (Left/Right).- Home Assistant: URL + long-lived token in encrypted storage.
   Hold Home = HA panel over any app (chosen entities: toggle, scenes, sensors, camera snapshots,
   Left/Right dims lights, optional own dashboard in a WebView signed in with the token).
   Hold Back = quick panel (short Back unchanged). Customizable: order, names, side, width,

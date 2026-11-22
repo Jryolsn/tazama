@@ -98,6 +98,10 @@ android/fastlane/report.xml
 android/fastlane/google_play_api_key.json
 android/fastlane/README.md
 
+# Local dev config (contains TV IP) and device screenshots
+.devrc
+.screenshots/
+
 
 # Tazama Camera (phone app) build output
 camera-app/.gradle/

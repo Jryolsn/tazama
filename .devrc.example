@@ -1,0 +1,3 @@
+# Local dev config. Copy to .devrc (gitignored) and edit.
+# Wi-Fi adb address of your dev TV. Leave unset to use a running emulator.
+TV_IP="192.168.x.x:5555"
