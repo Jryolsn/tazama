@@ -8,6 +8,7 @@ trust the plan and fix this file.
 
 - media-panel-phone-camera — PLANNING — telefonkameran (Tazama Link) ska bli ett kort i mediapanelen i stället för en egen vy
 - desktop-widget-types — PLANNING — fler widgettyper på skrivbordet: Spelas nu, väder, HA-grupper, Fortsätt titta med flera objekt
+- kotlin-compose-migration — PLANNING — total migration Flutter→Kotlin+Compose TV (idéfas, alternativ öppna)
 
 ## Parked
 
