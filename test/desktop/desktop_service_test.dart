@@ -70,16 +70,65 @@ void main() {
     expect(await service.moveItemBy('a', 1, 0), isFalse);
   });
 
-  test('pages can be reordered and the last page stays', () async {
+  test('pages can be added on both sides and the home page follows its page', () async {
     SharedPreferences.setMockInitialValues({
       'desktop_pages': '[[{"id":"a","type":"clock"}],[{"id":"b","type":"clock"}]]',
+      'desktop_home_page': 1,
     });
     final service = DesktopService(await SharedPreferences.getInstance());
-    expect(await service.movePage(1, -1), 0);
-    expect(service.pages[0].single.id, 'b');
+    expect(await service.insertPage(0), 0);
+    expect(service.pages.length, 3);
+    expect(service.homePage, 2);
+    expect(service.pages[service.homePage].single.id, 'b');
+    expect(await service.insertPage(3), 3);
+    expect(service.homePage, 2);
+  });
+
+  test('deleting pages keeps one and moves the home page to a neighbour', () async {
+    SharedPreferences.setMockInitialValues({
+      'desktop_pages': '[[{"id":"a","type":"clock"}],[{"id":"b","type":"clock"}],[]]',
+      'desktop_home_page': 1,
+    });
+    final service = DesktopService(await SharedPreferences.getInstance());
+    await service.removePage(1);
+    expect(service.homePage, 0);
+    expect(service.pages[0].single.id, 'a');
     await service.removePage(0);
     await service.removePage(0);
-    expect(service.pages.single.single.id, 'a');
+    expect(service.pages.length, 1);
+    expect(service.homePage, 0);
+  });
+
+  test('widget style defaults to border and glass and is saved', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final service = DesktopService(prefs);
+    expect(service.widgetBorder, isTrue);
+    expect(service.widgetBackground, DesktopWidgetBackground.glass);
+    await service.setWidgetBorder(false);
+    await service.setWidgetBackground(DesktopWidgetBackground.blur);
+    final again = DesktopService(prefs);
+    expect(again.widgetBorder, isFalse);
+    expect(again.widgetBackground, DesktopWidgetBackground.blur);
+  });
+
+  test('adding to an empty cell puts the widget there, smaller when needed', () async {
+    SharedPreferences.setMockInitialValues({
+      'desktop_pages': '[[{"id":"a","type":"clock","w":2,"h":2,"x":0,"y":0},{"id":"b","type":"clock","w":1,"h":1,"x":3,"y":0}]]',
+    });
+    final service = DesktopService(await SharedPreferences.getInstance());
+    expect(await service.addItemAt(0, DesktopWidgetType.camera, size: (2, 2), ref: 'cam', x: 2, y: 1), isTrue);
+    final added = service.pages[0].last;
+    expect((added.x, added.y), (2, 1));
+    expect(added.size, (2, 1));
+    expect(await service.addItemAt(0, DesktopWidgetType.app, size: (1, 1), x: 2, y: 0), isTrue);
+    expect(service.pages[0].last.x, 2);
+    expect(await service.addItemAt(0, DesktopWidgetType.app, size: (1, 1), x: 2, y: 0), isFalse);
+  });
+
+  test('only the clock is not focusable', () {
+    expect(desktopTypeFocusable(DesktopWidgetType.clock), isFalse);
+    expect(DesktopWidgetType.values.where(desktopTypeFocusable).length, DesktopWidgetType.values.length - 1);
   });
 
   test('only sizes that keep every widget on the page are offered', () async {

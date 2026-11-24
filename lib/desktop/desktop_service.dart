@@ -7,6 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// What a desktop widget shows.
 enum DesktopWidgetType { clock, camera, homeAssistant, app, watchNext }
 
+/// Widgets that only show something cannot take focus outside edit mode.
+bool desktopTypeFocusable(DesktopWidgetType type) => type != DesktopWidgetType.clock;
+
+/// What sits behind a widget's content.
+enum DesktopWidgetBackground { glass, blur, none }
+
 /// Grid size of a desktop page, in cells.
 const int kDesktopColumns = 4;
 const int kDesktopRows = 2;
@@ -155,10 +161,16 @@ List<DesktopItem> _placed(List<DesktopItem> items) {
 /// The desktop above the taskbar: pages of widgets, stored as JSON in preferences.
 class DesktopService extends ChangeNotifier {
   static const _pagesKey = 'desktop_pages';
+  static const _homePageKey = 'desktop_home_page';
+  static const _borderKey = 'desktop_widget_border';
+  static const _backgroundKey = 'desktop_widget_background';
 
   final SharedPreferences _prefs;
   List<List<DesktopItem>> _pages = const [[]];
   final _random = Random();
+
+  /// Bumped when something outside the desktop (settings) asks it to enter edit mode.
+  final ValueNotifier<int> editRequests = ValueNotifier(0);
 
   DesktopService(this._prefs) {
     _load();
@@ -166,6 +178,38 @@ class DesktopService extends ChangeNotifier {
 
   /// Always at least one page. Every widget that fits has its spot filled in.
   List<List<DesktopItem>> get pages => _pages;
+
+  /// The page shown at start and when Home is pressed.
+  int get homePage => (_prefs.getInt(_homePageKey) ?? 0).clamp(0, _pages.length - 1);
+
+  bool get widgetBorder => _prefs.getBool(_borderKey) ?? true;
+
+  DesktopWidgetBackground get widgetBackground =>
+      DesktopWidgetBackground.values.where((b) => b.name == _prefs.getString(_backgroundKey)).firstOrNull ??
+      DesktopWidgetBackground.glass;
+
+  Future<void> setHomePage(int index) async {
+    await _prefs.setInt(_homePageKey, index.clamp(0, _pages.length - 1));
+    notifyListeners();
+  }
+
+  Future<void> setWidgetBorder(bool value) async {
+    await _prefs.setBool(_borderKey, value);
+    notifyListeners();
+  }
+
+  Future<void> setWidgetBackground(DesktopWidgetBackground value) async {
+    await _prefs.setString(_backgroundKey, value.name);
+    notifyListeners();
+  }
+
+  void requestEdit() => editRequests.value++;
+
+  @override
+  void dispose() {
+    editRequests.dispose();
+    super.dispose();
+  }
 
   void _load() {
     final raw = _prefs.getString(_pagesKey);
@@ -185,9 +229,10 @@ class DesktopService extends ChangeNotifier {
     if (_pages.isEmpty) _pages = [[]];
   }
 
-  Future<void> _set(List<List<DesktopItem>> pages) async {
+  Future<void> _set(List<List<DesktopItem>> pages, {int? homePage}) async {
     _pages = [for (final p in pages) _placed(p)];
     if (_pages.isEmpty) _pages = [[]];
+    if (homePage != null) await _prefs.setInt(_homePageKey, homePage.clamp(0, _pages.length - 1));
     notifyListeners();
     await _prefs.setString(_pagesKey, jsonEncode([for (final page in _pages) page.map((i) => i.toJson()).toList()]));
   }
@@ -209,6 +254,32 @@ class DesktopService extends ChangeNotifier {
     pages[target].add(item);
     await _set(pages);
     return target;
+  }
+
+  /// Adds a widget to an empty cell of [pageIndex]. Takes [size] when it fits near the cell,
+  /// else the largest size that does. Returns false when the page is full.
+  Future<bool> addItemAt(int pageIndex, DesktopWidgetType type,
+      {required (int, int) size, String? ref, required int x, required int y}) async {
+    if (pageIndex < 0 || pageIndex >= _pages.length) return false;
+    final pages = _copy();
+    final sizes = [size, ...kDesktopSizes.reversed.where((s) => s != size && s.$1 <= size.$1 && s.$2 <= size.$2), (1, 1)];
+    for (final s in sizes) {
+      // Spots that cover the chosen cell, so the widget lands where the user pointed.
+      for (var dy = 0; dy < s.$2; dy++) {
+        for (var dx = 0; dx < s.$1; dx++) {
+          final item = DesktopItem(id: _newId(), type: type, width: s.$1, height: s.$2, ref: ref, x: x - dx, y: y - dy);
+          if (item.x! < 0 || item.y! < 0) continue;
+          final cells = layoutDesktopPage([...pages[pageIndex], item]);
+          final cell = cells[item.id];
+          if (cells.length == pages[pageIndex].length + 1 && cell!.x == item.x && cell.y == item.y) {
+            pages[pageIndex].add(item);
+            await _set(pages);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   Future<void> removeItem(String id) => _set([for (final p in _pages) p.where((i) => i.id != id).toList()]);
@@ -286,29 +357,22 @@ class DesktopService extends ChangeNotifier {
     return true;
   }
 
-  Future<int> addPage(int afterIndex) async {
+  /// Inserts an empty page at [index] (0 = before the first page). Returns its index.
+  Future<int> insertPage(int index) async {
     final pages = _copy();
-    final index = (afterIndex + 1).clamp(0, pages.length);
-    pages.insert(index, []);
-    await _set(pages);
-    return index;
+    final at = index.clamp(0, pages.length);
+    pages.insert(at, []);
+    final home = homePage;
+    await _set(pages, homePage: at <= home ? home + 1 : home);
+    return at;
   }
 
-  /// Moves a page one step earlier (-1) or later (+1). Returns its new index.
-  Future<int> movePage(int index, int delta) async {
-    final target = index + delta;
-    if (index < 0 || index >= _pages.length || target < 0 || target >= _pages.length) return index;
-    final pages = _copy();
-    final page = pages.removeAt(index);
-    pages.insert(target, page);
-    await _set(pages);
-    return target;
-  }
-
-  /// The last page cannot be removed.
+  /// The last page cannot be removed. The home page moves along with its page,
+  /// or to the page before it when it is the one removed.
   Future<void> removePage(int index) async {
     if (_pages.length < 2 || index < 0 || index >= _pages.length) return;
-    await _set(_copy()..removeAt(index));
+    final home = homePage;
+    await _set(_copy()..removeAt(index), homePage: index < home || (index == home && home > 0) ? home - 1 : home);
   }
 
   /// (page, index) of a widget.

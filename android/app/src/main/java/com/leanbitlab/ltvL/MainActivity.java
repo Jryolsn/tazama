@@ -82,6 +82,7 @@ public class MainActivity extends FlutterActivity {
     /** Which settings to open on resume: "settings" or "home_assistant". */
     static volatile String openSettingsTarget;
     private MethodChannel.Result pendingPinResult;
+    private MethodChannel homeChannel;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -98,11 +99,22 @@ public class MainActivity extends FlutterActivity {
         LinkWakeService.start(this);
     }
 
+    /** Home pressed while Tazama is the home screen (or brought back by the accessibility service). */
+    @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        if (homeChannel != null && Intent.ACTION_MAIN.equals(intent.getAction())
+                && intent.hasCategory(Intent.CATEGORY_HOME)) {
+            homeChannel.invokeMethod("home", null);
+        }
+    }
+
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
 
         BinaryMessenger messenger = flutterEngine.getDartExecutor().getBinaryMessenger();
+        homeChannel = new MethodChannel(messenger, "com.jryolsn.tazama/home");
 
         new MethodChannel(messenger, METHOD_CHANNEL).setMethodCallHandler((call, result) -> {
             switch (call.method) {
