@@ -64,27 +64,79 @@ Future<T?> showDesktopChoices<T>(BuildContext context, String title, List<Deskto
       ),
     );
 
-enum DesktopMenuAction { move, size, add, addPage, pageEarlier, pageLater, remove, removePage }
+enum DesktopMenuAction { move, size, remove }
 
-Future<DesktopMenuAction?> showDesktopItemMenu(BuildContext context,
-        {DesktopItem? item, required int page, required int pageCount}) =>
-    showDesktopChoices(context, item == null ? 'Page ${page + 1}' : desktopTypeName(item.type), [
-      if (item != null) ...[
-        const DesktopChoice(DesktopMenuAction.move, 'Move', subtitle: 'Arrows move it on the grid', icon: Icons.open_with_rounded),
-        const DesktopChoice(DesktopMenuAction.size, 'Size', icon: Icons.aspect_ratio_rounded),
-        const DesktopChoice(DesktopMenuAction.remove, 'Remove widget', icon: Icons.delete_outline_rounded),
-      ],
-      const DesktopChoice(DesktopMenuAction.add, 'Add widget', icon: Icons.add_rounded),
-      DesktopChoice(DesktopMenuAction.addPage, 'Add page', subtitle: 'After page ${page + 1}', icon: Icons.note_add_rounded),
-      if (page > 0)
-        DesktopChoice(DesktopMenuAction.pageEarlier, 'Move page left', subtitle: 'Page ${page + 1} becomes ${page}',
-            icon: Icons.keyboard_double_arrow_left_rounded),
-      if (page < pageCount - 1)
-        DesktopChoice(DesktopMenuAction.pageLater, 'Move page right', subtitle: 'Page ${page + 1} becomes ${page + 2}',
-            icon: Icons.keyboard_double_arrow_right_rounded),
-      if (pageCount > 1)
-        DesktopChoice(DesktopMenuAction.removePage, 'Remove page ${page + 1}', icon: Icons.layers_clear_rounded),
+/// Edit mode: what to do with one widget.
+Future<DesktopMenuAction?> showDesktopItemMenu(BuildContext context, DesktopItem item, {required bool canResize}) =>
+    showDesktopChoices(context, desktopTypeName(item.type), [
+      const DesktopChoice(DesktopMenuAction.move, 'Move', subtitle: 'Arrows move it, past the edge to the next page',
+          icon: Icons.open_with_rounded),
+      if (canResize)
+        DesktopChoice(DesktopMenuAction.size, 'Size', subtitle: desktopSizeLabel(item.size), icon: Icons.aspect_ratio_rounded),
+      const DesktopChoice(DesktopMenuAction.remove, 'Remove widget', icon: Icons.delete_outline_rounded),
     ]);
+
+String desktopBackgroundName(DesktopWidgetBackground background) => switch (background) {
+      DesktopWidgetBackground.glass => 'Glass',
+      DesktopWidgetBackground.blur => 'Blur',
+      DesktopWidgetBackground.none => 'None',
+    };
+
+String _backgroundHint(DesktopWidgetBackground background) => switch (background) {
+      DesktopWidgetBackground.glass => 'Tinted, see-through',
+      DesktopWidgetBackground.blur => 'Frosted, blurs the wallpaper',
+      DesktopWidgetBackground.none => 'Content right on the wallpaper',
+    };
+
+/// Widget border and background, shared by every page. Changes show right away behind the panel.
+Future<void> showDesktopStyle(BuildContext context) => showDialog<void>(
+      context: context,
+      builder: (context) => const SidePanelDialog(width: 320, isRightSide: true, child: DesktopStyleSettings()),
+    );
+
+class DesktopStyleSettings extends StatelessWidget {
+  const DesktopStyleSettings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final desktop = context.watch<DesktopService>();
+    final theme = Theme.of(context).textTheme;
+    final accent = Theme.of(context).colorScheme.primary;
+    return Column(
+      children: [
+        const SettingsPageHeader(title: 'Widget style'),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 16),
+            children: [
+              FocusableSettingsTile(
+                autofocus: true,
+                leading: const Icon(Icons.crop_square_rounded),
+                title: Text('Border', style: theme.bodyMedium),
+                subtitle: Text('Thin outline around each widget', style: theme.bodySmall),
+                trailing: Switch(value: desktop.widgetBorder, onChanged: desktop.setWidgetBorder),
+                onPressed: () => desktop.setWidgetBorder(!desktop.widgetBorder),
+              ),
+              const SettingsGroupLabel('Background'),
+              for (final background in DesktopWidgetBackground.values)
+                FocusableSettingsTile(
+                  leading: Icon(switch (background) {
+                    DesktopWidgetBackground.glass => Icons.window_rounded,
+                    DesktopWidgetBackground.blur => Icons.blur_on_rounded,
+                    DesktopWidgetBackground.none => Icons.layers_clear_rounded,
+                  }),
+                  title: Text(desktopBackgroundName(background), style: theme.bodyMedium),
+                  subtitle: Text(_backgroundHint(background), style: theme.bodySmall),
+                  trailing: desktop.widgetBackground == background ? Icon(Icons.check_rounded, color: accent, size: 20) : null,
+                  onPressed: () => desktop.setWidgetBackground(background),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 /// Asks what to add. Returns (type, ref) or null.
 Future<(DesktopWidgetType, String?)?> pickDesktopWidget(BuildContext context) async {

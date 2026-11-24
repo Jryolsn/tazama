@@ -1,5 +1,6 @@
 import 'package:flauncher/desktop/desktop_menus.dart';
 import 'package:flauncher/desktop/desktop_service.dart';
+import 'package:flauncher/desktop/desktop_widgets.dart';
 import 'package:flauncher/desktop/taskbar.dart';
 import 'package:flauncher/l10n/app_localizations.dart';
 import 'package:flauncher/providers/apps_service.dart';
@@ -58,12 +59,50 @@ class HomeScreenPage extends StatelessWidget {
                 ),
                 const SettingsGroupLabel('Desktop'),
                 FocusableSettingsTile(
-                  leading: const Icon(Icons.dashboard_rounded),
-                  title: Text('Pages', style: theme.bodyMedium),
+                  leading: const Icon(Icons.edit_outlined),
+                  title: Text('Edit desktop', style: theme.bodyMedium),
+                  subtitle: Text('Add, remove and move widgets and pages', style: theme.bodySmall),
                   trailing: value('$pageCount ${pageCount == 1 ? 'page' : 'pages'}, '
                       '$widgetCount ${widgetCount == 1 ? 'widget' : 'widgets'}'),
-                  onPressed: () => desktop.addPage(pageCount - 1),
-                  subtitle: Text('OK adds a page', style: theme.bodySmall),
+                  onPressed: () {
+                    // Close settings and open edit mode on the desktop itself.
+                    Navigator.of(context, rootNavigator: true).pop();
+                    desktop.requestEdit();
+                  },
+                ),
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.home_outlined),
+                  title: Text('Home page', style: theme.bodyMedium),
+                  subtitle: Text('Shown at start and when you press Home', style: theme.bodySmall),
+                  trailing: value('Page ${desktop.homePage + 1}'),
+                  onPressed: pageCount < 2
+                      ? null
+                      : () async {
+                          final page = await showDesktopChoices(context, 'Home page', [
+                            for (var i = 0; i < pageCount; i++)
+                              DesktopChoice(i, 'Page ${i + 1}',
+                                  subtitle: _pageSummary(desktop.pages[i]), selected: i == desktop.homePage),
+                          ]);
+                          if (page != null) await desktop.setHomePage(page);
+                        },
+                ),
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.crop_square_rounded),
+                  title: Text('Widget border', style: theme.bodyMedium),
+                  trailing: Switch(value: desktop.widgetBorder, onChanged: desktop.setWidgetBorder),
+                  onPressed: () => desktop.setWidgetBorder(!desktop.widgetBorder),
+                ),
+                FocusableSettingsTile(
+                  leading: const Icon(Icons.blur_on_rounded),
+                  title: Text('Widget background', style: theme.bodyMedium),
+                  trailing: value(desktopBackgroundName(desktop.widgetBackground)),
+                  onPressed: () async {
+                    final background = await showDesktopChoices(context, 'Widget background', [
+                      for (final b in DesktopWidgetBackground.values)
+                        DesktopChoice(b, desktopBackgroundName(b), selected: b == desktop.widgetBackground),
+                    ]);
+                    if (background != null) await desktop.setWidgetBackground(background);
+                  },
                 ),
                 FocusableSettingsTile(
                   showChevron: true,
@@ -76,8 +115,9 @@ class HomeScreenPage extends StatelessWidget {
                   child: Text(
                     'Taskbar: Up and Down switch category, Up from the first category goes to the desktop, '
                     'Left from the first app shows the category settings. '
-                    'Desktop: hold OK on a widget to move, resize or remove it, or to add, move and remove pages. '
-                    'Left and Right at the edge of a page turn the page.',
+                    'Desktop: Left and Right at the edge of a page turn the page, Home goes back to the home page. '
+                    'The pencil at the bottom right opens edit mode: OK on a widget moves, resizes or removes it, '
+                    'OK on an empty cell adds one there, and going past the first or last page adds a page.',
                     style: theme.bodySmall,
                   ),
                 ),
@@ -89,3 +129,8 @@ class HomeScreenPage extends StatelessWidget {
     );
   }
 }
+
+String _pageSummary(List<DesktopItem> items) => items.isEmpty
+    ? 'Empty'
+    : items.map((i) => desktopTypeName(i.type)).toSet().join(', ');
+

@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-11-21_
+_Last updated: 2026-11-24_
 
 Project state at a glance. Work in progress is planned in `dev-tickets/` (map: `dev-tickets/INDEX.md`);
 how to work in this repo: `AGENT.md`.
@@ -11,7 +11,13 @@ how to work in this repo: `AGENT.md`.
   `taskbar_category_id`). Above: desktop with pages of widgets (`lib/desktop/`, stored as JSON in
   `desktop_pages`), 4x2 grid per page, sizes 1x1, 2x1, 2x2, 4x1, 4x2. Widgets: clock, camera (media panel camera
   cards), Home Assistant entity (from the chosen panel entities), app shortcut, Continue watching (latest item).
-  Hold OK on a widget: move, size, add widget, add page, remove widget/page. Left/Right at a page edge turns the page.
+  Dashboard editing (2026-11-24): the clock takes no focus outside edit mode. A discreet pencil at the bottom right
+  of the desktop opens edit mode (holding OK no longer edits): OK on a widget = move/size/remove, OK on an empty cell
+  adds a widget there, toolbar = Add widget, Set as home, Style, Delete page (one page always stays), Done; Back also
+  exits. Past the first or last page a "+" spot creates a new page, so pages grow in both directions. The home page
+  (house in the page dots, `desktop_home_page`) shows at start and on Home (`onNewIntent` -> `com.jryolsn.tazama/home`).
+  Widget style for all pages: border on/off, background Glass/Blur/None (`desktop_widget_border`,
+  `desktop_widget_background`), also in Settings > Home screen. Left/Right at a page edge turns the page.
   Removed settings: home layout, Watch Next show/card size, hide status bar in grid, category row/grid choice.
   Ideas for later: more widget types (Now playing, weather, HA groups), Watch Next as a multi-item widget.
 - Cleanup of unused Arc/FLauncher leftovers (2026-11-20): removed the duplicate `me.efesser.flauncher` Java
